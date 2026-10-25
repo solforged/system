@@ -40,7 +40,8 @@ in
       taplo
       yaml-language-server
       dprint
-      nodejs
+      # modules.dev.node's version wins when both are on.
+      (lib.lowPrio nodejs)
     ];
     modules.dotfiles.configLink.nvim = "nvim";
     modules.env.variables.NVIM_MARKDOWN_PREVIEW = "${pkgs.vimPlugins.markdown-preview-nvim}";

@@ -25,7 +25,9 @@ in
   config = lib.mkIf cfg.enable {
     nixpkgs.config.android_sdk.accept_license = true;
     hm.home.packages = [
-      pkgs.android-cli
+      # cmdline-tools also ships `bin/android`, a launcher that downloads the
+      # CLI at runtime. The pinned package wins.
+      (lib.hiPrio pkgs.android-cli)
       android.androidsdk
       pkgs.flutter
       pkgs.jdk21
