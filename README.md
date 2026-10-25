@@ -67,7 +67,7 @@ New files must be `git add`ed before the flake can see them.
   `secrets-rekey` fetch it through fnox for a single agenix run.
 - **Adding a host.** Read its `/etc/ssh/ssh_host_ed25519_key.pub` (on macOS,
   create it first with `sudo ssh-keygen -A`), add it to the rules file, then run
-  `secrets-rekey`. hyperion and atlas are not recipients yet.
+  `secrets-rekey`. atlas is not a recipient yet.
 - **SSH keys** live in Proton Pass. `user.sshKeys` in
   `modules/common/default.nix` lists each host's public key. Every key
   authorizes SSH logins, and each host signs commits with its own key.
