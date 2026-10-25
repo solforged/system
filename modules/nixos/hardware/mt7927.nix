@@ -21,5 +21,24 @@ in
       enableBluetooth = true;
       disableAspm = true;
     };
+
+    # The flake builds with plain `make`, so its modules lack the kmodigest
+    # .ko.cer files nixpkgs' aggregateModules concatenates into modules.cer,
+    # and the modules tree fails to build. Sign them after fixup, since
+    # stripping changes the digest. Otherwise as in nixos kernel.nix.
+    system.modulesTree = lib.mkForce (
+      [ (lib.getOutput "modules" config.boot.kernelPackages.kernel) ]
+      ++ map (
+        pkg:
+        if lib.hasPrefix "mediatek-mt7927-" (pkg.pname or "") then
+          pkg.overrideAttrs (old: {
+            postFixup = (old.postFixup or "") + ''
+              find "$out/lib/modules" -name '*.ko' -exec ${lib.getExe pkgs.kmodigest} {} \;
+            '';
+          })
+        else
+          pkg
+      ) config.boot.extraModulePackages
+    );
   };
 }
