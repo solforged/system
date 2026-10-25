@@ -1,0 +1,7 @@
+# :schema https://yazi-rs.github.io/schemas/keymap.json
+
+[mgr]
+prepend_keymap = [
+  { on = "d", run = "remove", desc = "Trash selected files" },
+  { on = "D", run = "noop", desc = "Disable permanent delete; use d to trash" },
+]

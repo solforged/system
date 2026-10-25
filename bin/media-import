@@ -1,0 +1,277 @@
+#!/usr/bin/env bash
+# media-import: copy completed agent-vm downloads into the codex media library.
+#
+# Conventions (match the existing library):
+#   Movies: /volume2/Data/Media/Movies/<Name> (<Year>)/<Name> (<Year>).<ext>
+#   Shows:  /volume2/Data/Media/Shows/<Show> (<Year>)/Season <N>/<Show> - SxxEyy - <Title>.<ext>
+#
+# Copies, never moves: sources stay in the share so qBittorrent can keep
+# seeding, and the files remain for reference. Drop finished torrents from
+# the webui (and optionally their local copies) when seeding is done.
+#
+# Parsing is release-name based (no DB): split on dots, episode code SxxEyy,
+# title ends at the first quality/release token (1080p, x265, WEBRip, ...).
+# Year for shows comes from the torrent folder name, falling back to a match
+# against an existing show directory on codex.
+#
+# Modes:
+#   --check     monitor: qBittorrent state + per-item import status, no changes
+#   --dry-run   print the plan, copy nothing
+#   (default)   rename + copy via rsync/ssh
+set -euo pipefail
+
+SHARE="$HOME/shared/agent-vm/torrents"
+CODEX=codex
+MOVIES=/volume2/Data/Media/Movies
+SHOWS=/volume2/Data/Media/Shows
+QB=http://192.168.126.10:8080
+# Keep this file private and outside the checkout. Its contents are the
+# qBittorrent WebUI password, without a trailing newline.
+QB_PASSWORD_FILE="${QB_PASSWORD_FILE:-${XDG_CONFIG_HOME:-$HOME/.config}/media-import/qbittorrent-password}"
+
+CHECK=0
+DRY=0
+for a in "$@"; do
+  case "$a" in
+    --check) CHECK=1 ;;
+    --dry-run) DRY=1 ;;
+    -h|--help)
+      printf '%s\n' \
+        'media-import [--check | --dry-run]' \
+        'Copy completed downloads to codex. Sources remain available for seeding.' \
+        '  --check    Show torrent and import status without copying.' \
+        '  --dry-run  Show the copy plan without changing files.'
+      exit 0 ;;
+    *) echo "unknown arg: $a (try --help)" >&2; exit 2 ;;
+  esac
+done
+
+QUALITY_RE='^(1080p|720p|2160p|480p|4k|uhd|x264|x265|h264|h265|hevc|av1|webrip|web-dl|webdl|bluray|blu-ray|br|remux|hdtv|amzn|dnsp|nf|ddp|aac|ac3|eac3|dts|truehd|atmos|10bit|hdr|hdr10|dvhdr|reenc|proper|internal|limited|extended)$'
+YEAR_RE='^([12][90][0-9][0-9])$'
+SXE_RE='^S([0-9]{1,2})E([0-9]{1,3})$'
+VIDEO_RE='\.(mkv|mp4|avi|m4v|mov)$'
+
+join_sp() {
+  local out="" t
+  for t in "$@"; do out+="${out:+ }$t"; done
+  printf '%s' "$out"
+}
+
+# split a dot-separated stem into the global REPLY_TOK array
+split_stem() {
+  REPLY_TOK=()
+  local IFS='.'
+  read -ra REPLY_TOK <<< "$1"
+}
+
+# parse_tv <filename> <torrent-folder-name>
+# -> TV_SHOW TV_SEASON TV_SXE TV_TITLE TV_EXT TV_YEAR
+parse_tv() {
+  local base="${1##*/}"
+  local ext="${base##*.}"
+  split_stem "${base%.*}"
+  local n=${#REPLY_TOK[@]} i=0
+  while (( i < n )) && [[ ! ${REPLY_TOK[i]} =~ $SXE_RE ]]; do i=$((i+1)); done
+  (( i < n )) || return 1
+  (( i > 0 )) || return 1
+  TV_SHOW=$(join_sp "${REPLY_TOK[@]:0:i}")
+  TV_SEASON=$((10#${BASH_REMATCH[1]}))
+  TV_SXE=$(printf 'S%02dE%02d' "$TV_SEASON" "$((10#${BASH_REMATCH[2]}))")
+  local title="" j=$((i+1))
+  while (( j < n )) && [[ ! ${REPLY_TOK[j]} =~ $QUALITY_RE ]]; do
+    title+="${title:+ }${REPLY_TOK[j]}"
+    j=$((j+1))
+  done
+  (( j < n )) || return 1
+  TV_TITLE="$title"
+  TV_EXT="$ext"
+  # year: from the torrent folder name, else from an existing show dir on codex
+  TV_YEAR=""
+  local t
+  for t in ${2//./ }; do
+    if [[ $t =~ $YEAR_RE ]]; then TV_YEAR=$t; break; fi
+  done
+  if [[ -z $TV_YEAR ]]; then
+    local d base y
+    while IFS= read -r d; do
+      base="${d% (*}"
+      if [[ ${base,,} == "${TV_SHOW,,}" ]]; then
+        y="${d##*(}"
+        TV_YEAR="${y%)}"
+        break
+      fi
+    done <<< "${SHOW_LIST:-}"
+  fi
+  [[ -n $TV_YEAR ]] || return 1
+}
+
+# parse_movie <filename>
+# -> M_NAME M_YEAR M_EXT
+parse_movie() {
+  local base="${1##*/}"
+  local ext="${base##*.}"
+  split_stem "${base%.*}"
+  local n=${#REPLY_TOK[@]} i=0 year="" found=""
+  for (( i = 0; i < n; i++ )); do
+    if [[ ${REPLY_TOK[i]} =~ $QUALITY_RE ]]; then break; fi
+    if [[ ${REPLY_TOK[i]} =~ $YEAR_RE ]]; then
+      if [[ -n $found ]]; then year=${REPLY_TOK[i]}; break; fi
+      found=${REPLY_TOK[i]}
+    else
+      found=${REPLY_TOK[i]}
+    fi
+  done
+  [[ -n $year ]] || return 1
+  M_NAME=$(join_sp "${REPLY_TOK[@]:0:i}")
+  M_YEAR=$year
+  M_EXT=$ext
+}
+
+qb_login() {
+  [[ -r $QB_PASSWORD_FILE ]] || return 1
+  QB_COOKIE=$(mktemp)
+  curl -fsS -c "$QB_COOKIE" -X POST \
+    --data-urlencode username=torrents --data-urlencode "password@$QB_PASSWORD_FILE" \
+    "$QB/api/v2/auth/login" >/dev/null || { rm -f "$QB_COOKIE"; QB_COOKIE=""; return 1; }
+}
+
+# dest_for <share-entry> -> sets DEST (codex path of the first file's target)
+dest_for() {
+  local entry="$1"
+  if [[ -d $entry ]]; then
+    local v
+    for v in "$entry"/*; do
+      [[ -f $v && $v =~ $VIDEO_RE ]] || continue
+      if parse_tv "$v" "$(basename "$entry")"; then
+        DEST="$SHOWS/$TV_SHOW ($TV_YEAR)/Season $TV_SEASON/$TV_SHOW - $TV_SXE - $TV_TITLE.$TV_EXT"
+        return 0
+      fi
+      return 1
+    done
+  elif [[ -f $entry && $entry =~ $VIDEO_RE ]]; then
+    if parse_movie "$(basename "$entry")"; then
+      DEST="$MOVIES/$M_NAME ($M_YEAR)/$M_NAME ($M_YEAR).$M_EXT"
+      return 0
+    fi
+  fi
+  return 1
+}
+
+copied=0
+skipped=0
+
+process_video() {
+  # $1 = source video path, $2 = dest dir on codex, $3 = new filename
+  local src="$1" destdir="$2" newname="$3"
+  local dest="$destdir/$newname"
+  if ssh -q "$CODEX" "test -e $(printf '%q' "$dest")"; then
+    echo "  already on codex: $newname"
+    skipped=$((skipped+1))
+    return 0
+  fi
+  echo "  $src"
+  echo "    -> $dest"
+  if (( ! DRY )); then
+    ssh -q "$CODEX" "mkdir -p $(printf '%q' "$destdir")"
+    rsync -a --protect-args "$src" "$CODEX:$destdir/$newname"
+    # copy sidecars (srt/jpg/...) with the same stem, renamed alongside
+    local stem="${src%.*}" sc
+    for sc in "$stem".*; do
+      [[ -f $sc && $sc != "$src" ]] || continue
+      rsync -a --protect-args "$sc" "$CODEX:$destdir/${newname%.*}.${sc##*.}"
+    done
+  fi
+  copied=$((copied+1))
+}
+
+main() {
+  if [[ ! -d $SHARE ]]; then
+    echo "share missing: $SHARE" >&2
+    exit 1
+  fi
+
+  # Existing show names supply years omitted by release filenames.
+  SHOW_LIST=$(ssh -q "$CODEX" "ls '$SHOWS'")
+
+  if (( CHECK )); then
+    echo "qBittorrent ($QB):"
+    QB_COOKIE=""
+    if qb_login; then
+      curl -fsS -b "$QB_COOKIE" "$QB/api/v2/torrents/info" | python3 -c "
+import json, sys
+d = json.load(sys.stdin)
+d = d if isinstance(d, list) else d.get('torrents', [])
+if not d: print('  (no torrents)')
+for t in sorted(d, key=lambda t: t['name']):
+    print(f\"  {t['state']:<12} {int(t['progress']*100):3d}%  {t['name']}\")
+"
+      rm -f "$QB_COOKIE"
+    else
+      echo "  (unavailable: qBittorrent or password file $QB_PASSWORD_FILE not reachable)"
+    fi
+    echo "share:"
+    local found=0 e
+    for e in "$SHARE"/*; do
+      [[ -e $e ]] || continue
+      found=1
+      if dest_for "$e"; then
+        if ssh -q "$CODEX" "test -e $(printf '%q' "$DEST")"; then
+          echo "  imported (seeding): $(basename "$e")"
+        else
+          echo "  READY TO IMPORT:   $(basename "$e")"
+        fi
+      else
+        echo "  unparseable:         $(basename "$e")"
+      fi
+    done
+    (( found )) || echo "  (empty)"
+    return 0
+  fi
+
+  local entry
+  for entry in "$SHARE"/*; do
+    [[ -e $entry ]] || continue
+    local name
+    name=$(basename "$entry")
+
+    if [[ -d $entry ]]; then
+      local videos=() v
+      for v in "$entry"/*; do
+        [[ -f $v && $v =~ $VIDEO_RE ]] || continue
+        videos+=("$v")
+      done
+      (( ${#videos[@]} )) || { echo "skip (no videos): $name"; skipped=$((skipped+1)); continue; }
+      if ! parse_tv "${videos[0]}" "$name"; then
+        echo "skip (unparseable TV name): $name"
+        skipped=$((skipped+1))
+        continue
+      fi
+      echo "show: $TV_SHOW ($TV_YEAR) season $TV_SEASON: ${#videos[@]} file(s)"
+      for v in "${videos[@]}"; do
+        parse_tv "$v" "$name" || { echo "  skip (unparseable): $(basename "$v")"; skipped=$((skipped+1)); continue; }
+        process_video "$v" "$SHOWS/$TV_SHOW ($TV_YEAR)/Season $TV_SEASON" "$TV_SHOW - $TV_SXE - $TV_TITLE.$TV_EXT"
+      done
+    elif [[ -f $entry && $entry =~ $VIDEO_RE ]]; then
+      if ! parse_movie "$name"; then
+        echo "skip (unparseable movie name): $name"
+        skipped=$((skipped+1))
+        continue
+      fi
+      echo "movie: $M_NAME ($M_YEAR)"
+      process_video "$entry" "$MOVIES/$M_NAME ($M_YEAR)" "$M_NAME ($M_YEAR).$M_EXT"
+    else
+      echo "skip (not a video): $name"
+      skipped=$((skipped+1))
+    fi
+  done
+
+  echo
+  if (( DRY )); then
+    echo "dry run: $copied file(s) planned, $skipped skipped. Re-run without --dry-run to copy."
+    return 0
+  fi
+  echo "copied $copied file(s), $skipped already present or skipped."
+  echo "sources kept in $SHARE for seeding."
+}
+
+main

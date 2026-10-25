@@ -1,0 +1,111 @@
+modelRoles:
+  smol: anthropic/claude-haiku-5-5:high
+  plan: openai-codex/gpt-6-astra:high
+  commit: openai-codex/gpt-5.6-luna:low
+  task: openai-codex/gpt-6.1-sol:auto
+  slow: openai-codex/gpt-6-astra:high
+  tiny: openai-codex/gpt-6-luna:auto
+  vision: openai-codex/gpt-6.1-sol:auto
+  memory: openai-codex/gpt-6-luna:high
+  default: anthropic/claude-opus-5-5:high
+disabledProviders:
+  - ollama
+  - vllm
+symbolPreset: nerd
+setupVersion: 2
+hideThinkingBlock: false
+memory:
+  backend: mnemopi
+autolearn:
+  enabled: true
+  autoContinue: true
+mnemopi:
+  polyphonicRecall: true
+  enhancedRecall: true
+  proactiveLinking: true
+  noEmbeddings: false
+  scoping: per-project-tagged
+  llmMode: smol
+astGrep:
+  enabled: true
+speechgen:
+  enabled: false
+generate_image:
+  enabled: true
+computer:
+  enabled: true
+checkpoint:
+  enabled: true
+vault:
+  enabled: true
+github:
+  enabled: true
+security:
+  enabled: false
+dev:
+  autoqa: false
+task:
+  isolation:
+    enabled: true
+  enableEffort: true
+  maxEffort: xhigh
+commands:
+  enableClaudeUser: false
+  enableClaudeProject: false
+  enableOpencodeUser: false
+  enableOpencodeProject: false
+display:
+  shimmer: disabled
+  subagentLivePreview: false
+theme:
+  dark: solforge-dark
+  light: solforge-light
+bashInterceptor:
+  enabled: true
+startup:
+  checkUpdate: false
+terminal:
+  showProgress: true
+autocompleteMaxVisible: 15
+composer:
+  shape: band
+  tokenRate: true
+defaultThinkingLevel: auto
+spelling:
+  typoDetection: false
+  autocomplete: "off"
+isolation:
+  backend: auto
+retry:
+  fallbackChains: {}
+codexResets:
+  autoRedeem: "yes"
+sharpshooter:
+  model: ""
+tui:
+  titleSpinner: braille
+  codexResetFireworks: true
+  titleState: false
+statusLine:
+  separator: powerline
+  contextLine: annotated
+  compactThinkingLevel: false
+compaction:
+  idleEnabled: true
+  modelThresholds:
+    anthropic/*: 40%
+shellMinimizer:
+  sourceOutlineLevel: aggressive
+modelPresets:
+  openai:
+    modelRoles:
+      smol: anthropic/claude-haiku-5-5:high
+      plan: openai-codex/gpt-6-astra:high
+      commit: openai-codex/gpt-6-luna:low
+      task: openai-codex/gpt-6.1-sol:auto
+      slow: openai-codex/gpt-6-astra:high
+      tiny: openai-codex/gpt-6-luna:auto
+      vision: openai-codex/gpt-6.1-sol:auto
+      memory: openai-codex/gpt-6-luna:high
+      default: anthropic/claude-opus-5-5:medium
+    defaultThinkingLevel: auto

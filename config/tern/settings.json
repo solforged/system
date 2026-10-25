@@ -1,0 +1,19 @@
+{
+  "theme": "System",
+  "copy_on_select": true,
+  "opacity": 90,
+  "prompt_style": "tern",
+  "msaa": "2x",
+  "git": {
+    "pull_mode": "Rebase",
+    "sign_commits_by_default": true,
+    "show_commit_author": true
+  },
+  "sqlite": {
+    "editor_font_size": 12,
+    "results_font_size": 12
+  },
+  "carly": {
+    "model": "@default"
+  }
+}

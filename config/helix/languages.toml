@@ -1,0 +1,31 @@
+# Language servers come from modules/common/editors/helix.nix, except
+# sourcekit-lsp, which ships with Xcode on macOS.
+[language-server.sourcekit-lsp]
+command = "xcrun"
+args = ["sourcekit-lsp"]
+
+[language-server.pyright]
+command = "pyright-langserver"
+args = ["--stdio"]
+
+[language-server.ruff]
+command = "ruff"
+args = ["server"]
+
+[language-server.marksman]
+command = "marksman"
+args = ["server"]
+
+[language-server.taplo]
+command = "taplo"
+args = ["lsp", "stdio"]
+
+[[language]]
+name = "python"
+language-servers = ["pyright", "ruff"]
+auto-format = false
+
+[[language]]
+name = "swift"
+language-servers = ["sourcekit-lsp"]
+auto-format = false

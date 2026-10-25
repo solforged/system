@@ -1,0 +1,51 @@
+git:
+  overrideGpg: true
+# ANSI colors follow the terminal palette, including light mode.
+gui:
+  border: single
+  showFileIcons: false
+  theme:
+    activeBorderColor: [yellow, bold]
+    inactiveBorderColor: [black, bold]
+    searchingActiveBorderColor: [yellow, bold]
+    optionsTextColor: [blue]
+    selectedLineBgColor: [reverse]
+    inactiveViewSelectedLineBgColor: [bold]
+    cherryPickedCommitFgColor: [green]
+    cherryPickedCommitBgColor: [default]
+    markedBaseCommitFgColor: [yellow]
+    markedBaseCommitBgColor: [default]
+    unstagedChangesColor: [yellow]
+    defaultFgColor: [default]
+customCommands:
+  - key: X
+    description: Force (skip hooks)
+    commandMenu:
+      - key: c
+        context: files
+        description: Commit skipping verify hooks
+        command: git commit --no-verify
+        output: terminal
+        prompts:
+          - type: confirm
+            title: Skip all pre-commit and commit-msg hooks?
+            key: ok
+      - key: a
+        context: commits
+        description: Amend HEAD skipping verify hooks
+        command: git commit --amend --no-verify
+        output: terminal
+        prompts:
+          - type: confirm
+            title: Amend HEAD, skipping all verify hooks?
+            key: ok
+      - key: s
+        context: files
+        description: Commit skipping style policy
+        command: git -c hook.commit-message-policy.enabled=false commit
+        output: terminal
+      - key: r
+        context: commits
+        description: Amend HEAD skipping style policy
+        command: git -c hook.commit-message-policy.enabled=false commit --amend
+        output: terminal

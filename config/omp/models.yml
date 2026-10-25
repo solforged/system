@@ -1,0 +1,33 @@
+providers:
+  llama.cpp:
+    baseUrl: http://127.0.0.1:8081
+    api: openai-completions
+    auth: none
+    discovery:
+      type: llama.cpp
+    modelOverrides:
+      qwen3.8-27b-256k:
+        name: "Qwen 3.8 27B (256k context)"
+        reasoning: true
+        contextWindow: 262144
+        maxTokens: 16384
+        compat:
+          thinkingFormat: qwen
+          reasoningContentField: reasoning_content
+          supportsReasoningEffort: true
+  amarna:
+    baseUrl: https://amarna.ussuri-alphard.ts.net
+    api: openai-completions
+    auth: none
+    discovery:
+      type: llama.cpp
+    modelOverrides:
+      qwen3.8-27b-256k:
+        name: "Qwen 3.8 27B (256k context)"
+        reasoning: true
+        contextWindow: 262144
+        maxTokens: 16384
+        compat:
+          thinkingFormat: qwen
+          reasoningContentField: reasoning_content
+          supportsReasoningEffort: true

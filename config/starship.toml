@@ -1,0 +1,52 @@
+add_newline = true
+command_timeout = 200
+format = '$hostname$directory([\[$git_branch$git_commit$git_status$git_state\]](blue) )$line_break$character'
+
+[hostname]
+ssh_only = false
+format = "[$hostname]($style) "
+style = "bright-black"
+
+[directory]
+format = "[$path]($style)[$read_only]($read_only_style) "
+style = "blue"
+truncation_length = 3
+truncate_to_repo = false
+truncation_symbol = "…/"
+read_only = " ro"
+read_only_style = "red"
+
+[git_branch]
+format = '[$branch]($style)'
+style = "blue"
+only_attached = true
+
+[git_commit]
+format = '[@$hash]($style)'
+style = "yellow"
+only_detached = true
+
+[git_state]
+format = ' [|$state( $progress_current/$progress_total)]($style)'
+style = "bold yellow"
+
+[git_status]
+format = '( [$all_status$ahead_behind]($style))'
+style = "yellow"
+conflicted = "[=](bold red)"
+staged = "[+](green)"
+modified = "!"
+renamed = "[»](cyan)"
+deleted = "[✘](red)"
+typechanged = "~"
+untracked = "?"
+stashed = ""
+ahead = "[⇡](blue)"
+behind = "⇣"
+diverged = "⇕"
+up_to_date = ""
+
+[character]
+success_symbol = "[>](bold green)"
+error_symbol = "[>](bold red)"
+vimcmd_symbol = "[<](bold green)"

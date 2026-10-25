@@ -1,0 +1,8 @@
+# Global fnox config. Values stay in Proton Pass; project fnox.toml files
+# reference items through this provider, e.g.
+#   API_TOKEN = { provider = "protonpass", value = "Some item/password" }
+default_provider = "protonpass"
+
+[providers.protonpass]
+type = "proton-pass"
+vault = "Personal"

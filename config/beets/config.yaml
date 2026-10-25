@@ -1,0 +1,55 @@
+directory: ~/Music/beets
+library: ~/.local/share/beets.db
+
+plugins:
+  - albumtypes
+  - chroma
+  - embedart
+  - fetchart
+  - lastgenre
+  - lyrics
+  - musicbrainz
+  - parentwork
+  - replaygain
+  - zero
+
+import:
+  move: true
+  write: true
+  resume: ask
+  incremental: true
+  languages:
+    - en
+
+art_filename: cover
+
+paths:
+  # Import game soundtracks with: beet import --set game=true PATH
+  game:true: Soundtracks/Games/%upper{%left{$album,1}}/$album/$track $title
+  albumtype:soundtrack: Soundtracks/Scores/%upper{%left{$album,1}}/$album/$track $title
+  default: Artists/%upper{%left{$albumartist,1}}/$albumartist/$album/$track $title
+  comp: Artists/V/Various Artists/$album/$track $title
+  singleton: Artists/%upper{%left{$artist,1}}/$artist/Non-Album/$title
+
+fetchart:
+  auto: true
+
+embedart:
+  auto: true
+
+lyrics:
+  auto: false
+
+lastgenre:
+  auto: true
+
+parentwork:
+  auto: true
+
+replaygain:
+  auto: true
+  backend: ffmpeg
+
+zero:
+  fields: comments artist_sort artists_sort albumartist_sort albumartists_sort
+  update_database: true

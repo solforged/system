@@ -1,0 +1,11 @@
+# Global Cargo config, deployed to $CARGO_HOME/config.toml.
+# Project Cargo.toml profiles still apply; these keys win where both set one.
+
+[profile.dev]
+# File and line numbers for backtraces and panics, without full variable
+# debug info. Set CARGO_PROFILE_DEV_DEBUG=true when a debugger needs locals.
+debug = "line-tables-only"
+
+[profile.dev.package."*"]
+# Dependencies (not workspace members) carry no debug info at all.
+debug = false

@@ -1,0 +1,16 @@
+Host github.com
+  User git
+
+Host sigil
+  User admin
+
+Host amarna
+  User sol
+
+Host agent-vm
+  User vmadmin
+
+Host *
+  ServerAliveInterval 60
+  ServerAliveCountMax 3
+  HashKnownHosts yes

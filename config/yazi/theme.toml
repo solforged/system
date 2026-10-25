@@ -1,0 +1,86 @@
+# ANSI roles follow the active terminal palette in both appearances.
+# Reverse video keeps labels readable without assuming a dark background.
+[mgr]
+cwd = { fg = "blue" }
+find_keyword = { fg = "yellow", bold = true, italic = false, underline = true }
+find_position = { fg = "yellow", bg = "reset", bold = true, italic = false }
+symlink_target = { fg = "cyan", italic = false }
+count_copied = { fg = "green", bg = "reset", reversed = true }
+count_cut = { fg = "red", bg = "reset", reversed = true }
+count_selected = { fg = "yellow", bg = "reset", reversed = true }
+border_style = { fg = "darkgray" }
+
+[indicator]
+current = { fg = "yellow", bg = "reset", reversed = true }
+padding = { open = " ", close = " " }
+
+[tabs]
+active = { fg = "yellow", bg = "reset", reversed = true, bold = true }
+inactive = { fg = "darkgray", bg = "reset" }
+sep_inner = { open = " ", close = " " }
+sep_outer = { open = "", close = "" }
+
+[mode]
+normal_main = { fg = "blue", bg = "reset", reversed = true, bold = true }
+normal_alt = { fg = "blue", bg = "reset" }
+select_main = { fg = "yellow", bg = "reset", reversed = true, bold = true }
+select_alt = { fg = "yellow", bg = "reset" }
+unset_main = { fg = "red", bg = "reset", reversed = true, bold = true }
+unset_alt = { fg = "red", bg = "reset" }
+
+[status]
+sep_left = { open = "", close = " " }
+sep_right = { open = " ", close = "" }
+progress_normal = { fg = "green", bg = "reset" }
+progress_error = { fg = "red", bg = "reset" }
+
+[notify]
+title_info = { fg = "blue" }
+title_warn = { fg = "yellow" }
+title_error = { fg = "red" }
+
+[which]
+border = { fg = "yellow" }
+cand = { fg = "blue" }
+rest = { fg = "darkgray" }
+desc = { fg = "reset" }
+
+[pick]
+border = { fg = "yellow" }
+active = { fg = "yellow", bold = true }
+
+[input]
+border = { fg = "yellow" }
+
+[cmp]
+border = { fg = "yellow" }
+icon_file = "-"
+icon_folder = "d"
+icon_command = "x"
+
+[tasks]
+border = { fg = "yellow" }
+hovered = { fg = "yellow", bold = true }
+
+[help]
+border = { fg = "yellow" }
+chord = { fg = "blue" }
+
+# File kinds, like a permissions column; filenames carry the type detail.
+[icon]
+globs = []
+dirs = []
+files = []
+exts = []
+conds = [
+  { if = "orphan", text = "!", fg = "red" },
+  { if = "link", text = "l", fg = "cyan" },
+  { if = "block", text = "b", fg = "yellow" },
+  { if = "char", text = "c", fg = "yellow" },
+  { if = "fifo", text = "p", fg = "yellow" },
+  { if = "sock", text = "s", fg = "magenta" },
+  { if = "dummy", text = "?", fg = "red" },
+  { if = "dir", text = "d", fg = "blue" },
+  { if = "exec", text = "x", fg = "green" },
+  { if = "!dir", text = "-", fg = "darkgray" },
+]

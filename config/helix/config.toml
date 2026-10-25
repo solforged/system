@@ -1,0 +1,23 @@
+[editor]
+line-number = "absolute"
+mouse = true
+auto-format = false
+bufferline = "multiple"
+color-modes = true
+true-color = true
+popup-border = "all"
+
+[editor.statusline]
+left = ["mode", "spinner", "file-name", "file-modification-indicator"]
+center = ["version-control"]
+right = ["position", "file-encoding", "file-line-ending", "file-type"]
+separator = "│"
+mode.normal = "NORMAL"
+mode.insert = "INSERT"
+mode.select = "SELECT"
+
+[editor.lsp]
+display-inlay-hints = false
+
+[editor.file-picker]
+hidden = false

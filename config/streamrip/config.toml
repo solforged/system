@@ -1,0 +1,82 @@
+# Preferences are merged into a writable config at activation.
+# Credentials, tokens, app secrets and the config version remain app-owned.
+
+[downloads]
+folder = "@HOME@/Music/streamrip"
+source_subdirectories = false
+disc_subdirectories = true
+concurrency = true
+max_connections = 6
+requests_per_minute = 60
+verify_ssl = true
+
+[qobuz]
+quality = 3
+download_booklets = true
+use_auth_token = true
+
+[tidal]
+quality = 3
+download_videos = true
+
+[deezer]
+quality = 2
+use_deezloader = true
+deezloader_warnings = true
+
+[soundcloud]
+quality = 0
+
+[youtube]
+quality = 0
+download_videos = false
+video_downloads_folder = "@HOME@/StreamripDownloads/YouTubeVideos"
+
+[database]
+downloads_enabled = true
+downloads_path = "@CONFIG@/downloads.db"
+failed_downloads_enabled = true
+failed_downloads_path = "@CONFIG@/failed_downloads.db"
+
+[conversion]
+enabled = false
+codec = "ALAC"
+sampling_rate = 48000
+bit_depth = 24
+lossy_bitrate = 320
+
+[qobuz_filters]
+extras = false
+repeats = false
+non_albums = false
+features = false
+non_studio_albums = false
+non_remaster = false
+
+[artwork]
+embed = true
+embed_size = "large"
+embed_max_width = -1
+save_artwork = true
+saved_max_width = -1
+
+[metadata]
+set_playlist_to_album = true
+renumber_playlist_tracks = true
+exclude = []
+
+[filepaths]
+add_singles_to_folder = false
+folder_format = "{albumartist} - {title} ({year}) [{container}] [{bit_depth}B-{sampling_rate}kHz]"
+track_format = "{tracknumber:02}. {artist} - {title}{explicit}"
+restrict_characters = false
+truncate_to = 120
+
+[lastfm]
+source = "qobuz"
+fallback_source = ""
+
+[cli]
+text_output = true
+progress_bars = true
+max_search_results = 100

@@ -1,0 +1,4 @@
+[settings]
+experimental = true
+minimum_release_age = "0s"
+github.credential_command = "gh auth token"
