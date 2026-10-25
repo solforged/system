@@ -41,8 +41,6 @@ in
   boot.supportedFilesystems.zfs = lib.mkForce false;
 
   networking.hostName = "nixos-installer";
-  networking.wireless.enable = lib.mkForce false;
-  networking.networkmanager.enable = true;
 
   nixpkgs.config.allowUnfree = true;
 
