@@ -27,8 +27,15 @@ done
 step "Ventoy stick"
 mkdir -p "$stick"
 if ! mountpoint -q "$stick"; then
+  # Needs VTOY_LINUX_REMOUNT in ventoy/ventoy.json on the stick.
   mount -o ro /dev/disk/by-label/Ventoy "$stick" 2>/dev/null ||
-    echo "Ventoy partition not mounted; continuing without amarna/ files."
+    echo "Could not mount the Ventoy partition."
+fi
+if [[ ! -f $from/backup.tar.age ]]; then
+  echo "No $from/backup.tar.age: the old host key and Secure Boot keys are lost,"
+  echo "and secrets stay undecryptable until they are rekeyed for the new key."
+  read -r -p "Continue anyway? [y/N] " answer
+  [[ $answer == [Yy] ]] || exit 1
 fi
 
 [[ -e $disk ]] || {
