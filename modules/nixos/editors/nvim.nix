@@ -11,6 +11,8 @@
 
 {
   config = lib.mkIf config.modules.editors.nvim.enable {
-    hm.home.packages = [ pkgs.gcc ];
+    # The clang wrapper (apps.workstation-tools) also ships cc, c++, cpp
+    # and ld; GCC keeps them, as on most Linux systems.
+    hm.home.packages = [ (lib.hiPrio pkgs.gcc) ];
   };
 }
