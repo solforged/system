@@ -56,6 +56,7 @@
             }
             (host.config or { })
           ]
+          ++ lib.optional isDarwin inputs.determinate.darwinModules.default
           ++ lib.optional (builtins.pathExists (path + "/hardware.nix")) (path + "/hardware.nix");
         };
       }

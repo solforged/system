@@ -11,6 +11,10 @@
     nix-darwin.url = "github:nix-darwin/nix-darwin";
     nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
 
+    # Determinate Nix owns /etc/nix/nix.conf and the daemon on Macs; this
+    # module writes nix.custom.conf and turns off nix-darwin's Nix management.
+    determinate.url = "https://flakehub.com/f/DeterminateSystems/determinate/3";
+
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 

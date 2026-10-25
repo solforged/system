@@ -58,6 +58,9 @@
   };
 
   config = { ... }: {
+    # The macOS account on this Mac is "admin", not the default "sol".
+    user.name = "admin";
+
     # Ghostty and Zed casks come from their modules.
     homebrew = {
       brews = [

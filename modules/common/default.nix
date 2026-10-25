@@ -70,18 +70,6 @@ in
         home.file = mapAttrs (_: link) dotfiles.homeLink;
       };
 
-    nix.settings = {
-      experimental-features = [
-        "nix-command"
-        "flakes"
-      ];
-      trusted-users = [
-        "root"
-        user
-      ];
-      warn-dirty = false;
-    };
-
     nixpkgs.config.allowUnfree = true;
 
     # packages/<name>.nix becomes pkgs.<name> on every host.

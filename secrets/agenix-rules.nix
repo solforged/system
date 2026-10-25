@@ -10,10 +10,12 @@
 let
   admin = "age1csrnt75trax79llf7njd6kvsvxj2r4acszgs9dxegw7uc5wt5etqyqc3m2";
   amarna = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILwkM1KLq8tcovQxQw6iqcSirQbZikwmYbQri9tpqUpF";
+  hyperion = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJwRPLR9b88m47AjZdWO1uEEvOIUz9cSwheSyHkCrKLO";
 
   everywhere = [
     admin
     amarna
+    hyperion
   ];
   work = [ admin ];
 in

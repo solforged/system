@@ -26,7 +26,18 @@ in
   };
 
   nix = {
-    settings.auto-optimise-store = true;
+    settings = {
+      experimental-features = [
+        "nix-command"
+        "flakes"
+      ];
+      trusted-users = [
+        "root"
+        user
+      ];
+      warn-dirty = false;
+      auto-optimise-store = true;
+    };
     gc = {
       automatic = true;
       dates = "weekly";
