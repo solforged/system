@@ -7,6 +7,7 @@
   stdenvNoCC,
   fetchurl,
   autoPatchelfHook,
+  patchelf,
 }:
 
 let
@@ -33,11 +34,21 @@ stdenvNoCC.mkDerivation rec {
   dontBuild = true;
   # Stripping breaks Bun's embedded application; the binary then runs bare Bun.
   dontStrip = true;
-  nativeBuildInputs = lib.optionals stdenv.hostPlatform.isLinux [ autoPatchelfHook ];
+  nativeBuildInputs = lib.optionals stdenv.hostPlatform.isLinux [
+    autoPatchelfHook
+    patchelf
+  ];
   buildInputs = lib.optionals stdenv.hostPlatform.isLinux [ stdenv.cc.cc.lib ];
   installPhase = ''
     runHook preInstall
     install -Dm755 "$src" "$out/bin/omp"
+  ''
+  # Mnemopi dlopens a downloaded onnxruntime whose RUNPATH is only $ORIGIN.
+  # Preloading the C++ runtime lets glibc satisfy it by soname.
+  + lib.optionalString stdenv.hostPlatform.isLinux ''
+    patchelf --add-needed libstdc++.so.6 --add-needed libgcc_s.so.1 "$out/bin/omp"
+  ''
+  + ''
     runHook postInstall
   '';
   doInstallCheck = stdenv.buildPlatform.canExecute stdenv.hostPlatform;
