@@ -63,14 +63,16 @@ compress() { tar -czf "${1%/}.tar.gz" "${1%/}"; }
 
 # --- Listing (eza) ---
 if command -v eza >/dev/null 2>&1; then
+  unalias ls ll la lt lta 2>/dev/null
   _eza_defaults=(--color=auto --group-directories-first --classify=auto)
   _eza_long_defaults=(-l --time-style=long-iso)
 
-  ls() { command eza "${_eza_defaults[@]}" "$@"; }
-  ll() { command eza "${_eza_defaults[@]}" "${_eza_long_defaults[@]}" "$@"; }
-  la() { ll -a "$@"; }
-  lt() { command eza "${_eza_defaults[@]}" -l --time-style=long-iso --tree --level=2 --icons --git "$@"; }
-  lta() { lt -a "$@"; }
+  # The whole if block is parsed before unalias runs, so avoid alias expansion.
+  function ls { command eza "${_eza_defaults[@]}" "$@"; }
+  function ll { command eza "${_eza_defaults[@]}" "${_eza_long_defaults[@]}" "$@"; }
+  function la { 'll' -a "$@"; }
+  function lt { command eza "${_eza_defaults[@]}" -l --time-style=long-iso --tree --level=2 --icons --git "$@"; }
+  function lta { 'lt' -a "$@"; }
 fi
 
 # --- Git worktrees ---
