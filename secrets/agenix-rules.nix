@@ -9,7 +9,7 @@
 # with `sudo ssh-keygen -A`), add it below, then run `secrets-rekey`.
 let
   admin = "age1csrnt75trax79llf7njd6kvsvxj2r4acszgs9dxegw7uc5wt5etqyqc3m2";
-  amarna = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILwkM1KLq8tcovQxQw6iqcSirQbZikwmYbQri9tpqUpF";
+  amarna = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKZvfZCi4oa8t+rQZeQz/fhzC9JfadSFRcU5NVTcy2Mm";
   hyperion = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJwRPLR9b88m47AjZdWO1uEEvOIUz9cSwheSyHkCrKLO";
 
   everywhere = [
