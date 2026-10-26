@@ -31,12 +31,20 @@ stdenvNoCC.mkDerivation rec {
   };
   dontUnpack = true;
   dontBuild = true;
+  # Stripping breaks Bun's embedded application; the binary then runs bare Bun.
+  dontStrip = true;
   nativeBuildInputs = lib.optionals stdenv.hostPlatform.isLinux [ autoPatchelfHook ];
   buildInputs = lib.optionals stdenv.hostPlatform.isLinux [ stdenv.cc.cc.lib ];
   installPhase = ''
     runHook preInstall
     install -Dm755 "$src" "$out/bin/omp"
     runHook postInstall
+  '';
+  doInstallCheck = stdenv.buildPlatform.canExecute stdenv.hostPlatform;
+  installCheckPhase = ''
+    runHook preInstallCheck
+    test "$("$out/bin/omp" --version)" = "omp/${version}"
+    runHook postInstallCheck
   '';
   meta = {
     description = "Oh My Pi coding agent";
