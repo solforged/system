@@ -30,11 +30,6 @@
     mt7927.url = "github:cmspam/mt7927-nixos/4177e1edb28fdc48ab696903f012348ac8ad39e8";
     mt7927.inputs.nixpkgs.follows = "nixpkgs";
 
-    # Not following nixpkgs: upstream builds and tests its uv2nix package
-    # against its own lock.
-    hermes-agent.url = "github:NousResearch/hermes-agent";
-    hermes-agent.inputs.home-manager.follows = "home-manager";
-
     # Private repo. Fetching it needs a GitHub token, e.g.
     # --option access-tokens "github.com=$(gh auth token)".
     solforge-theme.url = "github:solforged/solforge-theme";
