@@ -58,6 +58,37 @@ nix build .#installer-iso                               # amarna installer
 
 New files must be `git add`ed before the flake can see them.
 
+## GNOME desktop (amarna)
+
+`modules/nixos/desktop/gnome.nix` provides a Windows-like desktop without replacing
+GNOME's theme or adding desktop icons:
+
+- **Dash to Panel:** an always-visible, 48px bottom taskbar with grouped apps,
+  window previews, tray icons, a clock and a Show Desktop button. Clicking a
+  focused single-window app minimizes it; Shift-click or middle-click opens a
+  new window. Existing pinned favorites are left alone.
+- **ArcMenu:** a left-aligned, searchable Start menu using the Redmond layout.
+- **Tiling Assistant:** edge snapping, quarter tiling and a popup to fill the
+  remaining space with another window.
+- **AppIndicator** and the personal-apps module's **GSConnect** remain enabled.
+  Window titlebars gain minimize and maximize buttons; hot corners stay off.
+
+| Shortcut | Action |
+| --- | --- |
+| Super (Windows key) | Open Start menu; type to search |
+| Super+Tab | GNOME overview |
+| Alt+Tab / Alt+Shift+Tab | Switch individual windows forward / backward |
+| Super+1…9 | Launch or switch taskbar apps |
+| Super+arrows | Snap, maximize or restore windows |
+| Super+D | Show / restore desktop |
+| Super+E | Open Files |
+
+Apply with `sudo nixos-rebuild switch --flake ~/src/system#amarna`, then **log out
+and back in** so the Wayland shell discovers the new extensions. Right-click
+Start for ArcMenu and taskbar settings, or run `gnome-extensions prefs <UUID>`.
+Extension packages and the settings above are managed by Nix; change the module
+for persistent tweaks (rebuilding reapplies its settings).
+
 ## Secrets and keys
 
 - **agenix** decrypts `secrets/*.age` at activation with each host's
@@ -72,7 +103,9 @@ New files must be `git add`ed before the flake can see them.
   `modules/common/default.nix` lists each host's public key. Every key
   authorizes SSH logins, and each host signs commits with its own key.
   `modules.apps.proton-pass.sshAgent` runs `pass-cli ssh-agent` on
-  `~/.ssh/proton-pass-agent.sock`; run `pass-cli login` once per host.
+  `~/.ssh/proton-pass-agent.sock`; run `pass-cli login` once per host. On
+  NixOS, the CLI uses GNOME Keyring's persistent Secret Service (`dbus`), not
+  the default kernel keyring that is cleared on reboot.
 - **fnox** reads project secrets from Proton Pass (`config/fnox/config.toml`).
 - **solforge-theme** is a private flake input. Locking or updating it needs
   `--option access-tokens "github.com=$(gh auth token)"`.

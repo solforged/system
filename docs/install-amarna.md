@@ -62,15 +62,39 @@ It:
 ## After the first boot
 
 1. `pass-cli login`, which starts the SSH agent
-   (`systemctl --user status proton-pass-ssh-agent`).
-2. Secure Boot: set `security.secureboot.sign = true` in `hosts/amarna`, run
+   (`systemctl --user status proton-pass-ssh-agent`). NixOS configures the
+   persistent desktop keyring with `PROTON_PASS_LINUX_KEYRING=dbus`; on an
+   older installer, export that variable before logging in. Approve any
+   desktop keyring prompt locally, never copy the admin key into the shell.
+2. **Secrets, if the host key was not restored.** The generated host key
+   differs from the recipient in the flake, so the first activation cannot
+   decrypt Berkeley Mono or the Git scan policy. From `~/src/system`:
+
+   - For an older image's read-only flake copy, run `chmod -R u+w ~/src/system`.
+   - Read `/etc/ssh/ssh_host_ed25519_key.pub` and replace only the `amarna`
+     recipient in `secrets/agenix-rules.nix`. Keep the admin and other hosts.
+   - Run `secrets-rekey` as your normal user, then
+     `sudo nixos-rebuild switch --flake ~/src/system#amarna`. Rekeying alone
+     does not install decrypted files; activation does.
+   - Run `fc-cache -f ~/.local/share/fonts` and verify
+     `fc-match 'Berkeley Mono Variable'`.
+     Check that these files are nonempty and readable without printing them:
+     `~/.local/share/fonts/Berkeley Mono Variable.otf`,
+     `/run/agenix/gitleaks-policy`, `/run/agenix/gitleaks-allowlist`, and
+     `/run/agenix/gitleaks-work-remote`.
+   - Save the changed rules and encrypted files in Git once a real checkout
+     is restored. The fallback copy from the image has no Git history.
+
+   `git-work-identity.age` is intentionally admin-only and is not activated
+   on amarna.
+3. Secure Boot: set `security.secureboot.sign = true` in `hosts/amarna`, run
    `sudo nixos-rebuild boot --flake ~/src/system#amarna --install-bootloader`,
    check `sudo sbctl verify`, then turn Secure Boot back on in firmware. If
    the firmware keys were reset, enroll them with
    `sbctl enroll-keys --microsoft --tpm-eventlog` from Setup Mode.
-3. `fprintd-enroll` for the fingerprint reader and `pamu2fcfg` for security
+4. `fprintd-enroll` for the fingerprint reader and `pamu2fcfg` for security
    keys.
-4. Compare `hosts/amarna/hardware.nix` against
+5. Compare `hosts/amarna/hardware.nix` against
    `nixos-generate-config --no-filesystems --show-hardware-config`.
 
 ## Testing the image

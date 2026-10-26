@@ -79,6 +79,8 @@ if [[ -f $from/system.bundle ]]; then
   git -C "$repo" remote set-url origin git@github.com:solforged/system.git
 else
   cp -r "$flake/." "$repo"
+  # Store sources are read-only; the live checkout must support edits/rekeying.
+  chmod -R u+w "$repo"
   echo "No system.bundle; copied the flake without git history."
 fi
 nixos-enter --root /mnt -c "chown -R $user:users /home/$user"
