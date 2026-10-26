@@ -5,6 +5,7 @@
   config,
   lib,
   pkgs,
+  inputs,
   ...
 }:
 
@@ -44,6 +45,9 @@ in
       (lib.lowPrio nodejs)
     ];
     modules.dotfiles.configLink.nvim = "nvim";
+    # The data runtime is on 'runtimepath', outside the live config symlink.
+    hm.xdg.dataFile."nvim/site/colors/solforge.lua".source =
+      "${inputs.solforge-theme}/nvim/colors/solforge.lua";
     modules.env.variables.NVIM_MARKDOWN_PREVIEW = "${pkgs.vimPlugins.markdown-preview-nvim}";
   };
 }

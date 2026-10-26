@@ -1,4 +1,9 @@
 {
+  "theme": {
+    "mode": "system",
+    "dark": "Solforge Dark",
+    "light": "Solforge Light"
+  },
   "edit_predictions": {
     "mode": "subtle"
   },

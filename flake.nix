@@ -55,6 +55,10 @@
       nixosConfigurations = only false;
       darwinConfigurations = only true;
 
+      checks.x86_64-linux.solforge = import ./tests/solforge.nix {
+        configuration = hosts.amarna.build;
+      };
+
       # nix build .#installer-iso
       packages.x86_64-linux.installer-iso =
         (lib.nixosSystem {

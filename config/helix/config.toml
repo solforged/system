@@ -1,3 +1,6 @@
+# Helix selects a single variant; use solforge-light for a light terminal.
+theme = "solforge-dark"
+
 [editor]
 line-number = "absolute"
 mouse = true

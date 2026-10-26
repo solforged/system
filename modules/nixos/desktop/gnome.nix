@@ -13,6 +13,7 @@ let
     arcmenu
     tiling-assistant
     appindicator
+    brightness-control-using-ddcutil
   ];
 in
 {
@@ -21,6 +22,10 @@ in
   config = lib.mkIf cfg.enable {
     services.displayManager.gdm.enable = true;
     services.desktopManager.gnome.enable = true;
+
+    # External monitors use DDC/CI rather than the laptop backlight interface.
+    # This loads i2c-dev and grants the active local session access to its devices.
+    hardware.i2c.enable = true;
 
     environment.gnome.excludePackages = with pkgs; [
       epiphany
@@ -32,6 +37,7 @@ in
     environment.systemPackages =
       shellExtensions
       ++ (with pkgs; [
+        ddcutil
         gnome-tweaks
         # Native Wayland clipboard access for terminal apps and editors.
         wl-clipboard
@@ -41,7 +47,7 @@ in
     hm = hm: {
       dconf.settings = with hm.lib.hm.gvariant; {
         "org/gnome/desktop/interface" = {
-          color-scheme = "prefer-dark";
+          color-scheme = lib.mkDefault "prefer-dark";
           enable-hot-corners = false;
         };
         "org/gnome/desktop/peripherals/keyboard" = {
@@ -67,6 +73,11 @@ in
           disable-user-extensions = false;
           # Keep this mergeable: the personal-apps module also enables GSConnect.
           enabled-extensions = map (extension: extension.extensionUuid) shellExtensions;
+        };
+        "org/gnome/shell/extensions/display-brightness-ddcutil" = {
+          # Put hardware brightness sliders in Quick Settings, beside volume.
+          button-location = 1;
+          ddcutil-binary-path = lib.getExe pkgs.ddcutil;
         };
         "org/gnome/shell/keybindings" = {
           # ArcMenu takes the bare Super key; retain easy access to the overview.

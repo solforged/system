@@ -1,0 +1,103 @@
+/* Retain the installed Shell's geometry and assets, rather than vendoring a
+ * complete stylesheet that goes stale on the next GNOME release. The Nix
+ * module substitutes these tokens from solforge-theme's colors.toml. */
+@import url("resource:///org/gnome/shell/theme/gnome-shell-@variant@.css");
+
+stage {
+  color: @foreground@;
+}
+
+#panel {
+  background-color: @darker_background@;
+  color: @foreground@;
+}
+
+#panel .panel-button:hover,
+#panel .panel-button:active,
+#panel .panel-button:checked {
+  background-color: @selection@;
+  color: @selection_foreground@;
+}
+
+.popup-menu-content,
+.quick-settings,
+.quick-toggle-menu,
+.datemenu-popover,
+.message-list,
+.calendar,
+.modal-dialog,
+.osd-window,
+.switcher-list,
+.workspace-switcher,
+#dash .dash-background {
+  background-color: @lighter_background@;
+  color: @foreground@;
+  border-color: @muted@;
+}
+
+.popup-menu-item,
+.quick-toggle,
+.message,
+.message-notification-group,
+.calendar-day,
+.world-clocks-button,
+.weather-button {
+  color: @foreground@;
+}
+
+.popup-menu-item:focus,
+.popup-menu-item:hover,
+.quick-toggle:hover,
+.button:hover,
+.icon-button:hover,
+.message:hover,
+.calendar-day:hover,
+.world-clocks-button:hover,
+.weather-button:hover,
+.switcher-list .item-box:selected {
+  background-color: @selection@;
+  color: @selection_foreground@;
+}
+
+.quick-toggle,
+.button,
+.icon-button,
+.search-entry {
+  background-color: @background@;
+  color: @foreground@;
+  border-color: @muted@;
+}
+
+.quick-toggle:checked,
+.quick-toggle:checked:hover,
+.button:default,
+.button:default:hover,
+.calendar .calendar-day.calendar-today {
+  background-color: @accent@;
+  color: @background@;
+}
+
+.search-entry:focus {
+  border-color: @accent@;
+  box-shadow: inset 0 0 0 1px @accent@;
+}
+
+.slider {
+  color: @accent@;
+  -barlevel-active-background-color: @accent@;
+  -barlevel-background-color: @selection@;
+}
+
+.toggle-switch:checked {
+  background-color: @accent@;
+  color: @background@;
+}
+
+#overview {
+  background-color: @dark_background@;
+  color: @foreground@;
+}
+
+.workspace-thumbnail-indicator {
+  border-color: @accent@;
+}

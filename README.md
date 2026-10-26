@@ -60,8 +60,8 @@ New files must be `git add`ed before the flake can see them.
 
 ## GNOME desktop (amarna)
 
-`modules/nixos/desktop/gnome.nix` provides a Windows-like desktop without replacing
-GNOME's theme or adding desktop icons:
+`modules/nixos/desktop/gnome.nix` provides a Windows-like desktop without adding
+desktop icons. The separate Solforge module supplies its colors and wallpaper:
 
 - **Dash to Panel:** an always-visible, 48px bottom taskbar with grouped apps,
   window previews, tray icons, a clock and a Show Desktop button. Clicking a
@@ -88,6 +88,120 @@ and back in** so the Wayland shell discovers the new extensions. Right-click
 Start for ArcMenu and taskbar settings, or run `gnome-extensions prefs <UUID>`.
 Extension packages and the settings above are managed by Nix; change the module
 for persistent tweaks (rebuilding reapplies its settings).
+
+### Solforge themes
+
+amarna enables `modules.desktop.solforge.enable` alongside GNOME. The module in
+`modules/nixos/desktop/solforge.nix` reads colors and notebook wallpapers directly
+from the existing, pinned **solforge-theme** input; no palette or artwork is
+copied into this repo and no additional theme input is needed.
+
+- **GTK 3:** adw-gtk3 with Solforge's color roles.
+- **GTK 4 / libadwaita:** user CSS overrides named colors and modern CSS variables,
+  retaining the toolkit's native widgets and layout. No global `GTK_THEME` hack.
+- **GNOME Shell:** User Themes loads a small overlay on the installed GNOME's
+  stock stylesheet, including Quick Settings, notifications and the overview.
+  Dash to Panel and ArcMenu receive matching colors without changing the layout.
+- **Wallpaper:** the forge drawing (`00-fucina.png`), with both light and dark
+  background URIs installed. GNOME's built-in accent is yellow as a fallback
+  for apps that don't read user CSS. Icons, cursors and GDM remain stock.
+
+The desktop defaults to dark. To select the light desktop or another drawing,
+set these flags in `hosts/amarna/default.nix`, then rebuild:
+
+```nix
+desktop.solforge = {
+  enable = true;
+  variant = "light"; # "dark" is the default
+  wallpaper = "02-orologio.png"; # clock; other choices are in the option
+};
+```
+
+Log out and back in after the first switch so Shell discovers User Themes;
+restart GTK apps to reload user CSS. The desktop palette is declarative:
+changing appearance in Settings alone does not switch the GTK overrides or
+Shell overlay. Change `variant` and rebuild for a consistent desktop. Sandboxed
+apps and apps with their own styles may not honor the overrides.
+
+The corresponding app modules also install themes from the same input on both
+Linux and macOS, while their existing config files remain live links:
+
+| App | Selection |
+| --- | --- |
+| Ghostty | Solforge Dark / Light, follows system appearance |
+| Zed | Solforge Dark / Light, follows system appearance |
+| Helix | `solforge-dark`; change `theme` in `config/helix/config.toml` for light |
+| Neovim / LazyVim | `solforge`; follows Neovim's `background` (`:set background=light`) |
+| omp / Tern | Existing dark/light Solforge selections remain in place |
+
+Ghostty and Helix link individual config files, not whole directories, so Home
+Manager can own their sibling theme files without writing into the checkout.
+A guarded activation step removes the old whole-directory links on the first
+switch; real directories and unrelated links are left alone. Neovim's color
+scheme lives in the data runtime for the same reason. Edit Solforge's upstream
+generator to change the palette, then update just that input:
+
+```sh
+nix flake update solforge-theme --option access-tokens "github.com=$(gh auth token)"
+nix build .#checks.x86_64-linux.solforge
+sudo nixos-rebuild switch --flake ~/src/system#amarna
+```
+
+The check evaluates both desktop variants, parses their CSS with the pinned
+GTK 3/4 and GNOME Shell versions, and checks wallpapers, extension merging, app
+theme files and safe migration of the old directory links.
+
+### External-monitor brightness
+
+The GNOME module enables I²C access, installs `ddcutil`, and enables **Brightness
+control using ddcutil** (GNOME 50 compatible). Its hardware-brightness sliders
+appear in Quick Settings; the extension's default shortcuts are Ctrl+Brightness
+Up / Down. The active local session gets device access through udev, without
+running `ddcutil` as root.
+
+After rebuilding and logging out and back in, check the monitor connection with:
+
+```sh
+ddcutil detect
+ddcutil getvcp 10
+```
+
+If the monitor is not detected or brightness is unsupported, check that **DDC/CI**
+is enabled in the monitor's own menu. Some monitors also restrict brightness
+adjustment in HDR or other picture modes. An empty `/sys/class/backlight` is
+normal for an external monitor; these controls use DDC/CI instead.
+
+## Fingerprint authentication (amarna)
+
+`modules.security.authentication.{enable,fingerprint}` are already enabled on
+amarna. They enable `fprintd`, its enrollment tools and PAM authentication for
+GNOME login / screen unlock, `sudo` and polkit prompts, with password fallback.
+The connected **DigitalPersona U.are.U 4500** (`05ba:000a`) is recognized by the
+stock driver; no proprietary driver is needed.
+
+Enroll a finger as your normal user (no `sudo`), then verify it:
+
+```sh
+fprintd-enroll -f right-index-finger
+fprintd-list "$USER"
+fprintd-verify -f right-index-finger
+```
+
+Follow the enrollment prompts, lifting and replacing the same finger between
+scans. Alternatively, use **Settings → System → Users → Fingerprint Login**.
+Enrollment is local to this machine, stored under `/var/lib/fprint`, not in Nix
+or this repository. Re-enroll after reinstalling the system.
+
+Support is already active on amarna; enrollment does not need a rebuild. After
+verification, lock the screen with Super+L to test unlocking. `fprintd` starts on
+demand over D-Bus, so an idle `fprintd.service` is normal. Terminal PAM prompts
+try the reader before falling back to a password, so a password prompt may be
+delayed until the scan times out.
+
+Keep your account and disk-encryption passwords: fingerprints do not unlock
+LUKS at boot, and a fingerprint-only login cannot automatically unlock GNOME
+Keyring. Enter the keyring password when prompted, or log in with your password
+to unlock it for apps such as Proton Pass.
 
 ## Secrets and keys
 

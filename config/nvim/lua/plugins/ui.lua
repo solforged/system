@@ -1,5 +1,9 @@
 return {
   {
+    "LazyVim/LazyVim",
+    opts = { colorscheme = "solforge" },
+  },
+  {
     "nvim-mini/mini.icons",
     opts = { style = "ascii" },
   },
