@@ -10,6 +10,7 @@ modelRoles:
   default: anthropic/claude-opus-5-5:high
   advisor: anthropic/claude-opus-5-5:high
   widget: anthropic/claude-haiku-5-5:low
+  judge: anthropic/claude-opus-5-5:high
 disabledProviders:
   - ollama
   - vllm
@@ -57,7 +58,7 @@ commands:
   enableOpencodeUser: false
   enableOpencodeProject: false
 display:
-  shimmer: disabled
+  shimmer: kitt
   subagentLivePreview: false
 theme:
   dark: solforge-dark
@@ -88,11 +89,13 @@ tui:
   titleSpinner: braille
   codexResetFireworks: true
   titleState: false
+  textSizing: true
 statusLine:
   separator: powerline
   contextLine: annotated
   compactThinkingLevel: false
   preset: default
+  transparent: false
 compaction:
   idleEnabled: true
   modelThresholds:
@@ -106,13 +109,13 @@ modelPresets:
     modelRoles:
       smol: anthropic/claude-haiku-5-5:high
       plan: openai-codex/gpt-6-astra:high
-      commit: openai-codex/gpt-6-luna:low
+      commit: openai-codex/gpt-6-luna:high
       task: openai-codex/gpt-6.1-sol:auto
       slow: openai-codex/gpt-6-astra:high
       tiny: openai-codex/gpt-6-luna:auto
       vision: openai-codex/gpt-6.1-sol:auto
       memory: openai-codex/gpt-6-luna:high
-      default: anthropic/claude-opus-5-5:medium
+      default: openai-codex/gpt-6.1-sol:xhigh
     defaultThinkingLevel: auto
   anthropic:
     modelRoles:
@@ -128,3 +131,5 @@ modelPresets:
       advisor: anthropic/claude-opus-5-5:high
       widget: anthropic/claude-haiku-5-5:low
     defaultThinkingLevel: medium
+browser:
+  cmux: false
