@@ -3,8 +3,9 @@ theme = dark:solforge-dark,light:solforge-light
 font-size = 12
 font-family = Berkeley Mono Variable
 shell-integration = zsh
-# Protect text from hard-coded application colors.
-minimum-contrast = 4.5
+# Protect text from hard-coded application colors. 4:1 matches Solforge's
+# ANSI floor, so dim text on a lightly raised surface keeps its colour.
+minimum-contrast = 4
 window-padding-x = 6
 window-padding-y = 4
 window-padding-balance = true
