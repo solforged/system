@@ -4,13 +4,10 @@ alias e='nvim'
 alias gg='lazygit'
 
 alias cdd="cd $DOTFILES_DIR"
-alias cdw="cd $LLM_WIKI_DIR"
 
 alias eal="cd $DOTFILES_DIR && $EDITOR $DOTFILES_DIR/config/zsh/config.d/aliases.zsh"
 
-alias gl="glow -t"
-
-command -v omp &>/dev/null && alias omr='omp --resume'
+command -v omp &>/dev/null && alias o='omp'
 
 hash -d df="$DOTFILES_DIR"
 hash -d an="$HOME/work/analysis"
