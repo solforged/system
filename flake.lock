@@ -463,11 +463,11 @@
     "solforge-theme": {
       "flake": false,
       "locked": {
-        "lastModified": 1792471523,
-        "narHash": "sha256-VkN5E0MZZueEjFEk8S9UF3D3cs5PPC04ZYI2WnzJOwc=",
+        "lastModified": 1793128032,
+        "narHash": "sha256-n7NF0l8UL6c+ljnXInEUXHsk0p3G9Jl9/QecOTYPBfI=",
         "owner": "solforged",
         "repo": "solforge-theme",
-        "rev": "91efa7f31b73fd5390d5463d4442985d6dcb0b03",
+        "rev": "1448ac743d24639aebdad05237f825e8d40e655f",
         "type": "github"
       },
       "original": {
