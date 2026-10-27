@@ -36,6 +36,9 @@
     # cache.numtide.com; see modules/common/agents/cache.nix.
     llm-agents.url = "github:numtide/llm-agents.nix";
 
+    omp-intercom.url = "github:solforged/omp-intercom";
+    omp-intercom.flake = false;
+
     # Private repo. Fetching it needs a GitHub token, e.g.
     # --option access-tokens "github.com=$(gh auth token)".
     solforge-theme.url = "github:solforged/solforge-theme";

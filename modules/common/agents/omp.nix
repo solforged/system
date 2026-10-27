@@ -1,7 +1,7 @@
 # modules/common/agents/omp.nix
 #
-# Oh My Pi from the llm-agents input, its config, and the Solforge themes from
-# the solforge-theme input. Its root is ~/.config/omp rather than ~/.omp.
+# Oh My Pi from llm-agents, omp-intercom, and the Solforge themes from pinned
+# inputs. Its root is ~/.config/omp rather than ~/.omp.
 {
   config,
   lib,
@@ -34,7 +34,10 @@ in
           ]
           (target: {
             source = "${inputs.solforge-theme}/omp/${builtins.baseNameOf target}";
-          });
+          })
+        // {
+          "omp/agent/extensions/intercom.ts".source = "${inputs.omp-intercom}/intercom.ts";
+        };
     };
   };
 }

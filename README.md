@@ -81,6 +81,19 @@ gcroots. Determinate Nix manages garbage collection on Macs.
 
 New files must be `git add`ed before the flake can see them.
 
+## Oh My Pi
+
+`modules.agents.omp.enable` installs omp and the
+[`solforged/omp-intercom`](https://github.com/solforged/omp-intercom) extension.
+Both are enabled on amarna and hyperion; atlas keeps personal agents disabled.
+Home Manager links the pinned extension to
+`~/.config/omp/agent/extensions/intercom.ts`, where omp discovers it automatically.
+No separate `omp install` is needed.
+
+After switching the system configuration, restart omp sessions to load it.
+Use `/intercom list` to find other listening sessions on the same machine.
+Update the extension's pin with `nix flake update omp-intercom`, then rebuild.
+
 ## GNOME desktop (amarna)
 
 `modules/nixos/desktop/gnome.nix` provides a Windows-like desktop without adding

@@ -497,6 +497,22 @@
         "type": "github"
       }
     },
+    "omp-intercom": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1791528303,
+        "narHash": "sha256-2OcepsQVBhFyR6IVpJ6zu0edGPpvOLBZ8OiQQh4ISLA=",
+        "owner": "solforged",
+        "repo": "omp-intercom",
+        "rev": "6c7ca1deaf75b7a99625971743b949288ce9c9d8",
+        "type": "github"
+      },
+      "original": {
+        "owner": "solforged",
+        "repo": "omp-intercom",
+        "type": "github"
+      }
+    },
     "pre-commit": {
       "inputs": {
         "flake-compat": "flake-compat_2",
@@ -530,6 +546,7 @@
         "mt7927": "mt7927",
         "nix-darwin": "nix-darwin",
         "nixpkgs": "nixpkgs_4",
+        "omp-intercom": "omp-intercom",
         "solforge-theme": "solforge-theme"
       }
     },
