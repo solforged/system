@@ -23,6 +23,7 @@ in
       "omp/agent/AGENTS.md" = "omp/AGENTS.md";
       "omp/agent/TITLE_SYSTEM.md" = "omp/TITLE_SYSTEM.md";
       "omp/agent/commands/curate-skills.md" = "omp/commands/curate-skills.md";
+      "omp/agent/commands/wiki.md" = "tern/plugins/wiki/wiki.md";
     };
     hm = {
       home.packages = [ inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.omp ];

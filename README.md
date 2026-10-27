@@ -94,6 +94,42 @@ After switching the system configuration, restart omp sessions to load it.
 Use `/intercom list` to find other listening sessions on the same machine.
 Update the extension's pin with `nix flake update omp-intercom`, then rebuild.
 
+### On-demand wiki
+
+`/wiki` is a Markdown command in `config/tern/plugins/wiki/wiki.md`, linked into
+`~/.config/omp/agent/commands/` by Home Manager. Tern links the same directory into
+`~/.config/tern/plugins/wiki`. Start a fresh omp process, including
+the agent used by Tern, after installing it; command directories are not watched.
+omp advertises the command over RPC as well as in its terminal interface.
+
+The default wiki is `~/wiki`, independent of the working project and omp's
+internal state. Notes are ordinary Markdown, browsable through `index.md` in
+any editor. Home Manager does not own the notes or include them in this repo.
+
+| Invocation | Behavior |
+| --- | --- |
+| `/wiki <question or topic>` | Research the topic and save a sourced note. |
+| `/wiki write <topic or instructions>` | Create or surgically update a readable note and its index entry. With no topic, capture the current discussion. |
+| `/wiki ask <question>` | Answer from relevant notes with source links; no writes. |
+| `/wiki use <page or topic>` | Read selected notes as background for the current task; no writes. |
+| `/wiki` or `/wiki help` | Show usage without accessing the wiki. |
+
+For example: `/wiki write Explain what we learned about the Tern launcher,
+including why its wrapper is necessary.` To use another directory, explicitly
+name it as the wiki root in the request; that selection applies only to that
+invocation.
+
+Writes preserve human annotations, distinguish user decisions from model
+recommendations, and record dates and sources. Profiles are ordinary pages;
+they are not inferred or read implicitly. A missing wiki is created only by
+research or `write`, never by `ask`, `use`, or help.
+
+The memory backend remains off. This command adds no automatic recall, session
+mining, or background maintenance; existing skill autolearning is separate and
+unchanged. These are model instructions, not a filesystem permission boundary.
+Notes read through either `ask` or `use` remain in the conversation's context;
+start a fresh session to work without that previously loaded context.
+
 ## Claude Desktop
 
 `modules.apps.claude-desktop.enable` installs the `claude` cask on Macs and

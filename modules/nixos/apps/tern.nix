@@ -57,6 +57,7 @@ let
 in
 {
   config = lib.mkIf cfg.enable {
+    modules.dotfiles.configLink."tern/plugins/wiki" = "tern/plugins/wiki";
     hm = hm: {
       home.packages = [ tern ];
       # Replace Tern's Downloads symlink, which otherwise shadows home.packages.
