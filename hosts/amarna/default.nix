@@ -126,6 +126,10 @@
       ./disko.nix
     ];
 
+    # This host is administered over Tailscale; keep SSH off other interfaces.
+    services.openssh.openFirewall = false;
+    networking.firewall.interfaces.tailscale0.allowedTCPPorts = [ 22 ];
+
     # The release this host was installed with. Never bump it.
     system.stateVersion = "26.05";
   };

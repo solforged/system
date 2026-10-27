@@ -329,6 +329,9 @@ to unlock it for apps such as Proton Pass.
   `~/.ssh/proton-pass-agent.sock`; run `pass-cli login` once per host. On
   NixOS, the CLI uses GNOME Keyring's persistent Secret Service (`dbus`), not
   the default kernel keyring that is cleared on reboot.
+- **SSH access.** amarna accepts inbound SSH only on `tailscale0`; connect
+  through the tailnet. Password, keyboard-interactive and root login are
+  disabled.
 - **fnox** reads project secrets from Proton Pass (`config/fnox/config.toml`).
 - **solforge-theme** is a private flake input. Locking or updating it needs
   `--option access-tokens "github.com=$(gh auth token)"`.
