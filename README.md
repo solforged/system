@@ -142,6 +142,26 @@ Start for ArcMenu and taskbar settings, or run `gnome-extensions prefs <UUID>`.
 Extension packages and the settings above are managed by Nix; change the module
 for persistent tweaks (rebuilding reapplies its settings).
 
+### Local Tern binary
+
+On NixOS, `modules.apps.tern.enable` installs a `tern` launcher using `steam-run-free`
+and manages its desktop, URL and file-opening entries. The executable stays at
+`config/tern/local/tern` in the live checkout configured by
+`modules.dotfiles.dir`; that directory is Git-ignored and is not copied into the
+flake source or Nix store. Provision it separately on a fresh checkout:
+
+```sh
+install -Dm755 /path/to/downloaded/tern ~/src/system/config/tern/local/tern
+nh os switch --ask
+```
+
+The launcher uses the runtime pinned by this flake, not a floating `nix run`.
+Home Manager replaces Tern's Downloads-based `~/.local/bin/tern` symlink and
+keeps desktop entries read-only so Tern cannot point them at the unwrapped
+binary. Tern may log read-only registration warnings; the managed entries
+already provide those launch commands. An existing login entry is migrated
+without enabling autostart. The writable settings merge is unchanged.
+
 ### Solforge themes
 
 amarna enables `modules.desktop.solforge.enable` alongside GNOME. The module in
