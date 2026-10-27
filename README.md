@@ -50,17 +50,34 @@ docs/              install runbook
 
 ## Use
 
+`nh` is installed on every host. `NH_FLAKE` points to the live checkout configured
+by `modules.dotfiles.dir`, so commands work from any directory and select the
+local hostname.
+
+For the first activation, before `nh` is installed:
+
 ```sh
-nh os switch                # amarna
-nh darwin switch            # Macs
-nh os switch --dry          # build and diff without activating
-nix fmt                     # nixfmt-tree
+nix run --inputs-from ~/src/system nixpkgs#nh -- os switch ~/src/system --ask
+```
+
+On Macs, replace `os` with `darwin`. Log out and back in after this first switch
+to load `NH_FLAKE`, then use:
+
+```sh
+nh os switch --ask          # build, show the diff, confirm, activate (amarna)
+nh os build                # build and show the diff without activating
+nh os test --ask           # activate without changing the next-boot default
+nh os boot --ask           # set the next-boot default without activating
+nh os switch --update --ask # update all flake inputs, then rebuild and activate
+nh darwin switch --ask      # Macs
+nix fmt                    # nixfmt-tree
 nix build .#installer-iso   # amarna installer
 ```
 
-nh finds the flake through `NH_FLAKE` (the checkout), picks the host by
-hostname, asks for sudo itself, and prints the package diff. Plain
-`nixos-rebuild` and `darwin-rebuild` still work, and the installer uses them.
+Run `nh` as your normal user; it elevates privileges when needed. Home Manager is
+part of the system activation, so no separate `nh home switch` is needed.
+On NixOS, `nh clean` runs weekly with a 14-day retention window and removes stale
+gcroots. Determinate Nix manages garbage collection on Macs.
 
 New files must be `git add`ed before the flake can see them.
 
@@ -89,8 +106,8 @@ desktop icons. The separate Solforge module supplies its colors and wallpaper:
 | Super+D | Show / restore desktop |
 | Super+E | Open Files |
 
-Apply with `nh os switch`, then **log out
-and back in** so the Wayland shell discovers the new extensions. Right-click
+Apply with `nh os switch --ask`, then **log out and back in** so the Wayland
+shell discovers the new extensions. Right-click
 Start for ArcMenu and taskbar settings, or run `gnome-extensions prefs <UUID>`.
 Extension packages and the settings above are managed by Nix; change the module
 for persistent tweaks (rebuilding reapplies its settings).
@@ -150,7 +167,7 @@ generator to change the palette, then update just that input:
 ```sh
 nix flake update solforge-theme --option access-tokens "github.com=$(gh auth token)"
 nix build .#checks.x86_64-linux.solforge
-nh os switch
+nh os switch --ask
 ```
 
 The check evaluates both desktop variants, parses their CSS with the pinned

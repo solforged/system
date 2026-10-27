@@ -83,6 +83,8 @@ in
     };
     users.users.${user}.openssh.authorizedKeys.keys = lib.attrValues config.user.sshKeys;
 
-    modules.env.variables.DOTFILES_DIR = dotfiles.dir;
+    modules.env.variables = {
+      DOTFILES_DIR = dotfiles.dir;
+    };
   };
 }
