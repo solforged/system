@@ -94,6 +94,23 @@ After switching the system configuration, restart omp sessions to load it.
 Use `/intercom list` to find other listening sessions on the same machine.
 Update the extension's pin with `nix flake update omp-intercom`, then rebuild.
 
+## Claude Desktop
+
+`modules.apps.claude-desktop.enable` installs the `claude` cask on Macs and
+`packages/claude-desktop.nix` on NixOS. The package repackages Anthropic's
+Linux beta `.deb` with a pinned version; the app does not update itself on
+Linux. To update, take the newest `claude-desktop_*_amd64.deb` and its
+`SHA256` from
+`https://downloads.claude.ai/claude-desktop/apt/stable/dists/stable/main/binary-amd64/Packages`
+(and `binary-arm64`), then set `version` and the hashes.
+
+`cowork.enable` (NixOS only, on for amarna) sets up Cowork's local VM: QEMU on
+the user's `PATH`, the `kvm` group for `/dev/kvm` and `/dev/vhost-vsock`, and
+the `vhost_vsock` module. The app only looks for UEFI firmware and virtiofsd
+at Debian's paths, so tmpfiles links `/usr/share/OVMF` and
+`/usr/libexec/virtiofsd` to the Nix builds. Log out and back in after the
+first switch so the new group applies.
+
 ## GNOME desktop (amarna)
 
 `modules/nixos/desktop/gnome.nix` provides a Windows-like desktop without adding

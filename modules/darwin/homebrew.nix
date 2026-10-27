@@ -24,7 +24,8 @@ in
       cleanup = "none";
     };
     casks =
-      lib.optional config.modules.apps.ghostty.enable "ghostty"
+      lib.optional config.modules.apps.claude-desktop.enable "claude"
+      ++ lib.optional config.modules.apps.ghostty.enable "ghostty"
       ++ lib.optional config.modules.editors.zed.enable "zed";
   };
 }

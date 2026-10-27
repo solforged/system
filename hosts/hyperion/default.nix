@@ -46,6 +46,7 @@
     };
 
     apps = {
+      claude-desktop.enable = true;
       ghostty.enable = true;
       tern.enable = true;
       proton-pass = {
@@ -75,7 +76,7 @@
       yubikey-manager
     ];
 
-    # Ghostty and Zed casks come from their modules.
+    # Claude, Ghostty and Zed casks come from their modules.
     homebrew = {
       brews = [
         "btop"
@@ -92,7 +93,6 @@
         "brave-browser"
         "calibre"
         "chatgpt"
-        "claude"
         "crossover"
         "cryptomator"
         "filebot"

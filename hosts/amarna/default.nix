@@ -77,6 +77,10 @@
     };
 
     apps = {
+      claude-desktop = {
+        enable = true;
+        cowork.enable = true;
+      };
       ghostty.enable = true;
       tern.enable = true;
       personal.enable = true;
