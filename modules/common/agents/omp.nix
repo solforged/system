@@ -1,6 +1,7 @@
 # modules/common/agents/omp.nix
 #
-# Oh My Pi, its config, and the Solforge themes from the solforge-theme input.
+# Oh My Pi from the llm-agents input, its config, and the Solforge themes from
+# the solforge-theme input.
 {
   config,
   lib,
@@ -22,7 +23,7 @@ in
       ".omp/agent/commands/curate-skills.md" = "omp/commands/curate-skills.md";
     };
     hm = {
-      home.packages = [ pkgs.omp ];
+      home.packages = [ inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.omp ];
       home.file =
         lib.genAttrs
           [
