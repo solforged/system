@@ -132,19 +132,23 @@ start a fresh session to work without that previously loaded context.
 
 ## Claude Desktop
 
-`modules.apps.claude-desktop.enable` installs the `claude` cask on Macs and
-`packages/claude-desktop.nix` on NixOS. The package repackages Anthropic's
-Linux beta `.deb` with a pinned version; the app does not update itself on
-Linux. To update, take the newest `claude-desktop_*_amd64.deb` and its
-`SHA256` from
-`https://downloads.claude.ai/claude-desktop/apt/stable/dists/stable/main/binary-amd64/Packages`
-(and `binary-arm64`), then set `version` and the hashes.
+`modules.apps.claude-desktop.enable` installs the `claude` cask on Macs, which
+updates itself. On NixOS it installs `claude-desktop` from the
+[`numtide/llm-agents.nix`](https://github.com/numtide/llm-agents.nix) flake
+input, which keeps its own nixpkgs pin to use the Numtide binary cache. Upstream
+bumps the package from Anthropic's apt repository several times a day. The app
+does not update itself on Linux and shows "update available" as soon as Anthropic
+publishes a release; pick it up with `nix flake update llm-agents`, then rebuild.
+
+The package runs the app in a bubblewrap FHS environment. That sandbox sets
+no_new_privs, so `sudo` fails in the app's terminal and in Claude Code sessions
+it starts; run privileged commands from another terminal. The module also puts
+`bubblewrap` and `socat` on `PATH` for Claude Code's sandbox.
 
 `cowork.enable` (NixOS only, on for amarna) sets up Cowork's local VM: QEMU on
 the user's `PATH`, the `kvm` group for `/dev/kvm` and `/dev/vhost-vsock`, and
-the `vhost_vsock` module. The app only looks for UEFI firmware and virtiofsd
-at Debian's paths, so tmpfiles links `/usr/share/OVMF` and
-`/usr/libexec/virtiofsd` to the Nix builds. Log out and back in after the
+the `vhost_vsock` module. The FHS environment supplies the UEFI firmware and
+virtiofsd at the Debian paths the app probes. Log out and back in after the
 first switch so the new group applies.
 
 ## GNOME desktop (amarna)
