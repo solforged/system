@@ -2,6 +2,8 @@
 #
 # Every host under hosts/ becomes a nixosConfiguration or a
 # darwinConfiguration, depending on its `system`. See lib/hosts.nix.
+# lib.mkHost builds a host for another flake, such as a work repo that adds
+# its own modules on top of these.
 {
   description = "NixOS and nix-darwin configuration for sol's machines";
 
@@ -53,6 +55,8 @@
     {
       nixosConfigurations = only false;
       darwinConfigurations = only true;
+
+      lib = { inherit (my) mkHost; };
 
       checks.x86_64-linux.solforge = import ./tests/solforge.nix {
         configuration = hosts.amarna.build;

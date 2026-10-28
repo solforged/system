@@ -13,7 +13,7 @@ host; hosts mostly turn on `modules.*` flags.
 
 ```
 flake.nix          inputs; nixosConfigurations and darwinConfigurations from hosts/
-lib/               `my`: mkOpt, module walkers, mapHosts
+lib/               `my`: mkOpt, module walkers, mkHost, mapHosts
 modules/common/    every modules.* option, plus settings valid on both platforms
 modules/nixos/     NixOS-only implementations of the same flags
 modules/darwin/    nix-darwin-only implementations
@@ -30,7 +30,8 @@ docs/              install runbook
 - **Hosts are attrsets, not modules.** `hosts/<name>/default.nix` returns
   `{ system; modules; config; }`. `system` picks the builder: a `-darwin` suffix
   means nix-darwin. `config` is an ordinary module for host-only settings. See
-  `lib/hosts.nix`.
+  `lib/hosts.nix`. The flake exports `lib.mkHost`, so another flake can build a
+  host from these modules plus its own.
 - **Modules are auto-imported.** Every `.nix` file under `modules/common` and
   the host's platform directory is loaded; names starting with `_` are skipped.
 - **Platform split.** NixOS and nix-darwin have different option trees, and
