@@ -17,8 +17,10 @@ let
   };
 in
 {
-  config = lib.mkIf (agents.claude.enable || agents.omp.enable || agents.pi.enable) (
-    # Determinate Nix owns nix.conf on Macs; see modules/darwin/default.nix.
-    if isDarwin then { determinateNix.customSettings = cache; } else { nix.settings = cache; }
-  );
+  config =
+    lib.mkIf (agents.claude.enable || agents.hermes.enable || agents.omp.enable || agents.pi.enable)
+      (
+        # Determinate Nix owns nix.conf on Macs; see modules/darwin/default.nix.
+        if isDarwin then { determinateNix.customSettings = cache; } else { nix.settings = cache; }
+      );
 }

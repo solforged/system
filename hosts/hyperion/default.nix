@@ -49,6 +49,7 @@
 
     agents = {
       claude.enable = true;
+      hermes.enable = true;
       omp.enable = true;
       pi.enable = true;
     };
