@@ -11,7 +11,7 @@
       starship.enable = true;
       atuin.enable = true;
       yazi.enable = true;
-      git = {
+      vcs = {
         enable = true;
         # The work identity everywhere, the personal one on GitHub remotes.
         identity = ../../secrets/git-work-identity.age;

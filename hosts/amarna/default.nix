@@ -46,7 +46,10 @@
       starship.enable = true;
       atuin.enable = true;
       yazi.enable = true;
-      git.enable = true;
+      vcs = {
+        enable = true;
+        jj.enable = true;
+      };
       mise.enable = true;
       fnox.enable = true;
       tools.enable = true;

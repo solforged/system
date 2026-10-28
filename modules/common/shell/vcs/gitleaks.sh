@@ -1,14 +1,35 @@
 # Secret-scan every commit: the staged diff on pre-commit, the message on
-# commit-msg (--commit-msg FILE). modules/common/shell/git/default.nix sets
-# policy_file, allowlist_file and work_remote_file ahead of this script.
+# commit-msg (--commit-msg FILE), and on --stdin whatever jj push pipes in.
+# modules/common/shell/vcs/_common.nix sets policy_file, allowlist_file and
+# work_remote_file ahead of this script.
 work_remote_regex="$(cat "$work_remote_file" 2>/dev/null || true)"
+
+tmp=""
+input=""
+cleanup() {
+  if [ -n "$tmp" ]; then
+    rm -f "$tmp"
+  fi
+  if [ -n "$input" ]; then
+    rm -f "$input"
+  fi
+}
+trap cleanup EXIT
 
 hook="pre-commit"
 msg_file=""
-if [ "${1:-}" = "--commit-msg" ]; then
-  hook="commit-msg"
-  msg_file="${2:-$(git rev-parse --git-path COMMIT_EDITMSG)}"
-fi
+case "${1:-}" in
+  --commit-msg)
+    hook="commit-msg"
+    msg_file="${2:-$(git rev-parse --git-path COMMIT_EDITMSG)}"
+    ;;
+  --stdin)
+    # Kept in a file: the policy and repo-local scans each read it.
+    hook="push"
+    input="$(mktemp "${TMPDIR:-/tmp}/gitleaks-input.XXXXXX")"
+    cat >"$input"
+    ;;
+esac
 
 # Replaying an unchanged historical message must not make a new global policy
 # retroactively reject a rebase. Any reword still goes through the scanner.
@@ -27,7 +48,9 @@ fi
 unset GITLEAKS_CONFIG GITLEAKS_CONFIG_TOML
 
 scan() {
-  if [ -n "$msg_file" ]; then
+  if [ -n "$input" ]; then
+    gitleaks stdin --redact --no-banner "$@" <"$input"
+  elif [ -n "$msg_file" ]; then
     [ -f "$msg_file" ] || return 0
     sed -e '/^#.*>8/,$d' -e '/^#/d' "$msg_file" |
       gitleaks stdin --redact --no-banner "$@"
@@ -38,7 +61,7 @@ scan() {
 
 require_file() {
   if [ ! -s "$1" ]; then
-    echo "$hook: missing $1, refusing to commit." >&2
+    echo "$hook: missing $1, refusing to continue." >&2
     echo "$hook: agenix decrypts it on switch; check age.identityPaths." >&2
     exit 1
   fi
@@ -60,14 +83,6 @@ if [ -n "$toplevel" ] && [ -n "$work_remote_regex" ]; then
     is_work_repo=1
   fi
 fi
-
-tmp=""
-cleanup() {
-  if [ -n "$tmp" ]; then
-    rm -f "$tmp"
-  fi
-}
-trap cleanup EXIT
 
 # Personal repos: the identity policy is mandatory. Work repos skip it.
 if [ "$is_work_repo" -eq 0 ]; then
@@ -92,8 +107,8 @@ if [ "$is_work_repo" -eq 0 ]; then
   # what lets a work identity reach a repository whose remote can publish it,
   # because git resolves identity by includeIf on the remote URL while this
   # policy is chosen by the same URL a step later. Resolve the full chain and
-  # scan it as ordinary text.
-  if [ -z "$msg_file" ]; then
+  # scan it as ordinary text. jj push puts the identities in its input.
+  if [ -z "$msg_file" ] && [ -z "$input" ]; then
     if ! { git var GIT_AUTHOR_IDENT; git var GIT_COMMITTER_IDENT; } |
       gitleaks stdin --redact --no-banner -c "$config_file" >/dev/null 2>&1; then
       echo "$hook: commit identity violates the identifier policy." >&2

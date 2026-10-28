@@ -9,7 +9,6 @@
   config = lib.mkIf config.modules.dev.personal.enable {
     modules.dev.android.enable = true;
     hm.home.packages = [
-      pkgs.jujutsu
       pkgs.yt-dlp
       pkgs.vale
     ];
