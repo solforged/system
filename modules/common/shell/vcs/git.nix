@@ -22,18 +22,17 @@ let
     ;
 
   # Git runs config hooks in file order, and the generated file sorts them by
-  # name, so one commit-msg hook fixes the order: strip Cursor's trailers
-  # before the policy reads the body, then scan the final message.
+  # name, so commit-message strips Cursor's trailers and scans the message
+  # before commit-message-policy reads the body. The policy is a hook of its
+  # own so config/lazygit/config.yml can skip it alone.
   commitMsg = pkgs.writeShellApplication {
     name = "git-commit-msg";
     runtimeInputs = with common; [
       stripCursorAttribution
-      commitMessagePolicy
       gitleaksScan
     ];
     text = ''
       git-strip-cursor-attribution "$1"
-      git-commit-message-policy "$1"
       git-gitleaks-scan --commit-msg "$1"
     '';
   };
@@ -77,6 +76,10 @@ in
         hook = {
           commit-message = {
             command = lib.getExe commitMsg;
+            event = "commit-msg";
+          };
+          commit-message-policy = {
+            command = lib.getExe common.commitMessagePolicy;
             event = "commit-msg";
           };
           secret-scan = {
