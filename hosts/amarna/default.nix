@@ -42,6 +42,7 @@
 
     shell = {
       zsh.enable = true;
+      nushell.enable = true;
       starship.enable = true;
       atuin.enable = true;
       yazi.enable = true;
