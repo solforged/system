@@ -29,7 +29,11 @@ fi
 printf '%s\n' "$message" |
   awk '
     NR == 1 {
-      if ($0 !~ /^[[:lower:]]+(\([^)]*\))?!?: [[:lower:]]/) {
+      # lazygit amends older commits with git commit --fixup, so check the
+      # target header under any fixup!/squash!/amend! prefixes.
+      header = $0
+      while (sub(/^(fixup|squash|amend)! /, "", header)) {}
+      if (header !~ /^[[:lower:]]+(\([^)]*\))?!?: [[:lower:]]/) {
         print "commit-msg: header must use Conventional Commits and start its description with a lowercase letter." > "/dev/stderr"
         invalid = 1
       }

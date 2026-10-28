@@ -39,6 +39,15 @@ customCommands:
           - type: confirm
             title: Amend HEAD, skipping all verify hooks?
             key: ok
+      - key: f
+        context: commits
+        description: Amend selected commit with staged changes, skipping verify hooks
+        command: git commit --no-verify --fixup={{.SelectedCommit.Hash}} && git -c sequence.editor=true rebase --interactive --autosquash --autostash {{.SelectedCommit.Hash}}^
+        output: terminal
+        prompts:
+          - type: confirm
+            title: Fix up {{.SelectedCommit.ShortHash}} with staged changes, skipping all verify hooks?
+            key: ok
       - key: s
         context: files
         description: Commit skipping style policy
