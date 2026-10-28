@@ -50,11 +50,16 @@ docs/              install runbook
 ## Use
 
 ```sh
-sudo nixos-rebuild switch --flake ~/src/system#amarna   # amarna
-sudo darwin-rebuild switch --flake ~/src/system         # Macs
-nix fmt                                                 # nixfmt-tree
-nix build .#installer-iso                               # amarna installer
+nh os switch                # amarna
+nh darwin switch            # Macs
+nh os switch --dry          # build and diff without activating
+nix fmt                     # nixfmt-tree
+nix build .#installer-iso   # amarna installer
 ```
+
+nh finds the flake through `NH_FLAKE` (the checkout), picks the host by
+hostname, asks for sudo itself, and prints the package diff. Plain
+`nixos-rebuild` and `darwin-rebuild` still work, and the installer uses them.
 
 New files must be `git add`ed before the flake can see them.
 
@@ -83,7 +88,7 @@ desktop icons. The separate Solforge module supplies its colors and wallpaper:
 | Super+D | Show / restore desktop |
 | Super+E | Open Files |
 
-Apply with `sudo nixos-rebuild switch --flake ~/src/system#amarna`, then **log out
+Apply with `nh os switch`, then **log out
 and back in** so the Wayland shell discovers the new extensions. Right-click
 Start for ArcMenu and taskbar settings, or run `gnome-extensions prefs <UUID>`.
 Extension packages and the settings above are managed by Nix; change the module
@@ -144,7 +149,7 @@ generator to change the palette, then update just that input:
 ```sh
 nix flake update solforge-theme --option access-tokens "github.com=$(gh auth token)"
 nix build .#checks.x86_64-linux.solforge
-sudo nixos-rebuild switch --flake ~/src/system#amarna
+nh os switch
 ```
 
 The check evaluates both desktop variants, parses their CSS with the pinned

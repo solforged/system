@@ -38,11 +38,14 @@ in
       warn-dirty = false;
       auto-optimise-store = true;
     };
-    gc = {
-      automatic = true;
-      dates = "weekly";
-      options = "--delete-older-than 14d";
-    };
+  };
+
+  # Replaces nix.gc: also clears stale gcroots, and always keeps the last 5
+  # generations however old they are.
+  programs.nh.clean = {
+    enable = true;
+    dates = "weekly";
+    extraArgs = "--keep-since 14d --keep 5";
   };
 
   # Project mise tools and npm/uv prebuilt binaries can require an FHS dynamic linker.
