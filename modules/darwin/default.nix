@@ -23,6 +23,8 @@ in
         user
       ];
       warn-dirty = false;
+      # ~/.local/state/nix instead of ~/.nix-profile and ~/.nix-defexpr.
+      use-xdg-base-directories = true;
     };
   };
 
