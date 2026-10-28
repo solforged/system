@@ -15,9 +15,9 @@ symbolPreset: nerd
 setupVersion: 2
 hideThinkingBlock: false
 memory:
-  backend: mnemopi
+  backend: "off"
 autolearn:
-  enabled: true
+  enabled: false
   autoContinue: true
 mnemopi:
   polyphonicRecall: true
@@ -68,7 +68,7 @@ terminal:
   showProgress: true
 autocompleteMaxVisible: 15
 composer:
-  shape: band
+  shape: claude
   tokenRate: true
 defaultThinkingLevel: auto
 spelling:
@@ -90,10 +90,13 @@ statusLine:
   separator: powerline
   contextLine: annotated
   compactThinkingLevel: false
+  preset: default
 compaction:
   idleEnabled: true
   modelThresholds:
     anthropic/*: 40%
+  handoffSaveToDisk: true
+  experimentalContextManagement: true
 shellMinimizer:
   sourceOutlineLevel: aggressive
 modelPresets:
