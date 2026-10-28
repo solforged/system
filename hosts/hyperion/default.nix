@@ -43,6 +43,7 @@
 
     apps = {
       ghostty.enable = true;
+      tern.enable = true;
       proton-pass = {
         enable = true;
         sshAgent.enable = true;

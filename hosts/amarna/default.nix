@@ -23,7 +23,6 @@
       gnome.enable = true;
       solforge.enable = true;
       preferences.enable = true;
-      tern.enable = true;
     };
 
     hardware = {
@@ -75,6 +74,7 @@
 
     apps = {
       ghostty.enable = true;
+      tern.enable = true;
       personal.enable = true;
       proton-pass = {
         enable = true;
