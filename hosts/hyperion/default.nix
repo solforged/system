@@ -30,6 +30,8 @@
     fonts = {
       berkeley.enable = true;
       ibmPlex.enable = true;
+      geist.enable = true;
+      nerdSymbols.enable = true;
     };
 
     editors = {
@@ -80,16 +82,9 @@
         "calibre"
         "chatgpt"
         "claude"
-        "codex-app"
         "crossover"
         "cryptomator"
-        "dropbox"
         "filebot"
-        "font-geist"
-        "font-geist-mono"
-        "font-symbols-only-nerd-font"
-        "grok-bot"
-        "helium-browser"
         "iina"
         "keka"
         "obsidian"
