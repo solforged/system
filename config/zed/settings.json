@@ -31,7 +31,10 @@
     "file_icons": true
   },
   "terminal": {
-    "show_count_badge": false
+    "show_count_badge": false,
+    "shell": {
+      "program": "nu"
+    }
   },
   "project_panel": {
     "git_status_indicator": true,

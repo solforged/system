@@ -3,6 +3,10 @@ return {
   -- Drop the tree explorer; navigate via pickers, manipulate files via oil.nvim.
   opts = {
     explorer = { enabled = false },
+    -- Terminals open nu. vim.o.shell stays $SHELL (zsh) for :! and plugins.
+    terminal = {
+      shell = vim.fn.executable("nu") == 1 and "nu" or nil,
+    },
     picker = {
       sources = {
         explorer = {

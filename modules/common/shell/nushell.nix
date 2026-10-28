@@ -1,8 +1,9 @@
 # modules/common/shell/nushell.nix
 #
-# zsh stays the login shell and sets up the environment, so start nu from it.
-# Tool init code is generated in the store and loaded from nu's vendor
-# autoload directory, ~/.local/share/nushell/vendor/autoload.
+# nu is the shell terminals open. zsh stays the login shell and sets up the
+# environment, so terminals start nu from it; anything that runs $SHELL still
+# gets a POSIX shell. Tool init code is generated in the store and loaded from
+# nu's vendor autoload directory, ~/.local/share/nushell/vendor/autoload.
 {
   config,
   lib,
@@ -41,6 +42,16 @@ let
       }
     done
   '';
+
+  # Apps started by launchd or GNOME lack the PATH and Nix environment that
+  # /etc/zshenv sets up, and nu reads no POSIX profile, so go through zsh.
+  login = pkgs.writeShellApplication {
+    name = "nu-login";
+    text = ''
+      # shellcheck disable=SC2016
+      exec ${lib.getExe pkgs.zsh} -l -c 'exec "$0" "$@"' ${lib.getExe pkgs.nushell} "$@"
+    '';
+  };
 in
 {
   options.modules.shell.nushell.enable = lib.mkEnableOption "Nushell";
@@ -58,6 +69,16 @@ in
         zoxide
       ];
       xdg.dataFile."nushell/vendor/autoload".source = autoload;
+
+      # config/ghostty/config.ghostty includes this. nu marks prompts and
+      # reports its directory itself, and Ghostty's nu integration only wraps
+      # ssh and sudo, which are off by default.
+      xdg.configFile."ghostty/shell.ghostty" = lib.mkIf config.modules.apps.ghostty.enable {
+        text = ''
+          command = direct:${lib.getExe login}
+          shell-integration = none
+        '';
+      };
     };
   };
 }
