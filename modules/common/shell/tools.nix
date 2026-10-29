@@ -25,6 +25,7 @@ in
         lazygit
         tig
         mosh
+        gitleaks
       ])
       ++ [ inputs.agenix.packages.${pkgs.stdenv.hostPlatform.system}.default ];
     modules.dotfiles = {

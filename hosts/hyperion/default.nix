@@ -65,9 +65,15 @@
     virt.containers.enable = true;
   };
 
-  config = { ... }: {
+  config = { pkgs, ... }: {
     # The macOS account on this Mac is "admin", not the default "sol".
     user.name = "admin";
+
+    # CLIs only this Mac needs.
+    hm.home.packages = with pkgs; [
+      rage
+      yubikey-manager
+    ];
 
     # Ghostty and Zed casks come from their modules.
     homebrew = {
