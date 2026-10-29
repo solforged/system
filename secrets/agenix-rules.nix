@@ -11,13 +11,18 @@ let
   admin = "age1csrnt75trax79llf7njd6kvsvxj2r4acszgs9dxegw7uc5wt5etqyqc3m2";
   amarna = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKZvfZCi4oa8t+rQZeQz/fhzC9JfadSFRcU5NVTcy2Mm";
   hyperion = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJwRPLR9b88m47AjZdWO1uEEvOIUz9cSwheSyHkCrKLO";
+  atlas = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKP1VxJ1WmNU+P8RVE0Rp9v+5IZJZkCPcOK/zHnd7uhk";
 
   everywhere = [
     admin
     amarna
     hyperion
+    atlas
   ];
-  work = [ admin ];
+  work = [
+    admin
+    atlas
+  ];
 in
 {
   "berkeley-mono-variable.otf.age".publicKeys = everywhere;
