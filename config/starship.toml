@@ -1,6 +1,7 @@
 add_newline = true
 command_timeout = 200
 format = '$hostname$directory([\[$git_branch$git_commit$git_status$git_state\]](blue) )$line_break$character'
+right_format = '($cmd_duration )($status)'
 
 [hostname]
 ssh_only = false
@@ -50,3 +51,18 @@ up_to_date = ""
 success_symbol = "[>](bold green)"
 error_symbol = "[>](bold red)"
 vimcmd_symbol = "[<](bold green)"
+
+[cmd_duration]
+min_time = 2000
+format = '[$duration]($style)'
+style = 'yellow'
+
+[status]
+disabled = false
+symbol = ''
+not_executable_symbol = ''
+not_found_symbol = ''
+sigint_symbol = ''
+signal_symbol = ''
+format = '[$status]($style)'
+style = 'red'

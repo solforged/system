@@ -21,7 +21,7 @@ let
       ${pkgs.starship}/bin/starship init nu > "$out/starship.nu"
     ''}
     ${lib.optionalString shell.atuin.enable ''
-      ${pkgs.atuin}/bin/atuin init nu --disable-ai > "$out/atuin.nu"
+      ${pkgs.atuin}/bin/atuin init nu --disable-ai --disable-up-arrow > "$out/atuin.nu"
     ''}
     ${lib.optionalString shell.mise.enable ''
       # Keep the caller's PATH. The first PATH assignments capture the build environment.

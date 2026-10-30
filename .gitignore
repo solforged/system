@@ -3,3 +3,4 @@ result-*
 
 # omp locks config.yml beside the linked file.
 config/omp/config.yml.lock
+.zcompdump
