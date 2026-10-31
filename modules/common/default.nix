@@ -24,6 +24,9 @@ in
       sshKeys =
         my.mkOpt' (types.attrsOf types.str) { }
           "Public halves of this user's Proton Pass SSH keys, by host. Every key authorizes SSH logins; a host signs commits with its own key.";
+      agentSigningKeys =
+        my.mkOpt' (types.attrsOf types.str) { }
+          "Public halves of Proton Pass keys that sandboxed agents sign commits with, by name. Git trusts them for signatures only; they never authorize logins.";
     };
 
     # Write home-manager config as `hm.<option>` from any module. A
@@ -80,6 +83,10 @@ in
     user.sshKeys = {
       amarna = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINJVrIRrq7NWLBvH/yDwoFCgZ4Ha/i7EKYCDEk3fDRNr amarna";
       hyperion = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGcTyuiMYZAm8fCEMjUG2uWlSylRqfA/azJksC8wY+8C hyperion";
+    };
+    # Each lives alone in a "Hermes" Proton Pass vault; see modules/nixos/agents.
+    user.agentSigningKeys = {
+      hermes-amarna = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAugIdnV1mNxWv1SJK/qHzXVixB6ufI7n5Fc2RngN59o hermes-amarna";
     };
     users.users.${user}.openssh.authorizedKeys.keys = lib.attrValues config.user.sshKeys;
 

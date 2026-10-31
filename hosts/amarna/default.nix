@@ -93,6 +93,10 @@
 
     agents = {
       claude.enable = true;
+      hermes = {
+        enable = true;
+        sandbox.enable = true;
+      };
       omp.enable = true;
       pi.enable = true;
     };

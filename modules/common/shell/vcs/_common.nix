@@ -16,11 +16,15 @@ rec {
   name = "solforged";
   email = "sol@sowilo.io";
 
-  # Proton Pass keys, served by its SSH agent. Each host signs with its own.
+  # Proton Pass keys, served by its SSH agent. Each host signs with its own;
+  # agent keys are trusted only for Git's signature namespace.
   signingKey = config.user.sshKeys.${config.networking.hostName} or null;
   sign = cfg.sign && signingKey != null;
   allowedSigners = pkgs.writeText "allowed_signers" (
     lib.concatMapStrings (key: "${email} ${key}\n") (lib.attrValues config.user.sshKeys)
+    + lib.concatMapStrings (key: "${email} namespaces=\"git\" ${key}\n") (
+      lib.attrValues config.user.agentSigningKeys
+    )
   );
 
   stripCursorAttribution = pkgs.writeShellApplication {
