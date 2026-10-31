@@ -74,7 +74,7 @@ function common.decode_action(url: string): (Request?, string?)
 	if not ok or type(value) ~= "table" then
 		return nil, "The wiki action is not a valid request."
 	end
-	if value.operation ~= "research" and value.operation ~= "ask" and value.operation ~= "use" then
+	if value.operation ~= "research" and value.operation ~= "ask" and value.operation ~= "use" and value.operation ~= "promote" then
 		return nil, "The wiki action is unknown."
 	end
 	if type(value.root) ~= "string" or type(value.text) ~= "string" or value.text:match("^%s*$") then

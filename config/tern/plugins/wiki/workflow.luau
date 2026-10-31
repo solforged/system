@@ -102,7 +102,7 @@ function workflow.request(cx: WindowCx, request: common.Request, source_pane: nu
 		error("Start Wiki actions with the browser's buttons; links in notes cannot launch a model.", 0)
 	end
 	-- Only the shared, typed operations can choose a fixed command above.
-	if request.operation ~= "research" and request.operation ~= "ask" and request.operation ~= "use" then
+	if request.operation ~= "research" and request.operation ~= "ask" and request.operation ~= "use" and request.operation ~= "promote" then
 		error("The wiki action is unknown.", 0)
 	end
 	launch(cx, request.root, request.operation, request.text, nil)

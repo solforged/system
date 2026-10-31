@@ -11,6 +11,20 @@
 }:
 let
   cfg = config.modules.agents.omp;
+  omp = inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.omp;
+  # Runs the live checkout's script, so edits apply without a rebuild, like
+  # the linked /wiki command beside it.
+  wikiInbox = pkgs.writeShellApplication {
+    name = "wiki-inbox";
+    runtimeInputs = [
+      omp
+      pkgs.git
+      pkgs.python3
+    ];
+    text = ''
+      exec python3 ${config.modules.dotfiles.dir}/config/tern/plugins/wiki/wiki-inbox.py "$@"
+    '';
+  };
 in
 {
   options.modules.agents.omp.enable = lib.mkEnableOption "Oh My Pi";
@@ -26,7 +40,10 @@ in
       "omp/agent/commands/wiki.md" = "tern/plugins/wiki/wiki.md";
     };
     hm = {
-      home.packages = [ inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.omp ];
+      home.packages = [
+        omp
+        wikiInbox
+      ];
       xdg.configFile =
         lib.genAttrs
           [

@@ -151,6 +151,10 @@ local function matches(state: State, note: Note): boolean
 	return query == "" or note.search:find(string.lower(query), 1, true) ~= nil
 end
 
+local function is_draft(note: Note): boolean
+	return note.relative:sub(1, 6) == "inbox/"
+end
+
 local function read_page(note: Note): (string?, string?)
 	local ok, value = pcall(tern.fs.read, note.path, MAX_PAGE_BYTES)
 	if not ok then
@@ -453,10 +457,14 @@ local function dispatch(state: State, operation: string, cx: BlockCx)
 		return
 	end
 	local text = state.question.text
-	if operation == "use" then
+	if operation == "use" or operation == "promote" then
 		local note = selected_note(state)
 		if not note then
 			feedback(state, "Select an enumerated wiki page first.", "error")
+			return
+		end
+		if operation == "promote" and not is_draft(note) then
+			feedback(state, "Only inbox drafts can be promoted. Select a page under inbox/.", "error")
 			return
 		end
 		-- Recheck the bounded regular-file read before handing a page to a model.
@@ -478,7 +486,7 @@ local function dispatch(state: State, operation: string, cx: BlockCx)
 		cx:open(common.action_url(operation, root, text))
 	end)
 	if ok then
-		local label = if operation == "research" then "Research and write" elseif operation == "ask" then "Read-only wiki question" else "Chat with selected note"
+		local label = if operation == "research" then "Research and write" elseif operation == "ask" then "Read-only wiki question" elseif operation == "promote" then "Promotion of the reviewed draft" else "Chat with selected note"
 		feedback(state, label .. " requested in an agent pane. This browser has not written any wiki files.")
 	else
 		feedback(state, "Could not request the wiki action: " .. error_text(failure), "error")
@@ -536,6 +544,7 @@ end
 
 local function view(state: State, _cx: BlockCx): BlockView
 	local selected = selected_note(state)
+	local draft_selected = selected ~= nil and is_draft(selected)
 	local children: { Node } = {
 		keyed(ui.text(ui.span("Wiki", "strong")), "heading"),
 		keyed(ui.text("Wiki root (Enter to refresh)"), "root-label"),
@@ -552,8 +561,9 @@ local function view(state: State, _cx: BlockCx): BlockView
 		keyed(ui.row({
 			button("Open selected in editor", "open", "wiki-open", selected ~= nil),
 			button("Chat with selected note", "use", "wiki-use", selected ~= nil),
+			button("Promote reviewed draft", "promote", "wiki-promote", draft_selected),
 		}), "note-actions"),
-		keyed(ui.text(ui.span("Browsing never writes notes. Ask has read-only tools. Research writes notes; Chat with selected note loads context into a normal omp chat. No model runs until you request one.", "muted")), "policy"),
+		keyed(ui.text(ui.span("Browsing never writes notes. Ask has read-only tools. Research writes notes; Chat with selected note loads context into a normal omp chat. Pages under inbox/ are unreviewed drafts; Promote marks the selected one as reviewed and moves it into the wiki. No model runs until you request one.", "muted")), "policy"),
 	}
 	if state.feedback then
 		table.insert(children, keyed(ui.text(ui.span(state.feedback, state.feedback_tone)), "feedback"))
@@ -580,8 +590,8 @@ local function view(state: State, _cx: BlockCx): BlockView
 			key = "n" .. tostring(note.index),
 			label = note.title,
 			detail = display(note.relative),
-			value = if note.error then "unreadable" else nil,
-			tone = if note.error then "warning" else nil,
+			value = if note.error then "unreadable" elseif is_draft(note) then "draft" else nil,
+			tone = if note.error then "warning" elseif is_draft(note) then "muted" else nil,
 		}))
 	end
 	local empty = if state.loading then "Pages appear as their titles are read…" elseif state.scan_error and #state.notes == 0 then "No readable listing was returned. See the scan error above." elseif #state.notes == 0 then "No note pages found. index.md and log.md are navigation/history, not notes. The browser does not create files." else "No pages match this title/path filter."
@@ -717,7 +727,7 @@ local function event(state: State, ev: UiEvent, cx: BlockCx)
 			end
 		end
 	elseif ev.ev == "action" then
-		if ev.act == "research" or ev.act == "ask" or ev.act == "use" then
+		if ev.act == "research" or ev.act == "ask" or ev.act == "use" or ev.act == "promote" then
 			dispatch(state, ev.act, cx)
 		elseif ev.act == "refresh" then
 			refresh(state, cx)
