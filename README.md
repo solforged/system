@@ -245,9 +245,11 @@ amarna enables `modules.desktop.solforge.enable` alongside GNOME. The module in
 from the existing, pinned **solforge-theme** input; no palette or artwork is
 copied into this repo and no additional theme input is needed.
 
-- **GTK 3:** adw-gtk3 with Solforge's color roles.
-- **GTK 4 / libadwaita:** user CSS overrides named colors and modern CSS variables,
-  retaining the toolkit's native widgets and layout. No global `GTK_THEME` hack.
+- **GTK 3:** adw-gtk3 with Solforge's color roles, as the `Solforge-dark` and
+  `Solforge-light` themes.
+- **GTK 4 / libadwaita:** user CSS overrides named colors and modern CSS variables
+  for both palettes, selected by `prefers-color-scheme`, retaining the toolkit's
+  native widgets and layout. No global `GTK_THEME` hack.
 - **GNOME Shell:** User Themes loads a small overlay on the installed GNOME's
   stock stylesheet, including Quick Settings, notifications and the overview.
   Dash to Panel and ArcMenu receive matching colors without changing the layout.
@@ -255,22 +257,23 @@ copied into this repo and no additional theme input is needed.
   background URIs installed. GNOME's built-in accent is yellow as a fallback
   for apps that don't read user CSS. Icons, cursors and GDM remain stock.
 
-The desktop defaults to dark. To select the light desktop or another drawing,
-set these flags in `hosts/amarna/default.nix`, then rebuild:
+The desktop follows **Settings → Appearance → Style** (or the Quick Settings
+dark-style toggle) and starts dark until you pick one. The dark default lives in
+a system dconf database, so a rebuild never overrides your choice. GTK 4 apps
+switch by themselves. The `solforge-appearance` user service watches the setting
+and loads the matching GTK 3 theme, Shell overlay, Dash to Panel and ArcMenu
+colors; `systemctl --user status solforge-appearance` shows whether it runs.
+To choose another drawing, set it in `hosts/amarna/default.nix` and rebuild:
 
 ```nix
 desktop.solforge = {
   enable = true;
-  variant = "light"; # "dark" is the default
   wallpaper = "02-orologio.png"; # clock; other choices are in the option
 };
 ```
 
-Log out and back in after the first switch so Shell discovers User Themes;
-restart GTK apps to reload user CSS. The desktop palette is declarative:
-changing appearance in Settings alone does not switch the GTK overrides or
-Shell overlay. Change `variant` and rebuild for a consistent desktop. Sandboxed
-apps and apps with their own styles may not honor the overrides.
+Log out and back in after the first switch so Shell discovers User Themes.
+Sandboxed apps and apps with their own styles may not honor the overrides.
 
 The corresponding app modules also install themes from the same input on both
 Linux and macOS, while their existing config files remain live links:

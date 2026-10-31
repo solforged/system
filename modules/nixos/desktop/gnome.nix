@@ -44,12 +44,15 @@ in
       ]);
     services.udev.packages = [ pkgs.gnome-settings-daemon ];
 
+    # Dark until the user picks a Style in Settings. A system database only
+    # supplies the default, so a rebuild never overrides that choice.
+    programs.dconf.profiles.user.databases = [
+      { settings."org/gnome/desktop/interface".color-scheme = "prefer-dark"; }
+    ];
+
     hm = hm: {
       dconf.settings = with hm.lib.hm.gvariant; {
-        "org/gnome/desktop/interface" = {
-          color-scheme = lib.mkDefault "prefer-dark";
-          enable-hot-corners = false;
-        };
+        "org/gnome/desktop/interface".enable-hot-corners = false;
         "org/gnome/desktop/peripherals/keyboard" = {
           repeat-interval = mkUint32 15;
           delay = mkUint32 200;
