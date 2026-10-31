@@ -94,6 +94,9 @@ After switching the system configuration, restart omp sessions to load it.
 Use `/intercom list` to find other listening sessions on the same machine.
 Update the extension's pin with `nix flake update omp-intercom`, then rebuild.
 
+Active model roles use Claude 5.5. The `openai` model preset retains Codex
+`gpt-6.1-sol:xhigh` for the default role and `gpt-6-luna:high` for commits.
+
 ### On-demand wiki
 
 `/wiki` is a Markdown command in `config/tern/plugins/wiki/wiki.md`, linked into
@@ -124,9 +127,9 @@ recommendations, and record dates and sources. Profiles are ordinary pages;
 they are not inferred or read implicitly. A missing wiki is created only by
 research or `write`, never by `ask`, `use`, or help.
 
-The memory backend remains off. This command adds no automatic recall, session
-mining, or background maintenance; existing skill autolearning is separate and
-unchanged. These are model instructions, not a filesystem permission boundary.
+Mnemopi memory and skill autolearning are enabled separately from `/wiki`.
+The wiki command adds no automatic recall, session mining, or background
+maintenance. Its rules are model instructions, not a filesystem permission boundary.
 Notes read through either `ask` or `use` remain in the conversation's context;
 start a fresh session to work without that previously loaded context.
 
