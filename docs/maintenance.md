@@ -7,21 +7,21 @@ local hostname.
 For the first activation, before `nh` is installed:
 
 ```sh
-nix run --inputs-from ~/src/system nixpkgs#nh -- os switch ~/src/system --ask
+nix run --inputs-from ~/src/system nixpkgs#nh -- os switch ~/src/system
 ```
 
 On Macs, replace `os` with `darwin`. Log out and back in after this first switch
 to load `NH_FLAKE`, then use:
 
 ```sh
-nh os switch --ask          # build, show the diff, confirm, activate (amarna)
-nh os build                # build and show the diff without activating
-nh os test --ask           # activate without changing the next-boot default
-nh os boot --ask           # set the next-boot default without activating
-nh os switch --update --ask # update all flake inputs, then rebuild and activate
-nh darwin switch --ask      # Macs
-nix fmt                    # nixfmt-tree
-nix build .#installer-iso   # amarna installer
+nh os switch             # build, show the diff, activate (amarna)
+nh os build              # build and show the diff without activating
+nh os test               # activate without changing the next-boot default
+nh os boot               # set the next-boot default without activating
+nh os switch --update    # update all flake inputs, then rebuild and activate
+nh darwin switch         # Macs
+nix fmt                  # nixfmt-tree
+nix build .#installer-iso # amarna installer
 ```
 
 Run `nh` as your normal user; it elevates privileges when needed. Home Manager is

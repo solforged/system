@@ -82,6 +82,7 @@
         cowork.enable = true;
       };
       ghostty.enable = true;
+      herdr-desktop.enable = true;
       tern.enable = true;
       personal.enable = true;
       proton-pass = {
@@ -93,6 +94,7 @@
 
     agents = {
       claude.enable = true;
+      herdr.enable = true;
       hermes = {
         enable = true;
         sandbox.enable = true;

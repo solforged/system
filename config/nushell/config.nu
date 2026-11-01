@@ -168,6 +168,7 @@ def --wrapped omp [...args] {
   }
 }
 alias omr = omp --resume
+alias pir = pi --resume
 
 # --- Git worktrees ---
 # Create a new worktree and branch from within current git directory.

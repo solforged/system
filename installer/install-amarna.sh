@@ -101,6 +101,6 @@ Reboot, log in, then:
   pass-cli login                     # starts the Proton Pass SSH agent
   systemctl --user status proton-pass-ssh-agent
 For Secure Boot, set security.secureboot.sign = true in hosts/amarna,
-run `nh os boot --install-bootloader --ask`,
+run `nh os boot --install-bootloader`,
 check `sudo sbctl verify`, then turn Secure Boot back on in firmware.
 EOF

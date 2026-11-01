@@ -61,8 +61,13 @@
 
       lib = { inherit (my) mkHost; };
 
-      checks.x86_64-linux.solforge = import ./tests/solforge.nix {
-        configuration = hosts.amarna.build;
+      checks.x86_64-linux = {
+        solforge = import ./tests/solforge.nix {
+          configuration = hosts.amarna.build;
+        };
+        herdr-themes = import ./tests/herdr.nix {
+          configuration = hosts.amarna.build;
+        };
       };
 
       # nix build .#installer-iso

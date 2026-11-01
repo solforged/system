@@ -25,7 +25,7 @@ desktop icons. The separate Solforge module supplies its colors and wallpaper:
 | Super+D                 | Show / restore desktop                       |
 | Super+E                 | Open Files                                   |
 
-Apply with `nh os switch --ask`, then **log out and back in** so the Wayland
+Apply with `nh os switch`, then **log out and back in** so the Wayland
 shell discovers the new extensions. Right-click
 Start for ArcMenu and taskbar settings, or run `gnome-extensions prefs <UUID>`.
 Extension packages and the settings above are managed by Nix; change the module
@@ -41,7 +41,7 @@ flake source or Nix store. Provision it separately on a fresh checkout:
 
 ```sh
 install -Dm755 /path/to/downloaded/tern ~/src/system/config/tern/local/tern
-nh os switch --ask
+nh os switch
 ```
 
 The launcher uses the runtime pinned by this flake, not a floating `nix run`.
@@ -95,6 +95,7 @@ Linux and macOS, while their existing config files remain live links:
 | ---------------- | ----------------------------------------------------------------------- |
 | Ghostty          | Solforge Dark / Light, follows system appearance                        |
 | Zed              | Solforge Dark / Light, follows system appearance                        |
+| Herdr desktop    | `solforge-dark` / `solforge-light`, follows system appearance by default |
 | Helix            | `solforge-dark`; change `theme` in `config/helix/config.toml` for light |
 | Neovim / LazyVim | `solforge`; follows Neovim's `background` (`:set background=light`)     |
 | omp / Tern       | Existing dark/light Solforge selections remain in place                 |
@@ -109,12 +110,32 @@ generator to change the palette, then update just that input:
 ```sh
 nix flake update solforge-theme --option access-tokens "github.com=$(gh auth token)"
 nix build .#checks.x86_64-linux.solforge
-nh os switch --ask
+nh os switch
 ```
 
 The check evaluates both desktop variants, parses their CSS with the pinned
 GTK 3/4 and GNOME Shell versions, and checks wallpapers, extension merging, app
-theme files and safe migration of the old directory links.
+theme files and safe migration of the old directory links. Herdr's native theme
+parser, terminal palette, UI contrast and settings merge have a separate check:
+`nix build .#checks.x86_64-linux.herdr-themes`.
+
+### Herdr desktop
+
+`modules.apps.herdr-desktop.enable` installs both Solforge variants at
+`~/.config/herdr-app/themes/` on Linux and macOS. They are generated from the
+pinned input, not a second hand-maintained palette. Terminals use Ghostty's exact
+ANSI colors, selection and gold cursor; the interface adds oxblood/vellum
+surfaces, gilt focus rings and buttons, and yellow/red/green agent states for
+working/blocked/done. Fonts and layout are unchanged.
+
+On activation, only the base `theme` pair in Herdr's writable `settings.json` is
+managed. Fonts, zoom, sounds, telemetry, appearance and other preferences survive
+rebuilds. With Appearance set to **System** in **Settings → Look**, the default
+Herdr layout follows the desktop's light/dark choice. Explicit appearance choices
+are respected. Per-layout theme picks override the base pair and are left alone;
+select `solforge-dark` and `solforge-light` in Settings → Look for a layout with
+its own look or a previous theme pick. Herdr reloads the files live; no daemon or
+terminal restart is needed.
 
 ## External-monitor brightness
 

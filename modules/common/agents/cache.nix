@@ -18,7 +18,14 @@ let
 in
 {
   config =
-    lib.mkIf (agents.claude.enable || agents.hermes.enable || agents.omp.enable || agents.pi.enable)
+    lib.mkIf
+      (
+        agents.claude.enable
+        || agents.herdr.enable
+        || agents.hermes.enable
+        || agents.omp.enable
+        || agents.pi.enable
+      )
       (
         # Determinate Nix owns nix.conf on Macs; see modules/darwin/default.nix.
         if isDarwin then { determinateNix.customSettings = cache; } else { nix.settings = cache; }

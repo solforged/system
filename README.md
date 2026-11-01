@@ -19,8 +19,8 @@ Keep the checkout at `~/src/system`; dotfiles are linked live from `config/`.
 On an already configured host, rebuild and activate as your normal user:
 
 ```sh
-nh os switch --ask     # NixOS
-nh darwin switch --ask # macOS
+nh os switch     # NixOS
+nh darwin switch # macOS
 ```
 
 ## Develop
@@ -43,7 +43,7 @@ and documentation guidelines.
 
 - [System maintenance](docs/maintenance.md): bootstrap, rebuilds, updates and garbage collection.
 - [Desktop](docs/desktop.md): GNOME, Tern, Solforge themes, monitor brightness and fingerprints.
-- [Agent tools](docs/agents.md): omp and Claude Desktop.
+- [Agent tools](docs/agents.md): omp, Herdr and Claude Desktop.
 - [Wiki](docs/wiki.md): `/wiki` commands and the draft inbox.
 - [Hermes sandbox](docs/hermes-sandbox.md): mounts, signing and security boundaries.
 - [Local inference](modules/nixos/ai/README.md): enable and operate llama.cpp or Ollama.

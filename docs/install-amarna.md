@@ -73,7 +73,7 @@ It:
    - For an older image's read-only flake copy, run `chmod -R u+w ~/src/system`.
    - Read `/etc/ssh/ssh_host_ed25519_key.pub` and replace only the `amarna`
      recipient in `secrets/agenix-rules.nix`. Keep the admin and other hosts.
-   - Run `secrets-rekey` as your normal user, then `nh os switch --ask`.
+   - Run `secrets-rekey` as your normal user, then `nh os switch`.
      Rekeying alone does not install decrypted files; activation does.
    - Run `fc-cache -f ~/.local/share/fonts` and verify
      `fc-match 'Berkeley Mono Variable'`.
@@ -87,7 +87,7 @@ It:
    `git-work-identity.age` is intentionally admin-only and is not activated
    on amarna.
 3. Secure Boot: set `security.secureboot.sign = true` in `hosts/amarna`, run
-   `nh os boot --install-bootloader --ask`,
+   `nh os boot --install-bootloader`,
    check `sudo sbctl verify`, then turn Secure Boot back on in firmware. If
    the firmware keys were reset, enroll them with
    `sbctl enroll-keys --microsoft --tpm-eventlog` from Setup Mode.

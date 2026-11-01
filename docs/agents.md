@@ -15,6 +15,26 @@ Update the extension's pin with `nix flake update omp-intercom`, then rebuild.
 
 For notes and background drafting, see the [wiki guide](wiki.md).
 
+## Herdr
+
+Both options are enabled on amarna and hyperion:
+
+- `modules.agents.herdr.enable` installs the `herdr` terminal workspace manager
+  from the pinned `llm-agents` input.
+- `modules.apps.herdr-desktop.enable` installs the official
+  [Herdr desktop app](https://github.com/herdrdev/herdr-app), launched with
+  `herdr-app` or the Herdr application entry, plus its `herdr-core` (`hc`) runtime.
+  The desktop app and TUI use separate daemons and state. The desktop module also
+  installs [Solforge light/dark themes](desktop.md#herdr-desktop) and sets the base
+  theme pair without replacing other Herdr preferences.
+
+Desktop and core releases are pinned in `packages/herdr-desktop.nix` and
+`packages/herdr-core.nix`; update their versions and hashes, then rebuild.
+Update the TUI with `nix flake update llm-agents`. Use Nix rebuilds rather than
+the apps' self-updaters. Upstream desktop releases enable usage telemetry;
+disable it in Settings → Privacy. On Linux, the core starts systemd user services
+and may enable user lingering so terminals survive logout.
+
 ## Claude Desktop
 
 `modules.apps.claude-desktop.enable` installs the `claude` cask on Macs, which

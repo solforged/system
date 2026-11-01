@@ -48,6 +48,7 @@
     apps = {
       claude-desktop.enable = true;
       ghostty.enable = true;
+      herdr-desktop.enable = true;
       tern.enable = true;
       proton-pass = {
         enable = true;
@@ -57,6 +58,7 @@
 
     agents = {
       claude.enable = true;
+      herdr.enable = true;
       hermes.enable = true;
       omp.enable = true;
       pi.enable = true;
