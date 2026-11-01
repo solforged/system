@@ -133,8 +133,8 @@ in
     };
     start256k = lib.mkOption {
       type = lib.types.bool;
-      default = true;
-      description = "Start Qwen 3.8 27B with 256k context at boot (qwen-256k, loopback port 8081).";
+      default = false;
+      description = "Start Qwen 3.8 27B with 256k context at boot (qwen-256k, loopback port 8081). Otherwise start it on demand.";
     };
     tailscaleServe.enable = lib.mkEnableOption "tailnet-only HTTPS for Qwen 3.8 27B with 256k context";
   };
@@ -175,14 +175,12 @@ in
       qwen-tailscale-serve = lib.mkIf cfg.tailscaleServe.enable {
         description = "Qwen 3.8 27B (256k context) tailnet HTTPS endpoint";
         wantedBy = [ "multi-user.target" ];
-        requires = [
-          "tailscaled.service"
-          "qwen-256k.service"
-        ];
+        # The Serve handler only proxies to 8081. Leaving qwen-256k out keeps
+        # the model unloaded until it is started on demand.
+        requires = [ "tailscaled.service" ];
         after = [
           "tailscaled.service"
           "tailscaled-autoconnect.service"
-          "qwen-256k.service"
         ];
         partOf = [ "tailscaled.service" ];
         serviceConfig = {
