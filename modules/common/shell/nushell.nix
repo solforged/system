@@ -1,9 +1,9 @@
 # modules/common/shell/nushell.nix
 #
-# nu is the shell terminals open. zsh stays the login shell and sets up the
-# environment, so terminals start nu from it; anything that runs $SHELL still
-# gets a POSIX shell. Tool init code is generated in the store and loaded from
-# nu's vendor autoload directory, ~/.local/share/nushell/vendor/autoload.
+# nu is the shell terminals open. zsh stays the login shell so anything that
+# runs $SHELL still gets a POSIX shell. Home Manager loads the Nix environment
+# for direct nu launches too. Tool init code is generated in the store and
+# loaded from ~/.local/share/nushell/vendor/autoload.
 {
   config,
   lib,
@@ -57,15 +57,21 @@ in
   options.modules.shell.nushell.enable = lib.mkEnableOption "Nushell";
 
   config = lib.mkIf cfg.enable {
-    # Link only config.nu: nu writes its plugin registry beside it.
+    # Keep config.nu live and let Home Manager own env.nu; nu writes its
+    # plugin registry beside them.
     modules.dotfiles.configLink."nushell/config.nu" = "nushell/config.nu";
 
     hm = {
+      # env.nu runs before config.nu and vendor autoloads. Direct launches
+      # (e.g. editor terminals) need the same PATH as the zsh login launcher.
+      programs.nushell = {
+        enable = true;
+        loadSessionVariables = true;
+      };
       home.packages = with pkgs; [
         carapace
         fzf
         gum
-        nushell
         zoxide
       ];
       xdg.dataFile."nushell/vendor/autoload".source = autoload;
