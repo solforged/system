@@ -68,6 +68,9 @@
         herdr-themes = import ./tests/herdr.nix {
           configuration = hosts.amarna.build;
         };
+        herdr-pi = import ./tests/herdr-pi.nix {
+          configuration = hosts.amarna.build;
+        };
       };
 
       # nix build .#installer-iso

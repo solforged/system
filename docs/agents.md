@@ -35,6 +35,40 @@ the apps' self-updaters. Upstream desktop releases enable usage telemetry;
 disable it in Settings → Privacy. On Linux, the core starts systemd user services
 and may enable user lingering so terminals survive logout.
 
+### Pi integration
+
+Herdr Desktop uses `hc`, not the TUI's `herdr` CLI or socket API. Pi 1.4.0
+already reports agent status through OSC 7501 after the terminal confirms
+support; no extension install or forced `PI_PROGRAM_STATUS` setting is needed.
+The TUI's `herdr integration install pi`, `pane report-metadata`, and TOML
+sidebar tokens do not configure Desktop. Its version-matched guide is
+`~/.config/herdr-app/AGENTS.md`; use `hc --skill` for the core's manual.
+
+Desktop recognizes subagents started with `hc run` as child terminals. They
+appear under their parent without taking a pane; peek opens one, and keep gives
+it a pane. Ordinary headless Pi subprocesses are not core child terminals.
+The core's delegation manual requires interactive agents, not `pi -p` jobs.
+Closing Desktop leaves programs running, but lost kept terminals recover into
+shells, not resumed agent sessions or replayed tasks.
+
+When Pi and Herdr TUI are enabled, Home Manager also owns
+`~/.config/pi/agent/extensions/herdr-agent-state.ts`. The file is extracted
+from the pinned TUI package during a sandboxed build; activation only links it.
+No installer runs against the real home, and no credentials or Pi settings are
+changed. Set `modules.agents.pi.herdrTuiIntegration.enable = false` to opt out;
+it defaults to the TUI's enable flag and is not needed for Desktop.
+
+Home Manager uses the usual `.hm-backup` suffix when backing up a conflicting
+manual installation. Resolve any pre-existing backup collision before
+switching; do not force-replace it. Restart Pi or `/reload` after switching.
+Once managed, update it through Nix rather than rerunning the TUI installer.
+This manages the default XDG agent directory; a custom `PI_CODING_AGENT_DIR`
+needs its own extension configuration.
+
+Check extraction, option gating, and the hook's session/lifecycle reports with
+`nix build .#checks.x86_64-linux.herdr-pi`. The check uses a private fake socket,
+not a running Herdr server, credentials, or model calls.
+
 ## Claude Desktop
 
 `modules.apps.claude-desktop.enable` installs the `claude` cask on Macs, which

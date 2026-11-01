@@ -49,6 +49,7 @@ nh os build                          # build NixOS without activating
 nh darwin build                      # build macOS without activating
 nix build .#checks.x86_64-linux.solforge # Linux theme checks
 nix build .#checks.x86_64-linux.herdr-themes # Herdr themes and settings merge
+nix build .#checks.x86_64-linux.herdr-pi # Pinned Herdr TUI integration for Pi
 nix build .#installer-iso             # amarna installer image
 ```
 
