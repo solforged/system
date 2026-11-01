@@ -12,8 +12,10 @@
       XDG_STATE_HOME = "$HOME/.local/state";
 
       BUN_INSTALL = "$HOME/.local/share/bun";
+      BUN_INSTALL_CACHE_DIR = "$HOME/.cache/bun";
       CARGO_HOME = "$HOME/.local/share/cargo";
       CODEX_HOME = "$HOME/.local/share/codex";
+      CUDA_CACHE_PATH = "$HOME/.cache/nvidia/ComputeCache";
       DOCKER_CONFIG = "$HOME/.config/docker";
       GEM_SPEC_CACHE = "$HOME/.cache/gem";
       GNUPGHOME = "$HOME/.local/share/gnupg";
@@ -23,6 +25,7 @@
       MPLCONFIGDIR = "$HOME/.config/matplotlib";
       PUB_CACHE = "$HOME/.cache/pub-cache";
       RUSTUP_HOME = "$HOME/.local/share/rustup";
+      TERMINFO = "$HOME/.local/share/terminfo";
       npm_config_cache = "$HOME/.cache/npm";
     };
 

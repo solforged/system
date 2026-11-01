@@ -1,3 +1,4 @@
+data_dir = "~/.local/share/atuin"
 enter_accept = true
 
 [sync]
