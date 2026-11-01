@@ -18,7 +18,7 @@ symbolPreset: nerd
 setupVersion: 2
 hideThinkingBlock: false
 memory:
-  backend: mnemopi
+  backend: local
 autolearn:
   enabled: true
   autoContinue: true
@@ -132,5 +132,6 @@ modelPresets:
       advisor: anthropic/claude-opus-5-5:high
       widget: anthropic/claude-haiku-5-5:low
     defaultThinkingLevel: medium
-browser:
-  cmux: false
+skills:
+  enableSkillCommands: false
+skillful: false
