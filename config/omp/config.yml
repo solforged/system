@@ -80,7 +80,8 @@ spelling:
 isolation:
   backend: auto
 retry:
-  fallbackChains: {}
+  fallbackChains:
+    {}
 codexResets:
   autoRedeem: "yes"
 sharpshooter:
