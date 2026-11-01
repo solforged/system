@@ -8,8 +8,32 @@ let
   cfg = config.modules.apps.tern;
   # Keep the local download outside the flake source and Nix store.
   binary = "${config.modules.dotfiles.dir}/config/tern/local/tern";
+  # Tern runs natively through nix-ld rather than an FHS sandbox: bubblewrap
+  # sets no_new_privs, so sudo failed in every shell Tern started. These are
+  # the libraries Tern loads at runtime.
+  # nixpkgs has no WPE WebKit, the engine Tern prefers, so it uses WebKitGTK.
+  libraries = with pkgs; [
+    stdenv.cc.cc.lib
+    libglvnd
+    vulkan-loader
+    wayland
+    libxkbcommon
+    libxcb
+    pam
+    libpulseaudio
+    webkitgtk_4_1
+  ];
+  # Shells inherit NIX_LD_LIBRARY_PATH (nix-ld hides only LD_LIBRARY_PATH from
+  # them), so keep the system nix-ld libraries for programs they start.
+  libraryPath = lib.concatStringsSep ":" [
+    (lib.makeLibraryPath libraries)
+    "${pkgs.addDriverRunpath.driverLink}/lib"
+    "/run/current-system/sw/share/nix-ld/lib"
+  ];
   tern = pkgs.writeShellScriptBin "tern" ''
-    exec ${lib.getExe pkgs.steam-run-free} ${lib.escapeShellArg binary} "$@"
+    export NIX_LD=${lib.escapeShellArg pkgs.stdenv.cc.bintools.dynamicLinker}
+    export NIX_LD_LIBRARY_PATH=${lib.escapeShellArg libraryPath}
+    exec ${lib.escapeShellArg binary} "$@"
   '';
   launcher = "${config.users.users.${config.user.name}.home}/.local/bin/tern";
   desktopEntry = {
@@ -57,6 +81,12 @@ let
 in
 {
   config = lib.mkIf cfg.enable {
+    assertions = [
+      {
+        assertion = config.programs.nix-ld.enable;
+        message = "modules.apps.tern runs the downloaded binary through nix-ld; enable programs.nix-ld.";
+      }
+    ];
     modules.dotfiles.configLink."tern/plugins/wiki" = "tern/plugins/wiki";
     hm = hm: {
       home.packages = [ tern ];
