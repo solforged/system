@@ -3,7 +3,7 @@
 # What Hermes' Docker terminal backend mounts into its rootless Podman
 # sandbox, so the agent can run unattended without the rest of the home
 # directory. Hermes creates and reuses the container itself; config.yaml lists
-# the mounts (README, "Hermes sandbox").
+# the mounts (see docs/hermes-sandbox.md).
 #
 # - ~/.local/share/hermes-sandbox/nix becomes the container's /nix: a store of
 #   its own, seeded with Nix and mise. Sharing the host daemon instead would

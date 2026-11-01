@@ -122,8 +122,8 @@ in
       description = ''
         Absolute path to the Qwen 3.8 27B Q8_0 GGUF with an embedded MTP head.
         Keep weights outside the Nix store, readable by the llama group.
-        Home directories are hidden from the services. See README.md in this
-        module directory for the Ollama blob migration commands.
+        Home directories are hidden from the services. See
+        docs/local-inference.md in the repository for model setup commands.
       '';
     };
     start64k = lib.mkOption {
