@@ -500,11 +500,11 @@
     "omp-intercom": {
       "flake": false,
       "locked": {
-        "lastModified": 1791528303,
-        "narHash": "sha256-2OcepsQVBhFyR6IVpJ6zu0edGPpvOLBZ8OiQQh4ISLA=",
+        "lastModified": 1793581150,
+        "narHash": "sha256-Zdz5J6i66WUL8q1KUgwtW9fiLibt7csoZxeIlI1QkwA=",
         "owner": "solforged",
         "repo": "omp-intercom",
-        "rev": "6c7ca1deaf75b7a99625971743b949288ce9c9d8",
+        "rev": "f69b95de1e97183c90c3841a3c53eec6032b6c3e",
         "type": "github"
       },
       "original": {
