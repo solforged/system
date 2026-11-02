@@ -63,8 +63,10 @@ in
         user = { inherit name email; };
         init.defaultBranch = "main";
         pull.ff = "only";
+        pull.rebase = true;
         push.autoSetupRemote = true;
         fetch.prune = true;
+        rebase.autoStash = true;
         rerere.enabled = true;
         diff.algorithm = "histogram";
         color.ui = "auto";
