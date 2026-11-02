@@ -22,6 +22,7 @@
       GOBIN = "$HOME/.local/share/go/bin";
       GOPATH = "$HOME/.local/share/go";
       GRADLE_USER_HOME = "$HOME/.local/share/gradle";
+      LLM_WIKI_DIR = "$HOME/.local/share/wiki";
       MPLCONFIGDIR = "$HOME/.config/matplotlib";
       PUB_CACHE = "$HOME/.cache/pub-cache";
       RUSTUP_HOME = "$HOME/.local/share/rustup";

@@ -65,7 +65,7 @@ let
       export PATH="''${MISE_DATA_DIR:-$HOME/.local/share/mise}/shims:${profileDir}/bin:$PATH"
       export NIX_CONF_DIR=${profileDir}/etc/nix
       export GIT_CONFIG_SYSTEM=${profileDir}/etc/gitconfig
-      export LLM_WIKI_DIR=${home}/wiki
+      export LLM_WIKI_DIR=${lib.replaceStrings [ "$HOME" ] [ home ] config.modules.env.variables.LLM_WIKI_DIR}
     ''
     + lib.optionalString sign ''
       export SSH_AUTH_SOCK=${agentSocket}

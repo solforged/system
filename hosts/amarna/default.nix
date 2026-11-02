@@ -6,8 +6,6 @@
   system = "x86_64-linux";
 
   modules = {
-    env.variables.LLM_WIKI_DIR = "$HOME/wiki";
-
     profiles = {
       role = "workstation";
       hardware = [
@@ -43,7 +41,6 @@
     shell = {
       zsh.enable = true;
       nushell.enable = true;
-      starship.enable = true;
       atuin.enable = true;
       yazi.enable = true;
       vcs = {
