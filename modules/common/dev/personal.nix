@@ -17,6 +17,7 @@
         "vale/.vale.ini" = "vale/vale.ini";
       };
       homeLink.".local/share/vale/styles/Voice" = "vale/styles/Voice";
+      homeLink.".local/share/vale/styles/config/views" = "vale/styles/config/views";
     };
   };
 }

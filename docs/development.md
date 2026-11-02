@@ -51,11 +51,20 @@ nix build .#checks.x86_64-linux.solforge # Linux theme checks
 nix build .#checks.x86_64-linux.herdr-themes # Herdr themes and settings merge
 nix build .#checks.x86_64-linux.herdr-pi # Pinned Herdr TUI integration for Pi
 nix build .#installer-iso             # amarna installer image
+vale --no-global --config config/vale/test.ini test --coverage config/vale/styles/Voice # prose rules
 ```
 
 New files must be staged with `git add` before the flake can see them. Home
 Manager is part of the system build, not a separate activation. See
 [system maintenance](maintenance.md) for activation and input updates.
+
+`config/vale` holds the shared prose style. `vale.ini` is the global Vale
+configuration and `styles/Voice` the rules it enables, both linked live;
+`styles/Voice/Brief.md` is the written house standard the rules enforce, and
+`styles/Voice/NOTICE` records the upstream source of the vendored dictionary
+and rules. Each rule carries its own test cases. Projects that gate on prose,
+such as Tessera, commit a copy of `styles/Voice` and refresh it after a change
+here.
 
 ## Documentation
 
