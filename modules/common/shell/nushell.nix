@@ -14,12 +14,12 @@
 let
   cfg = config.modules.shell.nushell;
   shell = config.modules.shell;
+  # Where carapace looks without XDG_CONFIG_HOME (Go's os.UserConfigDir).
+  carapaceConfigFallback =
+    if pkgs.stdenv.hostPlatform.isDarwin then "Library/Application Support" else ".config";
   autoload = pkgs.runCommand "nushell-autoload" { } ''
     export HOME="$TMPDIR/home"
     mkdir -p "$HOME" "$out"
-    ${lib.optionalString shell.starship.enable ''
-      ${pkgs.starship}/bin/starship init nu > "$out/starship.nu"
-    ''}
     ${lib.optionalString shell.atuin.enable ''
       ${pkgs.atuin}/bin/atuin init nu --disable-ai --disable-up-arrow > "$out/atuin.nu"
     ''}
@@ -32,7 +32,16 @@ let
       ${pkgs.fnox}/bin/fnox activate nu > "$out/fnox.nu"
     ''}
     ${pkgs.zoxide}/bin/zoxide init nushell > "$out/zoxide.nu"
-    ${pkgs.carapace}/bin/carapace _carapace nushell > "$out/carapace.nu"
+    # The init puts carapace's bin directory first on PATH. Generate it with a
+    # placeholder and resolve the directory when nu starts, or PATH keeps the
+    # build's home directory.
+    XDG_CONFIG_HOME=/carapace-config ${pkgs.carapace}/bin/carapace _carapace nushell \
+      | ${pkgs.gnused}/bin/sed 's#"/carapace-config/carapace/bin"#($env.XDG_CONFIG_HOME? | default ($env.HOME | path join "${carapaceConfigFallback}") | path join carapace bin)#g' \
+      > "$out/carapace.nu"
+    if grep -q /carapace-config "$out/carapace.nu"; then
+      echo "carapace.nu still names the build's config directory" >&2
+      exit 1
+    fi
 
     # Fail the build, not the shell, when a tool emits code nu cannot parse.
     for f in "$out"/*.nu; do

@@ -19,9 +19,9 @@ in
     onActivation = {
       autoUpdate = false;
       upgrade = false;
-      # "zap" would uninstall every formula and cask not listed here. Switch
-      # to it once each host's lists cover what is installed.
-      cleanup = "none";
+      # Hosts override this once their lists cover what is installed.
+      # "zap" also deletes the files a removed cask owns.
+      cleanup = lib.mkDefault "none";
     };
     casks =
       lib.optional config.modules.apps.claude-desktop.enable "claude"

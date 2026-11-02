@@ -14,7 +14,9 @@ unset _zsh_plugins
 # Keybindings follow Atuin's widgets.
 [[ -r "$ZDOTDIR/config.d/keybinds.zsh" ]] && source "$ZDOTDIR/config.d/keybinds.zsh"
 
-# Prompt, environment, secrets, and directory navigation.
+[[ -r "$ZDOTDIR/config.d/prompt.zsh" ]] && source "$ZDOTDIR/config.d/prompt.zsh"
+
+# Environment, secrets, and directory navigation.
 _zsh_init="${XDG_DATA_HOME:-$HOME/.local/share}/zsh/init.zsh"
 [[ -r "$_zsh_init" ]] && source "$_zsh_init"
 unset _zsh_init

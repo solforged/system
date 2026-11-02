@@ -36,11 +36,6 @@ let
     export HOME="$TMPDIR/home"
     mkdir -p "$HOME"
     touch "$out"
-    ${lib.optionalString config.modules.shell.starship.enable ''
-      echo 'if [[ "''${TERM:-}" != dumb ]]; then' >> "$out"
-      ${pkgs.starship}/bin/starship init zsh --print-full-init >> "$out"
-      echo 'fi' >> "$out"
-    ''}
     ${lib.optionalString config.modules.shell.mise.enable ''
       ${pkgs.mise}/bin/mise activate zsh > "$TMPDIR/mise.zsh"
       # Keep the caller's PATH. The initial exports capture the build environment.
@@ -58,7 +53,8 @@ in
   config = lib.mkIf cfg.enable {
     programs.zsh = {
       enable = true;
-      # plugins.zsh runs compinit, and Starship draws the prompt.
+      # plugins.zsh runs compinit, and config/zsh/config.d/prompt.zsh draws
+      # the prompt.
       enableGlobalCompInit = false;
       promptInit = "";
     };

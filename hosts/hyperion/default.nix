@@ -5,12 +5,9 @@
   system = "aarch64-darwin";
 
   modules = {
-    env.variables.LLM_WIKI_DIR = "$HOME/wiki";
-
     shell = {
       zsh.enable = true;
       nushell.enable = true;
-      starship.enable = true;
       atuin.enable = true;
       yazi.enable = true;
       vcs = {
@@ -47,8 +44,8 @@
 
     apps = {
       claude-desktop.enable = true;
-      ghostty.enable = true;
-      herdr-desktop.enable = true;
+      ghostty.enable = false;
+      herdr-desktop.enable = false;
       tern.enable = true;
       proton-pass = {
         enable = true;
@@ -58,8 +55,8 @@
 
     agents = {
       claude.enable = true;
-      herdr.enable = true;
-      hermes.enable = true;
+      herdr.enable = false;
+      hermes.enable = false;
       omp.enable = true;
       pi.enable = true;
     };
@@ -72,48 +69,48 @@
     # The macOS account on this Mac is "admin", not the default "sol".
     user.name = "admin";
 
-    # CLIs only this Mac needs.
+    # CLIs and apps only this Mac needs.
     hm.home.packages = with pkgs; [
       rage
       yubikey-manager
+      btop
+      coreutils
+      ffmpeg
+      qemu
+      unar
+      xdg-ninja
+      brave
+      chatgpt
+      crossover
+      iina
+      keka
+      obsidian
+      telegram-desktop
+      transmission_4-mac
+      whatsapp-for-mac
     ];
 
-    # Claude, Ghostty and Zed casks come from their modules.
-    homebrew = {
-      brews = [
-        "btop"
-        "coreutils"
-        "ffmpeg"
-        "qemu"
-        "unar"
-        "xdg-ninja"
-      ];
-      casks = [
-        "appcleaner"
-        "bit-slicer"
-        "blender"
-        "brave-browser"
-        "calibre"
-        "chatgpt"
-        "crossover"
-        "cryptomator"
-        "filebot"
-        "iina"
-        "keka"
-        "obsidian"
-        "remnote"
-        "roon"
-        "signal"
-        "spotify"
-        "steam"
-        "tailscale-app"
-        "telegram"
-        "transmission"
-        "whatsapp"
-        "yubico-authenticator"
-        "zotero"
-      ];
-    };
+    # Uninstall formulae and casks that are no longer listed. "zap" would
+    # also delete the files those casks own.
+    homebrew.onActivation.cleanup = "uninstall";
+
+    # No usable aarch64-darwin package for these, except Signal, which stays
+    # on the signed cask. Zotero's package depends on an end-of-life Firefox
+    # ESR. Claude and Zed casks come from their modules.
+    homebrew.casks = [
+      "bit-slicer"
+      "calibre"
+      "cryptomator"
+      # "filebot"
+      "remnote"
+      # "roon"
+      "signal"
+      # "spotify"
+      "tailscale"
+      "steam"
+      "yubico-authenticator"
+      "zotero"
+    ];
 
     # nix-darwin's own state version, not a NixOS release.
     system.stateVersion = 6;

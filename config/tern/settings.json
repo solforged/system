@@ -2,7 +2,13 @@
   "theme": "System",
   "copy_on_select": true,
   "opacity": 90,
+  "shell": "nu",
   "prompt_style": "tern",
+  "prompt_parts": {
+    "frame": "rounded",
+    "char": "lambda",
+    "dir": "full"
+  },
   "msaa": "2x",
   "git": {
     "pull_mode": "Rebase",
