@@ -1,0 +1,57 @@
+---
+description: Fix chosen findings from a clickaround or audit, re-verify them, and commit without publishing
+---
+
+Fix the findings the user chose, prove each fix in the running app, and commit
+the result. Do not push or land unless this invocation says so.
+
+The arguments at the end name the findings: numbers or ids, ranges, `all`, or
+`all but N`, and optionally the report path. Without a path, use the findings
+report from this session, otherwise the newest `report.md` in the repo's design
+folder under `~/Documents`. If the numbers could refer to more than one report,
+ask. Decisions in the same message ("portrait only for now", "keep the fold at
+860") are binding; record them as settled and do not reopen them.
+
+Out of scope unless this invocation asks for it: pushing, landing, shipping, and
+findings the user did not pick. Changes to app-wide defaults, stored data
+formats, migrations, or public APIs need the user's approval first; list them
+rather than making them.
+
+Before editing:
+
+1. Read the report entries in full, the repo's AGENTS.md, and the
+   repository-local and global skills for this project's fix fan-out, smoke
+   tests, and landing. Check `.agents/skills` and existing `.omp/skills`.
+2. Order the work: data loss first, then root causes shared by several findings,
+   then the report's suggested order.
+3. List peer sessions with the intercom tool. When the shared tree is dirty or a
+   peer is active, work in a fresh worktree from upstream, following the
+   worktree rules in AGENTS.md.
+
+Fixing:
+
+- Fix a handful yourself. For more, fan out fix lanes in one batch with disjoint
+  file ownership. The contract gives each lane its findings in full, its owned
+  paths, any cross-lane API published up front so callers can code against it,
+  and these rules: edit only, no builds, tests, or commits; one failing-before,
+  passing-after test for each P0 and P1 where practical; report each id as
+  fixed, partial, or not fixed, with the files changed.
+- Gate once per round with the repo's own check commands. Send each failure back
+  to the lane that owns it rather than patching around it.
+- Re-QA on a fresh build and a fresh data copy, following `/clickaround`'s
+  isolation rules: rerun each finding's steps and mark it fixed, partial, still
+  broken, or regressed, and list anything new. Forward items to their owners and
+  repeat until nothing is still broken or regressed, or what remains needs the
+  user's decision.
+
+Finish:
+
+- Commit in logical area commits under the `/commit-groups` rules: only your own
+  hunks, the AGENTS.md message style, and signed if the repo signs.
+- If this invocation says land or ship, continue with `/land`.
+- Report a table `# | Status | Commit | Change`, the checks you actually ran,
+  items deferred and why, and the decisions you took.
+- Stop your services and browsers, and remove your data copies, scratch
+  worktrees, and lane branches once their work is committed.
+
+Findings from the user: $ARGUMENTS

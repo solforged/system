@@ -1,16 +1,13 @@
 modelRoles:
   smol: anthropic/claude-haiku-5-5:high
-  plan: anthropic/claude-opus-5-5:high
-  commit: anthropic/claude-haiku-5-5:low
-  task: anthropic/claude-sonnet-5-5:high
-  slow: anthropic/claude-opus-5-5:xhigh
-  tiny: anthropic/claude-haiku-5-5:low
-  vision: anthropic/claude-sonnet-5-5:high
-  memory: anthropic/claude-sonnet-5-5:high
-  default: anthropic/claude-opus-5-5:high
-  advisor: anthropic/claude-opus-5-5:high
-  widget: anthropic/claude-haiku-5-5:low
-  judge: anthropic/claude-opus-5-5:high
+  plan: openai-codex/gpt-6-astra:high
+  commit: openai-codex/gpt-6-luna:high
+  task: openai-codex/gpt-6.1-sol:auto
+  slow: openai-codex/gpt-6-astra:high
+  tiny: openai-codex/gpt-6-luna:auto
+  vision: openai-codex/gpt-6.1-sol:auto
+  memory: openai-codex/gpt-6-luna:high
+  default: openai-codex/gpt-6.1-sol:xhigh
 disabledProviders:
   - ollama
   - vllm
@@ -73,15 +70,14 @@ autocompleteMaxVisible: 15
 composer:
   shape: claude
   tokenRate: true
-defaultThinkingLevel: medium
+defaultThinkingLevel: auto
 spelling:
   typoDetection: false
   autocomplete: "off"
 isolation:
   backend: auto
 retry:
-  fallbackChains:
-    {}
+  fallbackChains: {}
 codexResets:
   autoRedeem: "yes"
 sharpshooter:
@@ -135,3 +131,4 @@ modelPresets:
 skills:
   enableSkillCommands: false
 skillful: false
+expandThinkingBlocks: true
