@@ -44,7 +44,7 @@ and documentation guidelines.
 - [System maintenance](docs/maintenance.md): bootstrap, rebuilds, updates and garbage collection.
 - [Desktop](docs/desktop.md): GNOME, Tern, Solforge themes, monitor brightness and fingerprints.
 - [Agent tools](docs/agents.md): omp, Herdr and Claude Desktop.
-- [Wiki](docs/wiki.md): `/wiki` commands and the draft inbox.
+- [Wiki](docs/wiki.md): how the omp-wiki checkout is linked in.
 - [Hermes sandbox](docs/hermes-sandbox.md): mounts, signing and security boundaries.
 - [Local inference](modules/nixos/ai/README.md): enable and operate llama.cpp or Ollama.
 - [Secrets and keys](docs/secrets.md): agenix, Proton Pass and SSH access.
