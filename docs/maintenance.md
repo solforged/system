@@ -1,8 +1,8 @@
 # System maintenance
 
-`nh` is installed on every host. `NH_FLAKE` points to the live checkout configured
-by `modules.dotfiles.dir`, so commands work from any directory and select the
-local hostname.
+`nh` is installed on every host. `NH_FLAKE` points to the live checkout
+configured by `modules.dotfiles.dir`, so commands work from any directory and
+select the local hostname.
 
 For the first activation, before `nh` is installed:
 
@@ -24,9 +24,9 @@ nix fmt                  # nixfmt-tree
 nix build .#installer-iso # amarna installer
 ```
 
-Run `nh` as your normal user; it elevates privileges when needed. Home Manager is
-part of the system activation, so no separate `nh home switch` is needed.
-On NixOS, `nh clean` runs weekly with a 14-day retention window and removes stale
+Run `nh` as your normal user; it elevates privileges when needed. Home Manager
+is part of the system activation, so no separate `nh home switch` is needed. On
+NixOS, `nh clean` runs weekly with a 14-day retention window and removes stale
 gcroots. Determinate Nix manages garbage collection on Macs.
 
 New files must be `git add`ed before the flake can see them.

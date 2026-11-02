@@ -59,8 +59,8 @@ Manager is part of the system build, not a separate activation. See
 
 ## Documentation
 
-Keep READMEs as entry points: what the component is, how to install or enable it,
-how to develop it, and links to important docs. Put operational procedures,
+Keep READMEs as entry points: what the component is, how to install or enable
+it, how to develop it, and links to important docs. Put operational procedures,
 option reference and troubleshooting in topic guides under `docs/`, linked from
 the relevant README. Update the existing guide rather than adding a feature
 section to a README. Keep current model selections and other configuration

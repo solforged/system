@@ -11,13 +11,12 @@
 - **SSH keys** live in Proton Pass. `user.sshKeys` in
   `modules/common/default.nix` lists each host's public key. Every key
   authorizes SSH logins, and each host signs commits with its own key.
-  `user.agentSigningKeys` lists keys that sandboxed agents sign with; Git
-  trusts them for signatures only and no host accepts them for logins. The
-  Hermes key lives alone in the `Hermes` vault.
-  `modules.apps.proton-pass.sshAgent` runs `pass-cli ssh-agent` on
-  `~/.ssh/proton-pass-agent.sock`; run `pass-cli login` once per host. On
-  NixOS, the CLI uses GNOME Keyring's persistent Secret Service (`dbus`), not
-  the default kernel keyring that is cleared on reboot.
+  `user.agentSigningKeys` lists keys that sandboxed agents sign with; Git trusts
+  them for signatures only and no host accepts them for logins. The Hermes key
+  lives alone in the `Hermes` vault. `modules.apps.proton-pass.sshAgent` runs
+  `pass-cli ssh-agent` on `~/.ssh/proton-pass-agent.sock`; run `pass-cli login`
+  once per host. On NixOS, the CLI uses GNOME Keyring's persistent Secret
+  Service (`dbus`), not the default kernel keyring that is cleared on reboot.
 - **SSH access.** amarna accepts inbound SSH only on `tailscale0`; connect
   through the tailnet. Password, keyboard-interactive and root login are
   disabled.

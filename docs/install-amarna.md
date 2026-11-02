@@ -1,8 +1,8 @@
 # Installing amarna
 
 amarna installs from a custom image built by `nix build .#installer-iso`. The
-stock NixOS image isn't enough: amarna's only network is MT7927 Wi-Fi, and
-that driver isn't in the standard kernel. The image adds:
+stock NixOS image isn't enough: amarna's only network is MT7927 Wi-Fi, and that
+driver isn't in the standard kernel. The image adds:
 
 - the MT7927 driver on the kernel `modules.hardware.mt7927` pins;
 - NetworkManager (`nmtui`) and the CUDA binary caches;
@@ -12,18 +12,17 @@ that driver isn't in the standard kernel. The image adds:
 
 ## The Ventoy stick
 
-| Path | Contents |
-|---|---|
-| `iso/nixos-system-installer.iso` | The installer image |
-| `ventoy/ventoy.json` | `{ "control": [ { "VTOY_LINUX_REMOUNT": "1" } ] }`, so the booted image can mount the stick |
-| `amarna/backup.tar.age` | Host SSH key and `/var/lib/sbctl`, passphrase-encrypted |
-| `amarna/system.bundle` | `git bundle create system.bundle main`, cloned to `~/src/system` |
-| `amarna/qwen3.8-27b-q8_0.gguf` | Model for `modules.ai.llama` |
+| Path                             | Contents                                                                                    |
+| -------------------------------- | ------------------------------------------------------------------------------------------- |
+| `iso/nixos-system-installer.iso` | The installer image                                                                         |
+| `ventoy/ventoy.json`             | `{ "control": [ { "VTOY_LINUX_REMOUNT": "1" } ] }`, so the booted image can mount the stick |
+| `amarna/backup.tar.age`          | Host SSH key and `/var/lib/sbctl`, passphrase-encrypted                                     |
+| `amarna/system.bundle`           | `git bundle create system.bundle main`, cloned to `~/src/system`                            |
+| `amarna/qwen3.8-27b-q8_0.gguf`   | Model for `modules.ai.llama`                                                                |
 
-Only the image and `ventoy.json` are required. Without the backup, the new
-host key has to be added to `secrets/agenix-rules.nix` and the secrets
-rekeyed. Without the bundle, `~/src/system` is a copy of the flake with no
-history.
+Only the image and `ventoy.json` are required. Without the backup, the new host
+key has to be added to `secrets/agenix-rules.nix` and the secrets rekeyed.
+Without the bundle, `~/src/system` is a copy of the flake with no history.
 
 ## Before wiping
 
@@ -53,44 +52,43 @@ It:
 2. Mounts the stick at `/run/ventoy`. If `backup.tar.age` is missing, it asks
    before continuing.
 3. Asks you to type `ERASE`, then runs disko, which asks for the new LUKS
-   passphrase. Layout: an ESP, plus LUKS2 holding btrfs subvolumes `@`,
-   `@home`, `@nix` and `@log` (`hosts/amarna/disko.nix`).
+   passphrase. Layout: an ESP, plus LUKS2 holding btrfs subvolumes `@`, `@home`,
+   `@nix` and `@log` (`hosts/amarna/disko.nix`).
 4. Restores the backup into `/mnt`, then runs `nixos-install`.
-5. Sets the password for `sol`, clones the bundle to `~/src/system`, and
-   copies the model to `/var/lib/llama-models`.
+5. Sets the password for `sol`, clones the bundle to `~/src/system`, and copies
+   the model to `/var/lib/llama-models`.
 
 ## After the first boot
 
 1. `pass-cli login`, which starts the SSH agent
    (`systemctl --user status proton-pass-ssh-agent`). NixOS configures the
-   persistent desktop keyring with `PROTON_PASS_LINUX_KEYRING=dbus`; on an
-   older installer, export that variable before logging in. Approve any
-   desktop keyring prompt locally, never copy the admin key into the shell.
-2. **Secrets, if the host key was not restored.** The generated host key
-   differs from the recipient in the flake, so the first activation cannot
-   decrypt Berkeley Mono or the Git scan policy. From `~/src/system`:
+   persistent desktop keyring with `PROTON_PASS_LINUX_KEYRING=dbus`; on an older
+   installer, export that variable before logging in. Approve any desktop
+   keyring prompt locally, never copy the admin key into the shell.
+2. **Secrets, if the host key was not restored.** The generated host key differs
+   from the recipient in the flake, so the first activation cannot decrypt
+   Berkeley Mono or the Git scan policy. From `~/src/system`:
 
    - For an older image's read-only flake copy, run `chmod -R u+w ~/src/system`.
    - Read `/etc/ssh/ssh_host_ed25519_key.pub` and replace only the `amarna`
      recipient in `secrets/agenix-rules.nix`. Keep the admin and other hosts.
-   - Run `secrets-rekey` as your normal user, then `nh os switch`.
-     Rekeying alone does not install decrypted files; activation does.
+   - Run `secrets-rekey` as your normal user, then `nh os switch`. Rekeying
+     alone does not install decrypted files; activation does.
    - Run `fc-cache -f ~/.local/share/fonts` and verify
-     `fc-match 'Berkeley Mono Variable'`.
-     Check that these files are nonempty and readable without printing them:
+     `fc-match 'Berkeley Mono Variable'`. Check that these files are nonempty
+     and readable without printing them:
      `~/.local/share/fonts/Berkeley Mono Variable.otf`,
      `/run/agenix/gitleaks-policy`, `/run/agenix/gitleaks-allowlist`, and
      `/run/agenix/gitleaks-work-remote`.
-   - Save the changed rules and encrypted files in Git once a real checkout
-     is restored. The fallback copy from the image has no Git history.
+   - Save the changed rules and encrypted files in Git once a real checkout is
+     restored. The fallback copy from the image has no Git history.
 
-   `git-work-identity.age` is intentionally admin-only and is not activated
-   on amarna.
+   `git-work-identity.age` is intentionally admin-only and is not activated on
+   amarna.
 3. Secure Boot: set `security.secureboot.sign = true` in `hosts/amarna`, run
-   `nh os boot --install-bootloader`,
-   check `sudo sbctl verify`, then turn Secure Boot back on in firmware. If
-   the firmware keys were reset, enroll them with
-   `sbctl enroll-keys --microsoft --tpm-eventlog` from Setup Mode.
+   `nh os boot --install-bootloader`, check `sudo sbctl verify`, then turn
+   Secure Boot back on in firmware. If the firmware keys were reset, enroll them
+   with `sbctl enroll-keys --microsoft --tpm-eventlog` from Setup Mode.
 4. `fprintd-enroll` for the fingerprint reader and `pamu2fcfg` for security
    keys.
 5. Compare `hosts/amarna/hardware.nix` against
@@ -98,8 +96,8 @@ It:
 
 ## Testing the image
 
-The image can be booted in QEMU with OVMF. Use the graphical console: GRUB
-boots with `terminal_output console`, so a serial console shows nothing.
+The image can be booted in QEMU with OVMF. Use the graphical console: GRUB boots
+with `terminal_output console`, so a serial console shows nothing.
 
 ```sh
 qemu-system-x86_64 -enable-kvm -m 4096 -smp 4 \

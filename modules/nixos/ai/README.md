@@ -1,7 +1,7 @@
 # Local inference
 
-NixOS modules for NVIDIA-backed llama.cpp inference and optional Ollama.
-Amarna runs Qwen 3.8 27B with on-demand 64k and 256k context services.
+NixOS modules for NVIDIA-backed llama.cpp inference and optional Ollama. Amarna
+runs Qwen 3.8 27B with on-demand 64k and 256k context services.
 
 ## Setup
 
@@ -16,8 +16,10 @@ modules.ai.llama = {
 modules.services.tailscale.enable = true;
 ```
 
-Apply the host configuration, then [install the model weights](../../../docs/local-inference.md#model-weights).
-Weights are mutable data outside the Nix store; activation does not download them.
+Apply the host configuration, then
+[install the model weights](../../../docs/local-inference.md#model-weights).
+Weights are mutable data outside the Nix store; activation does not download
+them.
 
 Start a service when needed; stop it to release VRAM:
 
@@ -27,7 +29,8 @@ sudo systemctl stop qwen-256k
 ```
 
 Neither service starts at boot by default. For API model IDs, endpoints, boot
-settings, Ollama and CUDA caches, see the [operations guide](../../../docs/local-inference.md).
+settings, Ollama and CUDA caches, see the
+[operations guide](../../../docs/local-inference.md).
 
 ## Develop
 

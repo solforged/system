@@ -13,19 +13,18 @@ window, including input and generated output.
 | 256k (262,144 tokens) | `qwen-256k`    | `qwen3.8-27b-256k` | `127.0.0.1:8081` | No             |
 
 OMP shows **Qwen 3.8 27B (256k context)** through the local `llama.cpp` provider
-or the remote `amarna` provider. Both connect to the same 256k service.
-Other API clients should use the model IDs above.
+or the remote `amarna` provider. Both connect to the same 256k service. Other
+API clients should use the model IDs above.
 
 Neither service starts at boot, so the GPU stays free until a model is needed.
-Start one with `sudo systemctl start qwen-256k` (or `qwen-64k`) and stop it
-with `sudo systemctl stop qwen-256k` to release its VRAM. Set
+Start one with `sudo systemctl start qwen-256k` (or `qwen-64k`) and stop it with
+`sudo systemctl stop qwen-256k` to release its VRAM. Set
 `modules.ai.llama.start256k` or `start64k` to load a model at boot instead.
-These are system units, not user units. Both keep one inference slot,
-Flash Attention, full GPU offload, Jinja templates and preserved reasoning.
-Multi-token prediction (MTP) accelerates generation with two-token drafts;
-it is an inference setting, not a separate model variant.
-Both services can fit the 96 GB GPU together, but their combined VRAM use is
-substantial.
+These are system units, not user units. Both keep one inference slot, Flash
+Attention, full GPU offload, Jinja templates and preserved reasoning.
+Multi-token prediction (MTP) accelerates generation with two-token drafts; it is
+an inference setting, not a separate model variant. Both services can fit the 96
+GB GPU together, but their combined VRAM use is substantial.
 
 The package is nixpkgs `llama-cpp-cuda`, not an Ollama runner. The locked
 llama.cpp 0.6.0 source implements
@@ -62,21 +61,20 @@ The server fails visibly until its model is present.
 
 ## Tailnet endpoint
 
-`modules.ai.llama.tailscaleServe.enable` manages
-`qwen-tailscale-serve.service`. It sets up tailnet-only HTTPS on port 443,
-proxying to `127.0.0.1:8081`. The handler does not start `qwen-256k`; requests
-fail until that service runs. It never enables Funnel and does not open inference
-ports in the host firewall. On amarna, clients use
-`https://amarna.ussuri-alphard.ts.net/v1`.
+`modules.ai.llama.tailscaleServe.enable` manages `qwen-tailscale-serve.service`.
+It sets up tailnet-only HTTPS on port 443, proxying to `127.0.0.1:8081`. The
+handler does not start `qwen-256k`; requests fail until that service runs. It
+never enables Funnel and does not open inference ports in the host firewall. On
+amarna, clients use `https://amarna.ussuri-alphard.ts.net/v1`.
 
 Authenticate the NixOS host with Tailscale and enable HTTPS certificates for the
 tailnet before starting this unit. Hostname and tailnet DNS determine the
 certificate name; keep the node name `amarna` for existing clients. This unit
 owns the root HTTPS handler on port 443. Do not configure another Serve
-application at that address. Stopping or disabling the unit removes that
-handler without resetting unrelated Serve configuration. Switching between
-Ollama and Qwen leaves the handler in place.
-The endpoint has no application API key. Tailnet access policy controls access.
+application at that address. Stopping or disabling the unit removes that handler
+without resetting unrelated Serve configuration. Switching between Ollama and
+Qwen leaves the handler in place. The endpoint has no application API key.
+Tailnet access policy controls access.
 
 ## Optional Ollama
 
@@ -98,11 +96,13 @@ nix-community. Cache hits depend on the locked nixpkgs revision. Keep the
 standard package variants rather than narrowing CUDA architectures per host,
 which would change their store paths.
 
-The new cache settings take effect only after activation. For the initial
-build, pass `--option extra-substituters
-'https://nix-community.cachix.org https://cache.nixos-cuda.org'` and
+The new cache settings take effect only after activation. For the initial build,
+pass
+`--option extra-substituters
+'https://nix-community.cachix.org https://cache.nixos-cuda.org'`
+and
 `--option extra-trusted-public-keys
 'nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs=
-cache.nixos-cuda.org:74DUi4Ye579gUqzH4ziL9IyiJBlDpMRn9MBN8oNan9M='` to Nix.
-A missing substitute still requires a build; these caches do not guarantee
-that every revision is available.
+cache.nixos-cuda.org:74DUi4Ye579gUqzH4ziL9IyiJBlDpMRn9MBN8oNan9M='`
+to Nix. A missing substitute still requires a build; these caches do not
+guarantee that every revision is available.
