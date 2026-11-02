@@ -15,6 +15,20 @@ Update the extension's pin with `nix flake update omp-intercom`, then rebuild.
 
 For notes and background drafting, see the [wiki guide](wiki.md).
 
+## Shared agent policy
+
+[`config/agents/AGENTS.md`](../config/agents/AGENTS.md) owns shared style,
+worktree, cleanup, and intercom rules. Nix links OMP and Pi directly to it;
+`config/omp/AGENTS.md` remains a compatibility symlink for existing activations.
+Switch once to install the new links. Later policy edits need only a Pi reload
+or OMP restart, not a rebuild.
+
+Session worktrees default to
+`${XDG_STATE_HOME:-$HOME/.local/state}/agent-worktrees/<repo-key>/<unique-task>`.
+Harness-managed worker paths stay unchanged, with review and cleanup owned by
+the parent session. This is an instruction policy, not automatic provisioning
+or garbage collection.
+
 ## Herdr
 
 Both options are enabled on amarna and hyperion:

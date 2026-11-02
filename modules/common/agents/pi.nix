@@ -35,6 +35,7 @@ in
   config = lib.mkIf cfg.enable {
     # ~/.config/pi/agent rather than ~/.pi/agent. Set in a wrapper because
     # omp reads PI_CODING_AGENT_DIR too.
+    modules.dotfiles.configLink."pi/agent/AGENTS.md" = "agents/AGENTS.md";
     hm.xdg.configFile = lib.mkIf cfg.herdrTuiIntegration.enable {
       "pi/agent/extensions/herdr-agent-state.ts".source =
         "${herdrPiIntegration}/extensions/herdr-agent-state.ts";
