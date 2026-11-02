@@ -51,6 +51,13 @@ binary. Tern may log read-only registration warnings; the managed entries
 already provide those launch commands. An existing login entry is migrated
 without enabling autostart. The writable settings merge is unchanged.
 
+The shell environment preserves an inherited `ZDOTDIR`, including Tern's
+temporary shell-integration directory. PAM still supplies `~/.config/zsh` as the
+login default. Overwriting `ZDOTDIR` in `/etc/zshenv` skips Tern's hooks in
+cold-started terminals, leaving Starship in place of the native prompt.
+After changing this configuration, run `nh os switch` and open a fresh terminal;
+existing shells keep the startup hooks they already loaded.
+
 ## Solforge themes
 
 amarna enables `modules.desktop.solforge.enable` alongside GNOME. The module in
