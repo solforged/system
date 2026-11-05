@@ -19,6 +19,7 @@ Never touch:
 - Uncommitted or unpushed work.
 - Backup refs (`refs/backup/*`, `backup/*` bookmarks) and stashes.
 - Anything a managed skill marks as another session's or as a durable cache.
+- Existing material under `~/Documents`; it is not a migration or cleanup target.
 
 Survey:
 
@@ -32,9 +33,19 @@ Survey:
    and mark it orphaned (its session has ended) or live.
 3. `/tmp` and caches, using the managed skill `prune-tmp-and-user-caches-macos`
    (the survey steps apply on Linux too). Record sizes, ages, and references
-   from running processes or from skills. Before anything is deleted, move items
-   with no other copy, such as reports, evidence, SHA maps, and one-off tools,
-   to `~/Documents/<area>/`.
+   from running processes or from skills. Identify genuinely unique durable
+   items before proposing deletion: reports and their cited evidence, editable
+   mockup sources/assets, selected plates, or useful SHA maps and one-off tools
+   with no other copy. Do not promote every diagnostic capture, retry, or
+   intermediate render; preserve unfinished work on interruption.
+4. Propose salvage into a new dated run at
+   `~/artifacts/<project>/<YYYY-MM-DD>-<topic>/`, unless the user supplies a
+   destination. Use the stable project name, not a worktree name; never
+   overwrite an existing run or evidence. Follow AGENTS.md's artifact policy:
+   place report-cited evidence in `evidence/`, editable mockups/assets in
+   `mockups/`, and selected captioned renders in `plates/`, creating only
+   relevant directories. Preserve report/gallery relative links when salvaging.
+   Include the exact salvage sources and destinations in the approval list.
 
 Report one table per category, `item | state | evidence | action`, with sizes,
 then ask for approval of the exact list.
@@ -47,7 +58,12 @@ After approval:
 - Delete branches with `git branch -d`. Use `-D` only for branches proven landed
   by rebase or cherry-pick, and say which ones. Delete remote branches only when
   they have landed and the approval names them.
-- Delete the approved paths, then run `git worktree prune`.
+- Before deleting approved paths, durably preserve the approved unique items
+  and all cited evidence, required mockup sources/assets, and selected plates.
+  If required material cannot be preserved, skip that deletion. Delete only the
+  approved paths, then run `git worktree prune`. This session's own temporary
+  captures may be removed without approval only after the same preservation
+  rule is satisfied; never remove another session's unapproved captures.
 - Report sizes before and after, where salvaged items went, and what you skipped
   and why.
 

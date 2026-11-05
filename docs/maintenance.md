@@ -33,3 +33,32 @@ New files must be `git add`ed before the flake can see them.
 
 For the private theme input and host credentials, see
 [secrets and keys](secrets.md).
+
+## Package channels and binary caches
+
+Linux hosts use `nixos-unstable` through the `nixpkgs` input. Macs use
+`nixpkgs-unstable` through `nixpkgs-darwin`, since that channel's release gate
+includes Darwin tests. Both use the official `cache.nixos.org` binary cache.
+
+Nix needs a cached copy of the exact derivation, not just the same package
+version. A channel update or a local package override can select an uncached
+derivation, requiring a source build and its tests. The Darwin-tested channel
+reduces that risk; it does not guarantee that every package is cached.
+
+To update only the Mac package set and check the build before activation:
+
+```sh
+nix flake update nixpkgs-darwin
+nh darwin build
+nh darwin switch
+```
+
+## Hermes on macOS
+
+`modules.agents.hermes.enable` installs both the CLI and desktop app. It is
+enabled on hyperion. After `nh darwin switch`, Home Manager places the app at
+`~/Applications/Home Manager Apps/Hermes.app`.
+
+Disabling the module removes both packages and the app on the next switch.
+Hermes' configuration and conversation data remain in `~/.hermes`; re-enabling
+the module does not require resetting that directory.
