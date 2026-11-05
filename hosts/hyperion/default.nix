@@ -56,7 +56,7 @@
     agents = {
       claude.enable = true;
       herdr.enable = false;
-      hermes.enable = false;
+      hermes.enable = true;
       omp.enable = true;
       pi.enable = true;
     };
@@ -98,9 +98,10 @@
     # on the signed cask. Zotero's package depends on an end-of-life Firefox
     # ESR. Claude and Zed casks come from their modules.
     homebrew.casks = [
-      "bit-slicer"
+      "1password"
       "calibre"
       "cryptomator"
+      "raycast"
       # "filebot"
       "remnote"
       # "roon"
