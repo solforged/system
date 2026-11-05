@@ -10,8 +10,11 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
 
+    # The nixpkgs-unstable channel tests Darwin; nixos-unstable gates Linux.
+    nixpkgs-darwin.url = "github:nixos/nixpkgs/nixpkgs-unstable";
+
     nix-darwin.url = "github:nix-darwin/nix-darwin";
-    nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
+    nix-darwin.inputs.nixpkgs.follows = "nixpkgs-darwin";
 
     # Determinate Nix owns /etc/nix/nix.conf and the daemon on Macs; this
     # module writes nix.custom.conf and turns off nix-darwin's Nix management.
@@ -35,6 +38,9 @@
     # Coding agents. Its nixpkgs is left unfollowed so store paths match
     # cache.numtide.com; see modules/common/agents/cache.nix.
     llm-agents.url = "github:numtide/llm-agents.nix";
+
+    # Hermes' upstream flake tracks main for both the CLI and desktop app.
+    hermes-agent.url = "github:NousResearch/hermes-agent/main";
 
     omp-intercom.url = "github:solforged/omp-intercom";
     omp-intercom.flake = false;
