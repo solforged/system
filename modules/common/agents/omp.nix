@@ -44,6 +44,7 @@ in
       "omp/agent/models.yml" = "omp/models.yml";
       "omp/agent/AGENTS.md" = "agents/AGENTS.md";
       "omp/agent/TITLE_SYSTEM.md" = "omp/TITLE_SYSTEM.md";
+      "omp/agent/extensions/nous-portal.ts" = "omp/extensions/nous-portal.ts";
     }
     # Slash commands from config/omp/commands. /wiki links into the omp-wiki
     # checkout below.
