@@ -78,3 +78,39 @@
   `git worktree remove` without force. Delete owned branches only when their
   tips are integrated, using `git branch -d`. Retain unfinished work and report
   its path, branch, and next owner; never prune others' work.
+
+## UI audit and mockup artifacts
+
+- Apply this policy to UI audits and mockups, including work without a slash
+  command. It overrides older skill advice about output locations or keeping
+  every render, but leaves project build and isolation recipes unchanged.
+- Default each new run to `~/artifacts/<project>/<YYYY-MM-DD>-<topic>/`, using
+  the stable repository/project name, not an ephemeral worktree name. An explicit
+  user destination wins. Choose a fresh path if the run already exists; never
+  overwrite a prior run.
+- Create only relevant output: `evidence/` for report-cited finding evidence;
+  `mockups/` for editable HTML/CSS/SVG and required assets; `plates/` for selected
+  captioned renders; `report.md` for severity-ordered findings; and `index.html`
+  for editorial reading order when there are visual deliverables. Use relative
+  links within durable output. Keep stable finding IDs and severity ordering
+  distinct from gallery order.
+- Keep diagnostic screenshots, retries, and intermediate states in a task-owned
+  temporary directory. Inspect freely; persist selectively. Retain one canonical
+  image per finding (findings may share one), with extras only when transitions,
+  themes, or viewports add evidence. Verifiers record results and reuse existing
+  evidence; retain their captures only when different evidence matters.
+- Preserve editable alternatives, not every render. An ordinary design story
+  aims for 4–8 reader-facing plates, not a hard limit or a cap on necessary audit
+  evidence. Order retrospective galleries as problem → alternatives considered →
+  chosen direction → implemented result → remaining questions, including only
+  stages that exist; never invent implementation. Use numbered descriptive
+  filenames and captions explaining changes and reasons. Distinguish mockups
+  from the running app; match viewport, theme, and data state in before/after
+  comparisons.
+- Preserve existing artifacts; do not migrate or clean them up under this policy.
+  Leave `~/Documents` material untouched; use it by explicit path only, never as
+  a default discovery fallback. Discover new reports under `~/artifacts/<project>/`.
+  Remove only current-session-owned temporary captures, and only after all cited
+  evidence, mockup sources, and selected plates are durably preserved. Retain
+  unfinished work on interruption. This is an instruction policy, not automatic
+  provisioning, migration, or garbage collection.

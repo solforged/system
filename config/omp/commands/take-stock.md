@@ -24,7 +24,11 @@ Gather in one parallel batch:
   happened, and the same deferred step across several recaps is the real
   blocker. For "where were we on <topic>", find the sessions that last worked on
   it and use the `seance` agent for what they concluded.
-- Recent design, QA, and audit reports for this repo under `~/Documents`.
+- Recent design, QA, and audit reports (`report.md`, and visual `index.html`
+  galleries) and editable mockups under `~/artifacts/<project>/`, using the
+  stable repository/project name, not an ephemeral worktree name. Explicit
+  report/mockup paths or artifact destinations supplied by the user take
+  precedence; do not fall back to a legacy discovery location.
 - The repo's quick gate, run asynchronously while you read. Rerun a failure
   alone before calling it a regression.
 - The managed skill `repo-backlog-review`, which has project probes for Tessera,

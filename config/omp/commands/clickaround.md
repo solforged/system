@@ -44,36 +44,57 @@ Finding:
   and add one code-led lane on the shared primitives (popups, menus, pickers,
   editors) that confirms each suspicion in the running app. Write one contract
   file that every lane reads: build, data copy, port and profile per lane,
-  driving recipes, report format, and the rule that finder lanes edit nothing.
+  driving recipes, report format, the artifact run and task-owned temporary
+  capture directory, and the rule that finder lanes edit no app files. Assign
+  evidence paths per lane so lanes cannot overwrite one another.
 - Record each finding with an id (`<Lane>-N`), title, severity (P0 data loss or
   crash, P1 broken flow, P2 wrong or confusing, P3 polish), kind (bug, UX,
   visual, performance, accessibility), platform and viewport, steps, expected,
-  actual, a screenshot path, the suspected cause as `file:line`, and a fix idea.
-  Lanes write findings to disk as they go.
+  actual, evidence path, the suspected cause as `file:line`, and a fix idea.
+  Lanes write findings to disk as they go. Capture and inspect freely in their
+  owned temporary directories; when an image is useful, promote one canonical
+  image per finding to `evidence/` (findings may share one). Keep extra images
+  only when transitions, themes, or viewports add evidence, not every shot or retry.
 - Push for depth: keys typed while an async pick or save is pending, rapid
   repeats, undo straight after a commit, reload mid-operation, narrow and wide
   viewports, both themes, empty and very large data. A lane that returns one or
   two findings gets a harder second round.
 - Verify before reporting. Independent verifier lanes, or you when working
   alone, reproduce every P0 and P1 and any doubtful item on a fresh data copy
-  and mark it confirmed, partial, not reproduced, or duplicate. Move
-  unreproduced items to an appendix.
+  and mark it confirmed, partial, not reproduced, or duplicate. Verifiers record
+  their results and reuse finder evidence; persist their own captures only when
+  they add different evidence. Move unreproduced items to an appendix.
 
 Report:
 
-- Write `report.md` and the screenshots to the repo's existing design folder
-  under `~/Documents` (for example `~/Documents/tessera-design`), otherwise
-  `~/Documents/<repo>-design`, in a `<YYYY-MM-DD>-<slug>` subfolder.
-- Order: data loss and crashes, then regressions with the causing commit when
-  known, then one table per surface:
-  `# | Spot (shot) | What I saw | Proposal | Sev`, numbered across the whole
-  report so the user can answer "fix 1, 4, 9". End with a suggested fix order,
-  biggest wins first, and the one to three questions only the user can answer.
+- Follow AGENTS.md's shared artifact policy. Unless the user gives a destination,
+  create a new run at `~/artifacts/<project>/<YYYY-MM-DD>-<topic>/`, using the
+  stable repository/project name, not an ephemeral worktree name. Never
+  overwrite a prior run; choose a distinct run name if the path already exists.
+- Write `report.md` at the run root and report-cited evidence in `evidence/`.
+  For visual deliverables, write `index.html` for editorial order, selected
+  captioned renders in `plates/`, and any editable HTML/CSS/SVG alternatives
+  with required assets in `mockups/`. Create only relevant files/directories.
+  Use relative links and numbered descriptive visual filenames; captions explain
+  what changed and why, and distinguish mockups from the running app.
+- Keep the report severity-ordered: data loss and crashes first, then P1 through
+  P3, noting regressions and causing commits when known. Use
+  `# | ID | Surface (evidence) | What I saw | Proposal | Sev`, with stable finding
+  IDs and report-wide numbers so the user can answer "fix 1, 4, 9". End with a
+  suggested fix order, biggest wins first, and the one to three questions only
+  the user can answer.
+- Gallery order is separate from severity and finding IDs: problem, alternatives
+  considered, chosen direction, implemented result, remaining questions. Include
+  only stages that exist; never imply a mockup was implemented. Aim for 4–8
+  reader-facing plates in an ordinary design story, not a cap on audit evidence.
+  Match viewport, theme, and data state for before/after comparisons.
 - In chat, give counts by severity, the top items, and the report path, then ask
   which numbers to fix.
 
 Cleanup: stop the services and kill the browsers you started (match on your
-profile directories), and remove your data copies and worktrees. Keep the
-screenshots and the report.
+profile directories). Before removing your data copies, worktrees, or owned
+temporary captures, durably preserve all cited evidence, editable mockup
+sources/assets, and selected plates. Remove only this session's temporary
+material; keep unfinished work on interruption and preserve existing artifacts.
 
 Focus from the user: $ARGUMENTS
