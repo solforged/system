@@ -37,13 +37,12 @@
     };
 
     editors = {
-      default = "nvim";
+      default = "ms";
+      mitos.enable = true;
       nvim.enable = true;
-      helix.enable = true;
-      zed.enable = true;
     };
 
-    apps.ghostty.enable = true;
+    apps.rex.enable = true;
 
     # Work-safe agents; the private work flake adds the rest (docs/atlas.md).
     agents = {

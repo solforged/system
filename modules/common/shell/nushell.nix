@@ -114,6 +114,7 @@ in
         loadSessionVariables = true;
       };
       home.packages = with pkgs; [
+        login
         carapace
         fzf
         gum
@@ -121,7 +122,7 @@ in
       ];
       xdg.dataFile."nushell/vendor/autoload".source = autoload;
 
-      # config/ghostty/config.ghostty includes this. nu marks prompts and
+      # config/ghostty/config includes this. nu marks prompts and
       # reports its directory itself, and Ghostty's nu integration only wraps
       # ssh and sudo, which are off by default.
       xdg.configFile."ghostty/shell.ghostty" = lib.mkIf config.modules.apps.ghostty.enable {

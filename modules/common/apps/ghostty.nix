@@ -16,7 +16,7 @@ in
 
   config = lib.mkIf cfg.enable {
     # Link just the config: Home Manager owns the sibling theme files.
-    modules.dotfiles.configLink."ghostty/config.ghostty" = "ghostty/config.ghostty";
+    modules.dotfiles.configLink."ghostty/config" = "ghostty/config";
     hm = hm: {
       xdg.configFile =
         lib.genAttrs

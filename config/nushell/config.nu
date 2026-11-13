@@ -6,7 +6,7 @@
 $env.config.show_banner = false
 $env.config.edit_mode = "vi"
 $env.config.cursor_shape = { vi_insert: line, vi_normal: block }
-$env.config.buffer_editor = "nvim"
+$env.config.buffer_editor = ($env.EDITOR? | default "ms")
 # Unknown commands highlight as errors before you run them.
 $env.config.highlight_resolved_externals = true
 $env.config.use_kitty_protocol = true
@@ -252,7 +252,7 @@ if not $tern_native {
 # --- Aliases ---
 alias grep = grep --color=auto
 
-alias e = nvim
+def --wrapped e [...args] { ^($env.EDITOR? | default "ms") ...$args }
 alias gg = lazygit
 alias gl = glow -t
 

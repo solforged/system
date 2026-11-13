@@ -18,6 +18,9 @@ let
     (configuration.extendModules {
       modules = [
         {
+          # Keep testing the optional Helix migration even though Mitos is
+          # now the host's default editor.
+          modules.editors.helix.enable = true;
           modules.dotfiles.dir = lib.mkForce "/build/solforge-repo";
           hm.home.homeDirectory = lib.mkForce "/build/solforge-home";
         }
@@ -111,7 +114,7 @@ let
         ${pkgs.gnome-shell}/share/gnome-shell/gnome-shell-theme.gresource "$shellCss"
       test -s ${lib.removePrefix "file://" settings."org/gnome/desktop/background".${wallpaperKey}}
       test -s ${home.xdg.configFile."ghostty/themes/solforge-${variant}".source}
-      test -s ${home.xdg.configFile."helix/themes/solforge-${variant}.toml".source}
+      test -s ${home.xdg.configFile."mitos/themes/solforge-${variant}.toml".source}
     '';
   # Waits for the follower to apply MODE's theme after a Style change.
   expectMode = mode: ''

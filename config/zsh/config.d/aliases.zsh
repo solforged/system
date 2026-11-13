@@ -1,6 +1,6 @@
 alias grep='grep --color=auto'
 
-alias e='nvim'
+alias e='${EDITOR:-ms}'
 alias gg='lazygit'
 
 alias cdd="cd $DOTFILES_DIR"

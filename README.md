@@ -48,6 +48,7 @@ and documentation guidelines.
 
 - [System maintenance](docs/maintenance.md): bootstrap, rebuilds, updates and
   garbage collection.
+- [Terminals and editors](docs/terminals.md): Rex, Nushell, Mitos and Neovim.
 - [Desktop](docs/desktop.md): GNOME, Tern, Solforge themes, monitor brightness
   and fingerprints.
 - [Agent tools](docs/agents.md): omp, Herdr and Claude Desktop.

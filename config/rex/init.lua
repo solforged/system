@@ -1,0 +1,3 @@
+-- Rex configuration, linked live by modules/common/apps/rex.nix.
+-- Bind keys with rex.bind and drop defaults with rex.unbind; see
+-- https://www.superlogical.com/rex/docs. Apply with `rex config reload`.

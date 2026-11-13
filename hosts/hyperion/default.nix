@@ -37,17 +37,17 @@
     };
 
     editors = {
-      default = "nvim";
+      default = "ms";
+      mitos.enable = true;
       nvim.enable = true;
-      helix.enable = true;
-      zed.enable = true;
     };
 
     apps = {
+      rex.enable = true;
       claude-desktop.enable = true;
       ghostty.enable = false;
       herdr-desktop.enable = false;
-      tern.enable = true;
+      tern.enable = false;
       # Signing and SSH use this host's own key; see docs/secrets.md.
       proton-pass.enable = true;
     };

@@ -68,10 +68,9 @@
     };
 
     editors = {
-      default = "nvim";
+      default = "ms";
+      mitos.enable = true;
       nvim.enable = true;
-      helix.enable = true;
-      zed.enable = true;
     };
 
     apps = {
