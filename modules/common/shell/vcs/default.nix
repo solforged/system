@@ -58,5 +58,8 @@ in
       hk
       lazygit
     ];
+
+    # The house commit style; agents read it before committing.
+    modules.dotfiles.configLink."git/commit-style.md" = "git/commit-style.md";
   };
 }
