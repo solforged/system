@@ -64,6 +64,8 @@ in
         init.defaultBranch = "main";
         pull.ff = "only";
         pull.rebase = true;
+        # No merge commits, from agents or people: git merge only fast-forwards.
+        merge.ff = "only";
         push.autoSetupRemote = true;
         fetch.prune = true;
         rebase.autoStash = true;
