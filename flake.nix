@@ -40,7 +40,9 @@
     llm-agents.url = "github:numtide/llm-agents.nix";
 
     # Hermes' upstream flake tracks main for both the CLI and desktop app.
+    # Its home-manager only feeds a module this flake does not import.
     hermes-agent.url = "github:NousResearch/hermes-agent/main";
+    hermes-agent.inputs.home-manager.follows = "home-manager";
 
     omp-intercom.url = "github:solforged/omp-intercom";
     omp-intercom.flake = false;
