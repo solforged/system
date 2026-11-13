@@ -93,8 +93,10 @@ in
     ];
 
     # Filled in by ssh-enroll on each host; see docs/secrets.md.
-    user.authKeys = { };
-    user.backupAuthKey = null;
+    user.authKeys = {
+      hyperion = "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAIDKbD8uuk06z37rrhIi5huJb16uewOLCmCLpbufet6u1AAAABHNzaDo= hyperion";
+    };
+    user.backupAuthKey = "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAIJ6/cAxT1/LKMtq98Cgj/dYCsL0z+Q1cr62sT4CsLbuJAAAACnNzaDpiYWNrdXA= backup";
     # The work Mac reaches GitHub but does not log in to personal machines.
     user.sshLoginHosts = [
       "hyperion"
