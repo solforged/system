@@ -23,6 +23,7 @@
     };
 
     dev = {
+      devenv.enable = true;
       python.enable = true;
       node.enable = true;
       go.enable = true;

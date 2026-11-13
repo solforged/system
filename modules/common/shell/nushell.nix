@@ -17,6 +17,38 @@ let
   # Where carapace looks without XDG_CONFIG_HOME (Go's os.UserConfigDir).
   carapaceConfigFallback =
     if pkgs.stdenv.hostPlatform.isDarwin then "Library/Application Support" else ".config";
+  # Home Manager's direnv hook for Nushell, which it would otherwise write
+  # into config.nu (a live link here). PATH arrives as a string and is split
+  # back into a list.
+  direnvHook = pkgs.writeText "direnv.nu" ''
+    $env.config.hooks = ($env.config.hooks? | default {})
+    $env.config.hooks.pre_prompt = (
+      $env.config.hooks.pre_prompt? | default [] | append {||
+        let direnv = (${lib.getExe pkgs.direnv} export json | from json --strict | default {})
+        for key in ($direnv | columns) {
+          if ($direnv | get $key) == null { hide-env --ignore-errors $key }
+        }
+        $direnv
+        | items {|key, value|
+          let value = do (
+            {
+              "PATH": {
+                from_string: {|s| $s | split row (char esep) | path expand --no-symlink }
+                to_string: {|v| $v | path expand --no-symlink | str join (char esep) }
+              }
+            }
+            | merge ($env.ENV_CONVERSIONS? | default {})
+            | get ([[value, optional, insensitive]; [$key, true, true] [from_string, true, false]] | into cell-path)
+            | if ($in | is-empty) { {|x| $x} } else { $in }
+          ) $value
+          return [ $key $value ]
+        }
+        | where {|pair| $pair.1 != null }
+        | into record
+        | load-env
+      }
+    )
+  '';
   autoload = pkgs.runCommand "nushell-autoload" { } ''
     export HOME="$TMPDIR/home"
     mkdir -p "$HOME" "$out"
@@ -32,6 +64,10 @@ let
       ${pkgs.fnox}/bin/fnox activate nu > "$out/fnox.nu"
     ''}
     ${pkgs.zoxide}/bin/zoxide init nushell > "$out/zoxide.nu"
+    ${lib.optionalString config.modules.dev.devenv.enable ''
+      # Sorts after mise.nu, so a project's .envrc layers over mise's tools.
+      cp ${direnvHook} "$out/zz-direnv.nu"
+    ''}
     # The init puts carapace's bin directory first on PATH. Generate it with a
     # placeholder and resolve the directory when nu starts, or PATH keeps the
     # build's home directory.

@@ -21,6 +21,7 @@
     };
 
     dev = {
+      devenv.enable = true;
       personal.enable = true;
       python.enable = true;
       node.enable = true;

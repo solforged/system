@@ -45,6 +45,10 @@ let
       ${pkgs.fnox}/bin/fnox activate zsh >> "$out"
     ''}
     ${pkgs.zoxide}/bin/zoxide init zsh >> "$out"
+    ${lib.optionalString config.modules.dev.devenv.enable ''
+      # Last, so a project's .envrc layers over mise's tools.
+      ${lib.getExe pkgs.direnv} hook zsh >> "$out"
+    ''}
   '';
 in
 {

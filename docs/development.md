@@ -38,7 +38,9 @@ docs/              setup, operations and development guides
 - **Profiles.** `modules.profiles.role` and `modules.profiles.hardware` (strings
   such as `"gpu/nvidia"`) select modules under `modules/nixos/profiles/`.
 - **Language runtimes** come from `modules.dev.{python,node,go,rust,android}`.
-  mise only serves repos that ship a `mise.toml`.
+  Projects bring their own with devenv or a flake `devShell`;
+  `modules.dev.devenv` installs devenv and loads a project's `.envrc` through
+  direnv in zsh and Nushell. mise only serves repos that ship a `mise.toml`.
 
 ## Checks
 
