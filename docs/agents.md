@@ -4,22 +4,21 @@
 
 `modules.agents.omp.enable` installs omp and the
 [`solforged/omp-intercom`](https://github.com/solforged/omp-intercom) extension.
-Both are enabled on amarna and hyperion; atlas keeps personal agents disabled.
-Home Manager links the pinned extension to
-`~/.config/omp/agent/extensions/intercom.ts`, where omp discovers it
-automatically. No separate `omp install` is needed.
+It is enabled on every host; atlas's work-only additions come from the private
+work flake ([atlas](atlas.md)). omp lives in its own home, `~/.omp/agent`. Home
+Manager links the pinned extension to `~/.omp/agent/extensions/intercom.ts`,
+where omp discovers it automatically. No separate `omp install` is needed.
 
 After switching the system configuration, restart omp sessions to load it. Use
 `/intercom list` to find other listening sessions on the same machine. Update
 the extension's pin with `nix flake update omp-intercom`, then rebuild.
 
-For notes and background drafting, see the [wiki guide](wiki.md).
+For the memory wiki, see the [wiki guide](wiki.md).
 
 ### Nous Portal
 
 `config/omp/extensions/nous-portal.ts` adds the `nous` provider through omp's
-native extension API. Home Manager links it into
-`~/.config/omp/agent/extensions/`. It uses the
+native extension API. Home Manager links it into `~/.omp/agent/extensions/`. It uses the
 [Nous Portal OAuth subscription flow](https://hermes-agent.nousresearch.com/docs/integrations/nous-portal),
 not a static API key or a local Hermes proxy. Existing providers and model roles
 are unchanged.
@@ -71,7 +70,7 @@ catalog discovery or a device-code dialog for authenticated inference.
 ### Slash commands
 
 Each command is a prompt file in `config/omp/commands/`, linked into
-`~/.config/omp/agent/commands/` by `modules/common/agents/omp.nix`. Edits apply
+`~/.omp/agent/commands/` by `modules/common/agents/omp.nix`. Edits apply
 to the next omp process. A new file also needs an entry in that module's list
 and a switch. Command directories are not watched, so start a fresh omp process
 after a link is first installed.
@@ -83,6 +82,7 @@ after a link is first installed.
 | `/audit`         | Compares a subject with a spec, docs, or another app; ranked proposals                 | Edit anything                   |
 | `/take-stock`    | Reconciles the board, repo state, and session recaps; next passes in order             | Edit the board                  |
 | `/commit-groups` | Splits uncommitted (or `unpushed`) work into logical signed commits; `plan` to propose | Push, sweep in peers' hunks     |
+| `/review-commits` | Proposes a more logical split of the last N (or all unpushed) commits                 | Rewrite history                 |
 | `/land`          | Rebases, verifies, and lands by the repo's rule (`mise run land` or fast-forward)      | Merge, force-push main, ship    |
 | `/reconcile`     | Brings the checkout up to date with upstream, keeping unique local commits linear      | Push, land, update flake inputs |
 | `/tidy`          | Surveys worktrees, branches, servers, and `/tmp`; deletes an approved list             | Touch live peers' work          |
@@ -94,11 +94,10 @@ read alongside relevant global skills.
 
 ### UI audit and mockup artifacts
 
-The [shared agent policy](../config/agents/AGENTS.md) governs UI audits and
-mockups even when no slash command is invoked. It takes precedence over older
-skill instructions about output locations or retaining every render; project
-build and isolation recipes remain unchanged. An explicit user destination
-overrides the default.
+`/audit`, `/clickaround`, `/fix-findings` and `/tidy` carry this artifact
+policy. It takes precedence over older skill instructions about output
+locations or retaining every render; project build and isolation recipes remain
+unchanged. An explicit user destination overrides the default.
 
 New runs default to `~/artifacts/<project>/<YYYY-MM-DD>-<topic>/`. Use the stable
 repository/project name, not a temporary worktree name, and choose a fresh path
@@ -138,17 +137,16 @@ cited evidence, mockup sources, and selected plates are durably preserved. Keep
 unfinished work on interruption. This policy is an instruction to agents, not an
 automatic provisioning, migration, or cleanup service.
 
-The policy and existing command files are source-linked. Start a new omp process
-to pick up command edits and shared policy changes; Pi can reload its shared
-policy. Existing source-linked files need no Nix rebuild or system switch.
+The command files are source-linked. Start a new omp process to pick up command
+edits; existing source-linked files need no Nix rebuild or system switch.
 
 ### Managed skills
 
-omp writes the skills it learns to `<agent dir>/managed-skills` and has no
-setting to move them. Home Manager links that path to
-`$XDG_DATA_HOME/omp/managed-skills`. On the first switch, an activation step
-moves an existing directory there. It stops instead if both places already hold
-skills.
+omp writes the skills it learns to `~/.omp/agent/managed-skills`, which Home
+Manager leaves alone. Authored skills that Pi and omp share live in
+`config/agents/skills/` and link into `~/.agents/skills/`
+(`modules/common/agents/skills.nix`), beside the memory skill from the wiki
+checkout and the skills Rex and terminal-browser install there.
 
 Keep each procedure in one place: skills point to slash commands for shared
 workflows and to other skills for reusable project recipes. Move dated host,
@@ -167,17 +165,24 @@ ordinary repository content; the managed-skill writer no longer owns them.
 
 ## Shared agent policy
 
-[`config/agents/AGENTS.md`](../config/agents/AGENTS.md) owns shared style,
-worktree, cleanup, and intercom rules. Nix links OMP and Pi directly to it;
-`config/omp/AGENTS.md` remains a compatibility symlink for existing activations.
-Switch once to install the new links. Later policy edits need only a Pi reload
-or OMP restart, not a rebuild.
+[`config/agents/AGENTS.md`](../config/agents/AGENTS.md) owns the shared style
+and working rules. The commit rules live in `~/.config/git/commit-style.md`
+(`config/git/commit-style.md`). Nix links OMP and Pi directly to the policy, and
+`config/omp/AGENTS.md` remains a compatibility symlink. Policy edits take effect
+after a Pi reload or OMP restart.
 
-Session worktrees default to
-`${XDG_STATE_HOME:-$HOME/.local/state}/agent-worktrees/<repo-key>/<unique-task>`.
-Harness-managed worker paths stay unchanged, with review and cleanup owned by
-the parent session. This is an instruction policy, not automatic provisioning or
-garbage collection.
+Private worktrees go in `${OMP_WORKTREE_DIR:-$HOME/.omp/wt}/<repo-key>--<task>`,
+the layout `ga` creates. Harness-managed worker paths stay unchanged, with
+review and cleanup owned by the parent session.
+
+## Pi
+
+`modules.agents.pi.enable` installs Pi from the pinned `llm-agents` input and
+links the shared policy to `~/.pi/agent/AGENTS.md`. Its extensions and roles
+come from the live `~/src/pi-mono` checkout. Run `pi-setup` once per host, and
+again after pulling pi-mono or the wiki: it clones both when missing, builds the
+wiki tool, and runs pi-mono's `scripts/install.ts`, which links the extensions
+into `~/.pi/agent`. Update Pi itself with `system-bump llm-agents`.
 
 ## Herdr
 
@@ -216,7 +221,7 @@ Desktop leaves programs running, but lost kept terminals recover into shells,
 not resumed agent sessions or replayed tasks.
 
 When Pi and Herdr TUI are enabled, Home Manager also owns
-`~/.config/pi/agent/extensions/herdr-agent-state.ts`. The file is extracted from
+`~/.pi/agent/extensions/herdr-agent-state.ts`. The file is extracted from
 the pinned TUI package during a sandboxed build; activation only links it. No
 installer runs against the real home, and no credentials or Pi settings are
 changed. Set `modules.agents.pi.herdrTuiIntegration.enable = false` to opt out;
@@ -225,9 +230,9 @@ it defaults to the TUI's enable flag and is not needed for Desktop.
 Home Manager uses the usual `.hm-backup` suffix when backing up a conflicting
 manual installation. Resolve any pre-existing backup collision before switching;
 do not force-replace it. Restart Pi or `/reload` after switching. Once managed,
-update it through Nix rather than rerunning the TUI installer. This manages the
-default XDG agent directory; a custom `PI_CODING_AGENT_DIR` needs its own
-extension configuration.
+update it through Nix rather than rerunning the TUI installer. This manages
+`~/.pi/agent`; a custom `PI_CODING_AGENT_DIR` needs its own extension
+configuration.
 
 Check extraction, option gating, and the hook's session/lifecycle reports with
 `nix build .#checks.x86_64-linux.herdr-pi`. The check uses a private fake

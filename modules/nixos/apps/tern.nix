@@ -94,10 +94,6 @@ in
         source = "${tern}/bin/tern";
         force = true;
       };
-      # The wiki plugin starts omp panes, so it follows the omp module.
-      xdg.configFile."tern/plugins/wiki" = lib.mkIf config.modules.agents.omp.enable {
-        source = hm.config.lib.file.mkOutOfStoreSymlink config.modules.agents.omp.wiki.dir;
-      };
       # Read-only entries prevent Tern from registering its unwrapped executable.
       xdg.dataFile = lib.mapAttrs' (
         name: entry:

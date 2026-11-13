@@ -1,6 +1,8 @@
 # modules/common/agents/pi.nix
 #
-# Pi from the llm-agents input.
+# Pi from the llm-agents input, in its own home, ~/.pi/agent. Extensions and
+# roles come from the live ~/src/pi-mono checkout; pi-setup clones it and the
+# memory wiki and links them in.
 {
   config,
   lib,
@@ -33,23 +35,14 @@ in
       };
   };
   config = lib.mkIf cfg.enable {
-    # ~/.config/pi/agent rather than ~/.pi/agent. Set in a wrapper because
-    # omp reads PI_CODING_AGENT_DIR too.
-    modules.dotfiles.configLink."pi/agent/AGENTS.md" = "agents/AGENTS.md";
-    hm.xdg.configFile = lib.mkIf cfg.herdrTuiIntegration.enable {
-      "pi/agent/extensions/herdr-agent-state.ts".source =
+    modules.dotfiles.homeLink.".pi/agent/AGENTS.md" = "agents/AGENTS.md";
+    hm.home.file = lib.mkIf cfg.herdrTuiIntegration.enable {
+      ".pi/agent/extensions/herdr-agent-state.ts".source =
         "${herdrPiIntegration}/extensions/herdr-agent-state.ts";
     };
     hm.home.packages = [
-      (pkgs.symlinkJoin {
-        inherit (pi) name meta;
-        paths = [ pi ];
-        nativeBuildInputs = [ pkgs.makeWrapper ];
-        postBuild = ''
-          wrapProgram $out/bin/pi \
-            --run 'export PI_CODING_AGENT_DIR="''${PI_CODING_AGENT_DIR:-''${XDG_CONFIG_HOME:-$HOME/.config}/pi/agent}"'
-        '';
-      })
+      pi
+      pkgs.pi-setup
     ];
   };
 }
