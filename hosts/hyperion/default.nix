@@ -48,10 +48,8 @@
       ghostty.enable = false;
       herdr-desktop.enable = false;
       tern.enable = true;
-      proton-pass = {
-        enable = true;
-        sshAgent.enable = true;
-      };
+      # Signing and SSH use this host's own key; see docs/secrets.md.
+      proton-pass.enable = true;
     };
 
     agents = {

@@ -1,14 +1,19 @@
+# Machine-local overrides deployed by an overlay; ignored when absent.
+Include ~/.ssh/config.local
+
 Host github.com
   User git
-
-Host sigil
-  User admin
 
 Host amarna
   User sol
 
 Host agent-vm
   User vmadmin
+
+Host github.com amarna agent-vm
+  IdentityFile ~/.ssh/id_ed25519
+  IdentitiesOnly yes
+  IdentityAgent none
 
 Host *
   ServerAliveInterval 60

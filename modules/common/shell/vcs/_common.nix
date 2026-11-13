@@ -16,12 +16,19 @@ rec {
   name = "solforged";
   email = "sol@sowilo.io";
 
-  # Proton Pass keys, served by its SSH agent. Each host signs with its own;
-  # agent keys are trusted only for Git's signature namespace.
-  signingKey = config.user.sshKeys.${config.networking.hostName} or null;
+  # Each enrolled host signs with its own ~/.ssh/id_ed25519 (ssh-enroll),
+  # read from disk rather than an agent. Retired keys still verify old
+  # signatures; agent keys are trusted only for Git's signature namespace.
+  signingKey =
+    if config.user.sshKeys ? ${config.networking.hostName} then
+      "${config.users.users.${config.user.name}.home}/.ssh/id_ed25519"
+    else
+      null;
   sign = cfg.sign && signingKey != null;
   allowedSigners = pkgs.writeText "allowed_signers" (
-    lib.concatMapStrings (key: "${email} ${key}\n") (lib.attrValues config.user.sshKeys)
+    lib.concatMapStrings (key: "${email} ${key}\n") (
+      lib.attrValues config.user.sshKeys ++ config.user.retiredSigningKeys
+    )
     + lib.concatMapStrings (key: "${email} namespaces=\"git\" ${key}\n") (
       lib.attrValues config.user.agentSigningKeys
     )

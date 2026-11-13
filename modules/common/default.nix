@@ -23,7 +23,13 @@ in
       name = my.mkOpt types.str "sol";
       sshKeys =
         my.mkOpt' (types.attrsOf types.str) { }
-          "Public halves of this user's Proton Pass SSH keys, by host. Every key authorizes SSH logins; a host signs commits with its own key.";
+          "Public halves of each host's ~/.ssh/id_ed25519, made by ssh-enroll, by host. A host listed here signs commits with its own key.";
+      sshLoginHosts =
+        my.mkOpt' (types.listOf types.str) [ ]
+          "Hosts in sshKeys whose key may log in to this user's account.";
+      retiredSigningKeys =
+        my.mkOpt' (types.listOf types.str) [ ]
+          "Public halves of retired keys. Git and jj still verify their old signatures; they authorize nothing.";
       agentSigningKeys =
         my.mkOpt' (types.attrsOf types.str) { }
           "Public halves of Proton Pass keys that sandboxed agents sign commits with, by name. Git trusts them for signatures only; they never authorize logins.";
@@ -81,14 +87,28 @@ in
     ];
 
     user.sshKeys = {
-      amarna = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINJVrIRrq7NWLBvH/yDwoFCgZ4Ha/i7EKYCDEk3fDRNr amarna";
-      hyperion = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGcTyuiMYZAm8fCEMjUG2uWlSylRqfA/azJksC8wY+8C hyperion";
+      hyperion = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJhK+KaTssKEnfGu7L1mPgvycDLyAIZIqlJ089Wi7kWd hyperion";
+      amarna = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIO4ILJOzgl9yhaZ5mNZAtq16R8pvxXIgqX1ks/7+0ttD amarna";
+      atlas = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPp+FPH5hWad4uKJWwkQuDt1SqKy4tKY+gSmA/xnpyWZ atlas";
     };
+    # The work Mac signs commits but does not log in to personal machines.
+    user.sshLoginHosts = [
+      "hyperion"
+      "amarna"
+    ];
+    user.retiredSigningKeys = [
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINJVrIRrq7NWLBvH/yDwoFCgZ4Ha/i7EKYCDEk3fDRNr amarna (Proton Pass)"
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGJ1b34vIwDUfuIkKUrcFD/oji8cVPHD0pJQgBwn4ZII amarna"
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGcTyuiMYZAm8fCEMjUG2uWlSylRqfA/azJksC8wY+8C hyperion (Proton Pass)"
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIErof9IMxQpX5/SSsZeJ8cH6h6WYOiiIBURVUZFkd4r 1password"
+    ];
     # Each lives alone in a "Hermes" Proton Pass vault; see modules/nixos/agents.
     user.agentSigningKeys = {
       hermes-amarna = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAugIdnV1mNxWv1SJK/qHzXVixB6ufI7n5Fc2RngN59o hermes-amarna";
     };
-    users.users.${user}.openssh.authorizedKeys.keys = lib.attrValues config.user.sshKeys;
+    users.users.${user}.openssh.authorizedKeys.keys = map (
+      host: config.user.sshKeys.${host}
+    ) config.user.sshLoginHosts;
 
     modules.env.variables = {
       DOTFILES_DIR = dotfiles.dir;

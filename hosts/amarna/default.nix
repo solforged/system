@@ -83,10 +83,8 @@
       herdr-desktop.enable = true;
       tern.enable = true;
       personal.enable = true;
-      proton-pass = {
-        enable = true;
-        sshAgent.enable = true;
-      };
+      # Signing and SSH use this host's own key; see docs/secrets.md.
+      proton-pass.enable = true;
       workstation-tools.enable = true;
     };
 

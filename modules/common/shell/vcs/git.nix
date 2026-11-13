@@ -41,7 +41,7 @@ let
     user = {
       inherit name email;
     }
-    // lib.optionalAttrs sign { signingkey = "key::${signingKey}"; };
+    // lib.optionalAttrs sign { signingkey = signingKey; };
     gpg.format = "ssh";
     gpg.ssh.allowedSignersFile = "${allowedSigners}";
     commit.gpgsign = sign;

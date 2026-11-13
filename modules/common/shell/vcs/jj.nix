@@ -49,7 +49,11 @@ in
 
         # `jj commit` leaves an empty @ on top; advance bookmarks to the
         # commit under it.
-        revsets.bookmark-advance-to = "@-";
+        revsets = {
+          bookmark-advance-to = "@-";
+        }
+        # The commits a push signs first; signing below explains the wait.
+        // lib.optionalAttrs sign { git-sign-on-push = "~signed() & mine()"; };
 
         aliases.push = [
           "util"
@@ -58,8 +62,8 @@ in
           (lib.getExe jjPush)
         ];
       }
-      # jj rewrites @ on every snapshot, so signing as it goes would ask the
-      # agent for a signature on almost every command. Sign at push instead.
+      # jj rewrites @ on every snapshot, so signing as it goes would sign
+      # almost every command. Sign at push instead.
       // lib.optionalAttrs sign {
         signing = {
           behavior = "drop";
@@ -67,7 +71,6 @@ in
           key = signingKey;
           backends.ssh.allowed-signers = "${allowedSigners}";
         };
-        git.sign-on-push = true;
       };
     };
   };
