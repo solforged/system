@@ -39,6 +39,15 @@ main() {
 
   host=${1:-$(scutil --get LocalHostName 2>/dev/null || hostname -s)}
 
+  # Old launch agents can overwrite the environment or compete for the same
+  # service port. Leave them untouched and require an explicit migration.
+  for label in dev.mise.session-env dev.mise.container-system dev.mise.voice-stt; do
+    if [ -e "$HOME/Library/LaunchAgents/$label.plist" ] ||
+      launchctl print "gui/$(id -u)/$label" >/dev/null 2>&1; then
+      die "retire $label before switching; see docs/install-mac.md (Moving from dotfiles)"
+    fi
+  done
+
   step "Checking sudo"
   sudo -v
 
@@ -137,7 +146,9 @@ main() {
   step "Done"
   note "Next:"
   note "  - Log out and back in, so new sessions get NH_FLAKE and the shell setup."
-  note "  - Run pass-cli login for the SSH agent and Proton Pass secrets."
+  note "  - Run pi-setup for Pi's extensions and wiki; configure Rex (docs/terminals.md)."
+  note "  - Run ssh-enroll if this host has no personal SSH key yet."
+  note "  - Run pass-cli login when editing agenix secrets; personal SSH uses a local key."
   note "  - Later updates: system-bump, or nh darwin switch after a pull."
 }
 
