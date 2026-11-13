@@ -9,8 +9,8 @@ window, including input and generated output.
 
 | Context               | System service | API model ID       | Local endpoint   | Starts at boot |
 | --------------------- | -------------- | ------------------ | ---------------- | -------------- |
-| 64k (65,536 tokens)   | `qwen-64k`     | `qwen3.8-27b-64k`  | `127.0.0.1:8080` | No             |
-| 256k (262,144 tokens) | `qwen-256k`    | `qwen3.8-27b-256k` | `127.0.0.1:8081` | No             |
+| 64k (65,536 tokens)   | `qwen-64k`     | `qwen38-64k`       | `127.0.0.1:8080` | No             |
+| 256k (262,144 tokens) | `qwen-256k`    | `qwen38-256k`      | `127.0.0.1:8081` | No             |
 
 OMP shows **Qwen 3.8 27B (256k context)** through the local `llama.cpp` provider
 or the remote `amarna` provider. Both connect to the same 256k service. Other

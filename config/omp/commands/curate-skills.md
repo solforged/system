@@ -7,10 +7,9 @@ Audit omp's managed skills as a bounded working set.
 Scope:
 
 - Inspect every `SKILL.md` below the active managed-skills directory,
-  `<agent dir>/managed-skills`, where `omp config path` prints the agent dir. On
-  Sol's hosts that path links to `$XDG_DATA_HOME/omp/managed-skills`; resolve
-  links and deduplicate paths that reach the same file, including through the
-  legacy `~/.omp/agent` spelling.
+  `<agent dir>/managed-skills`, where `omp config path` prints the agent dir
+  (`~/.omp/agent`). Resolve links and deduplicate paths that reach the same
+  file.
 - Inspect repository-local `.agents/skills` and `.omp/skills` read-only when
   checking references, ownership, or name collisions. A name missing from the
   global inventory may still exist in its owning repository.

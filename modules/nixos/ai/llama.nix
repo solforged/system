@@ -163,13 +163,13 @@ in
       qwen-64k = mkServer {
         contextSize = 65536;
         port = 8080;
-        alias = "qwen3.8-27b-64k";
+        alias = "qwen38-64k";
         autoStart = cfg.start64k;
       };
       qwen-256k = mkServer {
         contextSize = 262144;
         port = 8081;
-        alias = "qwen3.8-27b-256k";
+        alias = "qwen38-256k";
         autoStart = cfg.start256k;
       };
       qwen-tailscale-serve = lib.mkIf cfg.tailscaleServe.enable {

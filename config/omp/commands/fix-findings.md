@@ -6,8 +6,8 @@ Fix the findings the user chose, prove each fix in the running app, and commit
 the result. Do not push or land unless this invocation says so.
 
 The arguments at the end name the findings: numbers or ids, ranges, `all`, or
-`all but N`, and optionally the report path. An explicit path wins; otherwise use
-the findings report from this session, then the newest `report.md` under
+`all but N`, and optionally the report path. An explicit path wins; otherwise
+use the findings report from this session, then the newest `report.md` under
 `~/artifacts/<project>/`, using the stable repository/project name rather than
 an ephemeral worktree name. If the numbers could refer to more than one report,
 ask. Decisions in the same message ("portrait only for now", "keep the fold at
@@ -46,8 +46,8 @@ Fixing:
   user's decision.
 - Record re-QA results by the original finding IDs in the same report run,
   preserving the original findings and evidence. Follow AGENTS.md's artifact
-  policy: use an owned temporary capture directory, reuse existing evidence,
-  and add useful new evidence to that run's `evidence/` with distinct filenames,
+  policy: use an owned temporary capture directory, reuse existing evidence, and
+  add useful new evidence to that run's `evidence/` with distinct filenames,
   never overwriting before images. Verifiers retain captures only when they add
   different evidence, not duplicate proof. Match viewport, theme, and data state
   for before/after comparisons; identify the tested build. If updating a visual

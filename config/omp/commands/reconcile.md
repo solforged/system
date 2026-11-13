@@ -8,15 +8,15 @@ uncommitted work. Leave history linear. Do not publish.
 Upstream is the upstream of the current branch. In git that is `@{upstream}`
 when it is set, otherwise `origin`'s default branch if that remote exists. In a
 jj working copy it is the remote bookmark, `main@origin` for `main`;
-`origin/main` is not a jj revision. `$ARGUMENTS` may name a different ref. Flake
-inputs, package upstreams, and open pull requests are not the target unless the
-argument says so. Fetch before comparing. Do not reconcile against a stale
-remote-tracking ref.
+`origin/main` is not a jj revision. `$ARGUMENTS` may name a different ref.
+Package upstreams, dependency pins, and open pull requests are not the target
+unless the argument says so. Fetch before comparing. Do not reconcile against a
+stale remote-tracking ref.
 
 Out of scope unless this invocation asks for it: push, `jj push`,
-`mise run land`, ship, force-push, opening a pull request, `nix flake update`,
-deleting backup refs, stashes, or worktrees you did not create, and rebuilding
-or restarting the system.
+`mise run land`, ship, force-push, opening a pull request, dependency-wide lock
+updates, deleting backup refs, stashes, or worktrees you did not create, and
+rebuilding, switching or restarting the system.
 
 Before moving any ref:
 
@@ -85,9 +85,9 @@ Conflicts:
 - Read both sides. Keep both when they add different behavior. Do not drop a
   side to get a clean tree.
 - `rerere` may pre-resolve. Read `git diff --cc` before accepting a resolution.
-- Do not splice `flake.lock` by hand. Check out one parent and re-run the lock
-  command the local commit performed, or keep upstream's lock when that input
-  change is already upstream.
+- Do not splice a lockfile (`flake.lock`, `Cargo.lock`, `bun.lock`) by hand.
+  Check out one parent and re-run the lock command the local commit performed,
+  or keep upstream's lock when that change is already upstream.
 - If the intent of a conflict is unclear, stop and ask. Do not guess.
 - Continue with `GIT_EDITOR=true`. If the repo signs commits, rebase with `-S`.
   `git commit-tree` does not sign unless `-S` is passed. `jj duplicate` drops

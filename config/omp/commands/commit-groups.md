@@ -43,9 +43,9 @@ Grouping:
   group that splits a file, write the file as the base plus the cumulative hunks
   of groups so far, run `jj commit` on those paths, then restore the final
   content. Do this only when no live peer is editing that file; otherwise ask.
-- Messages follow the commit rules in AGENTS.md: `type(scope): summary` in the
-  past tense, at most 72 characters, with an optional body of up to six bullets
-  wrapped at 72.
+- Messages follow `~/.config/git/commit-style.md` and the repo's
+  `.commit-style.md`, if any: `type(scope): summary` in the past tense, at most
+  72 characters, with an optional body of up to six bullets wrapped at 72.
 - Sign the commits if the repo signs (`git config commit.gpgsign`, or
   `signing.behavior` in jj; use `jj sign` when jj leaves them unsigned). Check
   `%G?` afterwards.
@@ -59,8 +59,8 @@ Verify:
 - The remaining uncommitted diff, plus everything you committed, equals the
   saved diff, byte for byte. Peers' hunks are unchanged.
 - Each commit stands alone: run the repo's quick check (type check, build, or
-  `nix flake check`-style evaluation) on each commit in a detached worktree. Run
-  the full checks on the tip. Point Rust builds at the main `target/`.
+  flake evaluation) on each commit in a detached worktree. Run the full checks on the tip. Point Rust
+  builds at the main `target/`.
 
 Report a table `commit | summary | files`, what you left uncommitted and whose
 it is, the checks you ran, and the backup ref if you made one. With `plan`, show

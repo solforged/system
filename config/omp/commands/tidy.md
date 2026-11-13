@@ -19,7 +19,8 @@ Never touch:
 - Uncommitted or unpushed work.
 - Backup refs (`refs/backup/*`, `backup/*` bookmarks) and stashes.
 - Anything a managed skill marks as another session's or as a durable cache.
-- Existing material under `~/Documents`; it is not a migration or cleanup target.
+- Existing material under `~/Documents`; it is not a migration or cleanup
+  target.
 
 Survey:
 
@@ -58,12 +59,12 @@ After approval:
 - Delete branches with `git branch -d`. Use `-D` only for branches proven landed
   by rebase or cherry-pick, and say which ones. Delete remote branches only when
   they have landed and the approval names them.
-- Before deleting approved paths, durably preserve the approved unique items
-  and all cited evidence, required mockup sources/assets, and selected plates.
-  If required material cannot be preserved, skip that deletion. Delete only the
+- Before deleting approved paths, durably preserve the approved unique items and
+  all cited evidence, required mockup sources/assets, and selected plates. If
+  required material cannot be preserved, skip that deletion. Delete only the
   approved paths, then run `git worktree prune`. This session's own temporary
-  captures may be removed without approval only after the same preservation
-  rule is satisfied; never remove another session's unapproved captures.
+  captures may be removed without approval only after the same preservation rule
+  is satisfied; never remove another session's unapproved captures.
 - Report sizes before and after, where salvaged items went, and what you skipped
   and why.
 

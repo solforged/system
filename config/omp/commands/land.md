@@ -12,7 +12,8 @@ branch's commits that are not on upstream.
 
 Out of scope unless this invocation asks for it: force-pushing main, merge
 commits, squash or rebase merges of pull requests, releases and tags,
-`nix flake update`, and rebuilding or switching a system.
+dependency-wide lock updates (`nix flake update`), and rebuilding or switching
+a system.
 
 Find the landing rule, in this order:
 
@@ -35,7 +36,7 @@ Before publishing:
    that includes commits you did not make and were not asked to land (a peer's,
    or the user's unpushed work), stop and ask. Also stop on `wip:` subjects
    (unless `wip` was given), `fixup!` commits, unsigned commits in a repo that
-   signs, or messages that break the AGENTS.md commit rules.
+   signs, or messages that break `~/.config/git/commit-style.md`.
 4. List peer sessions with the intercom tool. Tell live peers in this repo that
    you are about to move main, and ask them to hold their own landings.
 5. Rebase onto upstream; never merge. Run the repo's checks for the changed
@@ -49,7 +50,8 @@ Publish:
   If main moves mid-land, rebase, update the branch with `--force-with-lease` on
   that branch only, and run land again with the same branch.
 - Other repos: fast-forward push, `git push origin <ref>:main`. In jj,
-  `jj bookmark set main -r <rev>`, then `jj git push -b main`. If the push is
+  `jj bookmark set main -r <rev>`, then `jj push -b main`, which runs the
+  commit checks before `jj git push`. If the push is
   rejected, fetch, rebase, re-verify, and retry once before reporting.
 - Confirm the landed SHA is an ancestor of `origin/main`.
 

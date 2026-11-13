@@ -6,7 +6,7 @@ providers:
     discovery:
       type: llama.cpp
     modelOverrides:
-      qwen3.8-27b-256k:
+      qwen38-256k:
         name: "Qwen 3.8 27B (256k context)"
         reasoning: true
         contextWindow: 262144
@@ -22,7 +22,7 @@ providers:
     discovery:
       type: llama.cpp
     modelOverrides:
-      qwen3.8-27b-256k:
+      qwen38-256k:
         name: "Qwen 3.8 27B (256k context)"
         reasoning: true
         contextWindow: 262144

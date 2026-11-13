@@ -14,7 +14,7 @@ disabledProviders:
   - ollama
   - vllm
 symbolPreset: nerd
-setupVersion: 2
+setupVersion: 3
 hideThinkingBlock: false
 memory:
   backend: mnemopi

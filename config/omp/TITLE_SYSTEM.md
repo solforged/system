@@ -20,15 +20,18 @@ Casing rules, strictly:
 
 No trailing punctuation, no quotes, no commentary outside the tags.
 
-Examples: [User] the login button is broken on mobile somehow, can you fix? [AI]
+Examples:
 
-<title>Fix login button on mobile</title>
+```text
+[User] the login button is broken on mobile somehow, can you fix?
+[AI] <title>Fix login button on mobile</title>
 
-[User] audit repo slop and clean it up [AI] <title>Audit repo slop and
-cleanup</title>
+[User] audit repo slop and clean it up
+[AI] <title>Audit repo slop and cleanup</title>
 
-[User] SCHEMA.md is getting big; consider splitting it into smaller docs [AI]
+[User] SCHEMA.md is getting big; consider splitting it into smaller docs
+[AI] <title>Refactor SCHEMA.md into smaller docs</title>
 
-<title>Refactor SCHEMA.md into smaller docs</title>
-
-[User] hey [AI] <title>none</title>
+[User] hey
+[AI] <title>none</title>
+```
