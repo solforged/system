@@ -103,7 +103,7 @@ in
       "amarna"
     ];
     user.signingKeys = {
-      hyperion = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJhK+KaTssKEnfGu7L1mPgvycDLyAIZIqlJ089Wi7kWd hyperion";
+      hyperion = "sk-ecdsa-sha2-nistp256@openssh.com AAAAInNrLWVjZHNhLXNoYTItbmlzdHAyNTZAb3BlbnNzaC5jb20AAAAIbmlzdHAyNTYAAABBBBKZCikpKuquxv1fGSQsAD9eiFHMfmESuaDdJvTQpPonCBuUBDzRXCRzBDKucKs3MvwCt+TqFJKolc4/DXcaAA8AAAAEc3NoOg== hyperion";
       amarna = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIO4ILJOzgl9yhaZ5mNZAtq16R8pvxXIgqX1ks/7+0ttD amarna";
       atlas = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPp+FPH5hWad4uKJWwkQuDt1SqKy4tKY+gSmA/xnpyWZ atlas";
     };
@@ -113,6 +113,7 @@ in
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGcTyuiMYZAm8fCEMjUG2uWlSylRqfA/azJksC8wY+8C hyperion (Proton Pass)"
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIErof9IMxQpX5/SSsZeJ8cH6h6WYOiiIBURVUZFkd4r 1password"
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAugIdnV1mNxWv1SJK/qHzXVixB6ufI7n5Fc2RngN59o hermes-amarna (Proton Pass)"
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJhK+KaTssKEnfGu7L1mPgvycDLyAIZIqlJ089Wi7kWd hyperion (file)"
     ];
     # TPM-sealed keys; docs/hermes-sandbox.md makes one.
     user.agentSigningKeys = { };

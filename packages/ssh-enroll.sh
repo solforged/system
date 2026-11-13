@@ -1,19 +1,21 @@
 # ssh-enroll: give this host its SSH keys and register them on GitHub.
 #
-#   ssh-enroll           With only the primary YubiKey plugged in: this host's
-#                        FIDO2 key (~/.ssh/id_ed25519_sk, a handle that is
-#                        useless without the YubiKey) for GitHub and logins,
-#                        and its commit signing key, which never leaves the
-#                        Mac's Secure Enclave (~/.ssh/id_ecdsa_sk_signing is a
-#                        handle) or is sealed to the TPM elsewhere
+#   ssh-enroll           This host's FIDO2 key on the primary YubiKey
+#                        (~/.ssh/id_ed25519_sk, a handle that is useless
+#                        without it) for GitHub and logins, and its commit
+#                        signing key, which never leaves the Mac's Secure
+#                        Enclave (~/.ssh/id_ecdsa_sk_signing is a handle) or
+#                        is sealed to the TPM elsewhere
 #                        (~/.ssh/id_ecdsa_signing.tpm).
-#   ssh-enroll --backup  With only the backup YubiKey plugged in: its resident
-#                        key, made once for every host, which needs the PIN
-#                        and a touch. Other hosts fetch the handle when needed
-#                        with `cd ~/.ssh && ssh-keygen -K`.
+#   ssh-enroll --backup  The backup YubiKey's resident key, made once for
+#                        every host, which needs the PIN and a touch. Other
+#                        hosts fetch the handle when needed with
+#                        `cd ~/.ssh && ssh-keygen -K`.
 #
-# Keys are made only when missing and added to GitHub only when GitHub lacks
-# them, so it is safe to rerun. It prints the lines for
+# A YubiKey is needed only while its key is created: then plug in that one
+# alone, the primary for a host's key or the backup for --backup. The signing
+# key needs none. Keys are made only when missing and added to GitHub only
+# when GitHub lacks them, so it is safe to rerun. It prints the lines for
 # modules/common/default.nix.
 #
 # Adding keys needs gh's admin:public_key and admin:ssh_signing_key scopes.
@@ -43,7 +45,11 @@ create() {
   shift 3
   [ -f "$key" ] && return
   echo "ssh-enroll: creating $key"
-  [ "$type" = ed25519-sk ] && echo "ssh-enroll: touch the YubiKey when it blinks"
+  if [ "$type" = ed25519-sk ]; then
+    local which=primary
+    [ "$comment" = backup ] && which=backup
+    echo "ssh-enroll: plug in only the $which YubiKey; touch it when it blinks"
+  fi
   ssh-keygen -q -t "$type" "$@" -N '' -C "$comment" -f "$key"
 }
 
