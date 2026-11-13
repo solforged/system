@@ -60,6 +60,7 @@
       pi.enable = true;
     };
 
+    voice.enable = true;
     media.beets.enable = true;
     virt.containers.enable = true;
   };

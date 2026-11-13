@@ -51,7 +51,8 @@ and documentation guidelines.
 - [Terminals and editors](docs/terminals.md): Rex, Nushell, Mitos and Neovim.
 - [Desktop](docs/desktop.md): GNOME, Tern, Solforge themes, monitor brightness
   and fingerprints.
-- [Agent tools](docs/agents.md): omp, Herdr and Claude Desktop.
+- [Agent tools](docs/agents.md): Pi, omp, shared skills, Herdr and Claude Desktop.
+- [Local dictation](docs/voice.md): the Parakeet service on hyperion.
 - [Memory wiki](docs/wiki.md): the notes repository Pi and omp share.
 - [atlas](docs/atlas.md): the work Mac and its private work flake.
 - [Hermes sandbox](docs/hermes-sandbox.md): mounts, signing and security

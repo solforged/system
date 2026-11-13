@@ -1,0 +1,110 @@
+# Speech-to-text settings (config/voice/server.py). The server rereads this
+# file on the next request after it changes; no restart needed. Judge a
+# change with `voice-bench`, which replays your recent clips.
+
+# Where the server listens; read at startup only. Pi's voice extension expects
+# http://127.0.0.1:8178 unless `voice.url` in its settings says otherwise.
+host = "127.0.0.1"
+port = 8178
+
+model = "mlx-community/parakeet-tdt-0.6b-v3"
+
+# 1 is greedy decoding: ~50 ms for a 5 s clip, clean on ordinary words, and
+# names fixed by [replace] below. Above 1, beam search (keep it at 3 or more;
+# smaller beams cut off endings) favours the `boost` words at ~270 ms. Boosting
+# got names right in testing but also turned ordinary words into them ("50
+# milliseconds" became "50 mise"), so it is off until it earns its place.
+beam_size = 1
+boost_weight = 4.0
+boost = ["pi-mono", "dotfiles", "mise", "fnox", "Rex", "Omarchy", "Hyprland"]
+
+# Spellings kept exactly as written wherever they occur, so "Omp" at the start
+# of a sentence becomes "omp" and "rex" becomes "Rex". Every [replace] target
+# counts too. Common words belong here only when you always mean the name.
+names = [
+  "Pi", "Rex", "Claude", "Claude Code", "Codex", "Opus", "Sonnet", "Hermes", "Anthropic",
+  "OpenAI", "GitHub", "Ghostty", "Kitty", "Zed", "Raycast", "Obsidian", "Neovim", "Homebrew",
+  "Hugging Face", "Superlogical", "Parakeet", "Omarchy", "Hyprland",
+  "omp", "jj", "mise", "uv", "tmux", "launchd", "wasm", "worktree", "AGENTS.md", "README",
+  "JSON", "JSONL", "YAML", "MLX", "XDG",
+]
+
+# How transcripts are written, after [replace]. Parakeet writes edited prose:
+# capitalised sentences ending in a full stop.
+[style]
+# Starts a transcript in lowercase ("tell the…") unless its first word is "I",
+# a name above, or not an ordinary dictionary word ("Omarchy"). Capitals inside
+# the transcript stay as Parakeet wrote them.
+lowercase_start = true
+# Keeps the full stop that ends a transcript; question marks always stay.
+final_period = false
+
+# Whole-word, case-insensitive fixes for what the model hears instead of your
+# names. Most came from synthetic speech in four voices (`say`), keeping only
+# mishearings that are not words you would mean, so they cannot corrupt
+# ordinary speech. Add a line when you catch a new one.
+[replace]
+"pi mono" = "pi-mono"
+"py mono" = "pi-mono"
+"paimono" = "pi-mono"
+"paimano" = "pi-mono"
+"pymano" = "pi-mono"
+"pymono" = "pi-mono"
+"paymono" = "pi-mono"
+"pie sol" = "pi-sol"
+# "Pi" is heard as "pie", which you would rarely mean here.
+"pie" = "Pi"
+"omaipi" = "oh-my-pi"
+"yomaipi" = "oh-my-pi"
+"yamp" = "omp"
+"om top" = "omptop"
+"omp top" = "omptop"
+"dot files" = "dotfiles"
+".files" = "dotfiles"
+"dotful" = "dotfiles"
+"work tree" = "worktree"
+"work trees" = "worktrees"
+"meese" = "mise"
+"mies" = "mise"
+"MES" = "mise"
+"phnox" = "fnox"
+"fnac" = "fnox"
+"f nox" = "fnox"
+"omaki" = "Omarchy"
+"marchi" = "Omarchy"
+"hipperland" = "Hyprland"
+"hyperland" = "Hyprland"
+"iperion" = "hyperion"
+"amana" = "amarna"
+"yamarna" = "amarna"
+"lazajit" = "lazygit"
+"laser jet" = "lazygit"
+"ghosty" = "Ghostty"
+"ripgrap" = "ripgrep"
+"ripcrook" = "ripgrep"
+"ribcrop" = "ripgrep"
+"tomel" = "TOML"
+"tomal" = "TOML"
+"tomble" = "TOML"
+"till scale" = "Tailscale"
+"cloud code" = "Claude Code"
+"claw code" = "Claude Code"
+"clawed code" = "Claude Code"
+"opa" = "Opus"
+"soulforge" = "solforge"
+"selfirge" = "solforge"
+"tassera" = "tessera"
+"tisera" = "tessera"
+"palladium" = "palatium"
+"elixium" = "helixium"
+"umbring" = "umran"
+"rem card" = "remcard"
+"rem cart" = "remcard"
+"eddas reader" = "eddas-reader"
+"edis reader" = "eddas-reader"
+"edder's reader" = "eddas-reader"
+"edges reader" = "eddas-reader"
+"vox type" = "voxtype"
+"wax type" = "voxtype"
+"piazzola" = "Piazzolla"
+"piazala" = "Piazzolla"
