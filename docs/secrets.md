@@ -23,9 +23,15 @@
   per host that uses it. On NixOS, the CLI uses GNOME Keyring's persistent
   Secret Service (`dbus`), not the default kernel keyring that is cleared on
   reboot.
-- **SSH access.** amarna accepts inbound SSH only on `tailscale0`; connect
-  through the tailnet. Password, keyboard-interactive and root login are
-  disabled.
+- **SSH access.** amarna accepts inbound SSH only on `tailscale0`; hyperion's
+  Remote Login lets in only tailnet addresses (`AllowUsers`). Both take keys
+  only, and only the keys this flake declares; hyperion ignores
+  `~/.ssh/authorized_keys`, so pair a client (such as Tern) by adding its key
+  to the host's `users.users.<name>.openssh.authorizedKeys`. Rex for iOS pairs
+  over Tailscale and needs no SSH.
+- **gh's token** lives in the keychain, where any process can use it, so it
+  carries no `admin:public_key` or `admin:ssh_signing_key` scope. `ssh-enroll`
+  adds them for one run and removes them again.
 - **fnox** decrypts project secrets, stored as age ciphertext, with this host's
   `~/.config/fnox/age-identity.txt` (`config/fnox/config.toml`). Create the
   identity by hand on a new host and add its recipient there.

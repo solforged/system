@@ -63,11 +63,21 @@
     voice.enable = true;
     media.beets.enable = true;
     virt.containers.enable = true;
+
+    # Remote Login for Tern, over the tailnet only; Rex pairs over Tailscale
+    # without SSH.
+    services.ssh.enable = true;
   };
 
   config = { pkgs, ... }: {
     # The macOS account on this Mac is "admin", not the default "sol".
     user.name = "admin";
+
+    # Tern clients paired with this Mac. Login only; they sign nothing.
+    users.users.admin.openssh.authorizedKeys.keys = [
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIF++Ii79FcOTz8I8ObCoGO7sinJrDmpSoG4j7I77F5De tern-paired 2026-10-16"
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOzhivRLTuez7EWUjc/YreIloCItnXmoI3K8kUKnRmBN tern-paired 2026-10-24"
+    ];
 
     # CLIs and apps only this Mac needs.
     hm.home.packages = with pkgs; [

@@ -3,6 +3,10 @@
 # Creates ~/.ssh/id_ed25519 (no passphrase, never copied off the host) only
 # when it is missing, then adds it to GitHub as an authentication key and a
 # signing key unless GitHub already has it. Safe to rerun.
+#
+# Adding keys needs gh's admin:public_key and admin:ssh_signing_key scopes.
+# The token sits in the keychain where any process can use it, so they are
+# granted only for this run and removed again on exit.
 
 key="$HOME/.ssh/id_ed25519"
 host="$(hostname -s | tr '[:upper:]' '[:lower:]')"
@@ -14,13 +18,13 @@ if [ ! -f "$key" ]; then
   echo "ssh-enroll: created $key"
 fi
 
-scopes="$(gh auth status --hostname github.com 2>&1 || true)"
-for scope in admin:public_key admin:ssh_signing_key; do
-  if ! grep -q "$scope" <<<"$scopes"; then
-    gh auth refresh --hostname github.com --scopes admin:public_key,admin:ssh_signing_key
-    break
-  fi
-done
+admin_scopes=admin:public_key,admin:ssh_signing_key
+drop_scopes() {
+  gh auth refresh --hostname github.com --remove-scopes "$admin_scopes" ||
+    echo "ssh-enroll: remove the scopes by hand: gh auth refresh --remove-scopes $admin_scopes" >&2
+}
+trap drop_scopes EXIT
+gh auth refresh --hostname github.com --scopes "$admin_scopes"
 
 body="$(cut -d' ' -f2 "$key.pub")"
 if ! gh api --hostname github.com user/keys --jq '.[].key' | grep -qF "$body"; then
