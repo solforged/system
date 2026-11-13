@@ -83,6 +83,10 @@
         lib.recursiveUpdate acc { ${host.system}.${name} = host.build.config.system.build.toplevel; }
       ) { } hosts;
 
+      toolingChecks = lib.genAttrs systems (system: {
+        shell = import ./tests/shell.nix { pkgs = pkgsFor system; };
+      });
+
       installerIso =
         (lib.nixosSystem {
           specialArgs = { inherit inputs; };
@@ -98,7 +102,7 @@
 
       lib = { inherit (my) mkHost; };
 
-      checks = lib.recursiveUpdate hostChecks {
+      checks = lib.recursiveUpdate (lib.recursiveUpdate hostChecks toolingChecks) {
         x86_64-linux = {
           solforge = import ./tests/solforge.nix {
             configuration = hosts.amarna.build;
@@ -117,6 +121,7 @@
         {
           # nix run .#system-bump; installed on every host as system-bump.
           system-bump = (pkgsFor system).callPackage ./packages/system-bump.nix { };
+          mitos = (pkgsFor system).callPackage ./packages/mitos.nix { };
         }
         # nix build .#installer-iso
         // lib.optionalAttrs (system == "x86_64-linux") { installer-iso = installerIso; }

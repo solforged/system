@@ -1,7 +1,7 @@
 name: Check
 
-# Evaluates every host, check and package without building them, and checks
-# formatting.
+# Evaluates every host, check and package, runs the small shell/theme tests,
+# and checks formatting. System builds remain a local pre-switch check.
 # Evaluation catches what input bumps usually break: renamed options and
 # removed or renamed packages. bump.yml runs the same evaluation before it
 # commits a new lock.
@@ -49,6 +49,9 @@ jobs:
 
       - name: Evaluate every host, check and package
         run: nix run .#system-bump -- --verify
+
+      - name: Test shell helpers and Rex theme updates
+        run: nix build .#checks.x86_64-linux.shell
 
       - name: Check formatting
         run: nix fmt -- --ci

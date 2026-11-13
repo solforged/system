@@ -9,8 +9,9 @@ Solforge input. Xcode supplies Swift's language server on Macs.
 
 `packages/mitos.nix` packages the upstream release binary and its prebuilt
 parsers, avoiding a Rust and grammar rebuild on a switch. To update it, change
-`version` and the three platform hashes from the release's `SHA256SUMS`, build
-on the target platform, then check `ms --health rust`. Neovim provides the
+`version` and the three platform hashes from the release's `SHA256SUMS`, run
+`nix build .#mitos` on the target platform, then check
+`./result/bin/ms --health rust`. Neovim provides the
 shared language tools when enabled; Mitos also installs the servers explicitly
 named in its own configuration.
 
