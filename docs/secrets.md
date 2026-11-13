@@ -29,17 +29,21 @@
   every connection to that host for 10 minutes (`ControlPersist`). Only Nix's
   ssh speaks FIDO2, so Git's `core.sshCommand` points at it; `/usr/bin/ssh`,
   which GUI apps would find first, cannot use the keys.
-- **Signing.** Each host signs commits with `~/.ssh/id_ed25519`, also from
-  `ssh-enroll` (`user.signingKeys`). It authorizes no logins and is no
-  GitHub authentication key.
+- **Signing.** `ssh-enroll` also gives each host a commit signing key that
+  cannot leave it and signs without a prompt, registered on GitHub and listed in
+  `user.signingKeys`. On a Mac it lives in the Secure Enclave and
+  `~/.ssh/id_ecdsa_sk_signing` is its handle, used through Apple's
+  `/usr/lib/ssh-keychain.dylib`. On NixOS it is sealed to the TPM
+  (`~/.ssh/id_ecdsa_signing.tpm`) and served by `ssh-tpm-agent`. Git and jj
+  pick the setup from the type of the host's line, so a host still on the old
+  `~/.ssh/id_ed25519` keeps signing with it until its new line lands. Signing
+  keys authorize no logins and no GitHub access; anything running as you can
+  sign, but nothing can copy the key.
 - **Verifying old signatures.** `user.retiredSigningKeys` keeps replaced keys in
   Git's and jj's allowed signers; they authorize nothing.
   `user.agentSigningKeys` lists keys that sandboxed agents sign with; Git trusts
-  them for signatures only. The Hermes key lives alone in the `Hermes` Proton
-  Pass vault and is served by the sandbox's own agent. Run `pass-cli login` once
-  per host that uses it. On NixOS, the CLI uses GNOME Keyring's persistent
-  Secret Service (`dbus`), not the default kernel keyring that is cleared on
-  reboot.
+  them for signatures only. Hermes' key is sealed to amarna's TPM and served by
+  the sandbox's own agent ([Hermes sandbox](hermes-sandbox.md#signing)).
 - **SSH access.** amarna accepts inbound SSH only on `tailscale0`; hyperion's
   Remote Login lets in only tailnet addresses (`AllowUsers`). Both take keys
   only, and only the keys this flake declares; hyperion ignores

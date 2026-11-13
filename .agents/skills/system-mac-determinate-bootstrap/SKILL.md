@@ -118,8 +118,3 @@ eval amarna:
 
 ## Gotchas
 
-- `pass-cli login` fails "Error opening temp session file" while the
-  `org.nixos.proton-pass-ssh-agent` launchd job retries every 30 s and wipes the
-  half-written session.
-  `launchctl bootout gui/$(id -u)/org.nixos.proton-pass-ssh-agent` before login;
-  any switch reloads it.

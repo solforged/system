@@ -98,8 +98,7 @@ fi
 step "Done"
 cat <<'EOF'
 Reboot, log in, then:
-  pass-cli login                     # starts the Hermes sandbox's signing agent
-  systemctl --user status hermes-ssh-agent
+  ssh-enroll                         # with the primary YubiKey; see docs/secrets.md
 For Secure Boot, set security.secureboot.sign = true in hosts/amarna,
 run `nh os boot --install-bootloader`,
 check `sudo sbctl verify`, then turn Secure Boot back on in firmware.

@@ -59,4 +59,4 @@ and documentation guidelines.
   boundaries.
 - [Local inference](modules/nixos/ai/README.md): enable and operate llama.cpp or
   Ollama.
-- [Secrets and keys](docs/secrets.md): agenix, Proton Pass and SSH access.
+- [Secrets and keys](docs/secrets.md): agenix, YubiKeys, signing keys and SSH access.

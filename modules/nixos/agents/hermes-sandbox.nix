@@ -11,8 +11,9 @@
 # - ~/.local/share/hermes-sandbox/profile.sh becomes an /etc/profile.d entry.
 #   Hermes snapshots a login shell, so this is where PATH and git's signing
 #   config reach the agent.
-# - $XDG_RUNTIME_DIR/hermes-ssh-agent holds a second Proton Pass agent that
-#   serves only the Hermes vault. Its key signs commits and opens no logins.
+# - $XDG_RUNTIME_DIR/hermes-ssh-agent holds a second ssh-tpm-agent that
+#   serves only the TPM-sealed key in ~/.local/state/hermes-signing, which the
+#   container never sees. The key signs commits and opens no logins.
 {
   config,
   lib,
@@ -24,7 +25,7 @@ let
   cfg = config.modules.agents.hermes.sandbox;
   home = config.users.users.${config.user.name}.home;
   root = "${home}/.local/share/hermes-sandbox";
-  vault = "Hermes";
+  keyDir = "${home}/.local/state/hermes-signing";
   agentSocket = "/mnt/hermes-ssh-agent/agent.sock";
 
   common = import ../../common/shell/vcs/_common.nix { inherit config lib pkgs; };
@@ -119,8 +120,8 @@ in
         message = "modules.agents.hermes.sandbox needs modules.agents.hermes and modules.virt.containers.";
       }
       {
-        assertion = !sign || config.modules.apps.proton-pass.enable;
-        message = "Hermes' signing key lives in Proton Pass; enable modules.apps.proton-pass.";
+        assertion = !sign || config.security.tpm2.enable;
+        message = "Hermes' signing key is sealed to the TPM; set security.tpm2.enable (modules.shell.vcs.sign does).";
       }
     ];
 
@@ -136,16 +137,14 @@ in
       };
 
       hermes-ssh-agent = lib.mkIf sign {
-        Unit.Description = "Proton Pass SSH agent for the Hermes sandbox (${vault} vault only)";
+        Unit.Description = "SSH agent for the Hermes sandbox, serving only its TPM-sealed signing key";
         Service = {
-          Environment = [ "PROTON_PASS_LINUX_KEYRING=dbus" ];
           # The container binds this directory; keep it, and its inode, across restarts.
           RuntimeDirectory = "hermes-ssh-agent";
           RuntimeDirectoryMode = "0700";
           RuntimeDirectoryPreserve = "yes";
           ExecStartPre = "${pkgs.coreutils}/bin/rm -f %t/hermes-ssh-agent/agent.sock";
-          ExecStart = "${lib.getExe' pkgs.proton-pass-cli "pass-cli"} ssh-agent start --vault-name ${vault} --socket-path %t/hermes-ssh-agent/agent.sock";
-          # Fails until `pass-cli login` has run on this host.
+          ExecStart = "${lib.getExe pkgs.ssh-tpm-agent} -l %t/hermes-ssh-agent/agent.sock --key-dir ${keyDir}";
           Restart = "on-failure";
           RestartSec = 30;
         };

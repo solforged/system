@@ -3,7 +3,10 @@
 #   ssh-enroll           With only the primary YubiKey plugged in: this host's
 #                        FIDO2 key (~/.ssh/id_ed25519_sk, a handle that is
 #                        useless without the YubiKey) for GitHub and logins,
-#                        and its signing key (~/.ssh/id_ed25519).
+#                        and its commit signing key, which never leaves the
+#                        Mac's Secure Enclave (~/.ssh/id_ecdsa_sk_signing is a
+#                        handle) or is sealed to the TPM elsewhere
+#                        (~/.ssh/id_ecdsa_signing.tpm).
 #   ssh-enroll --backup  With only the backup YubiKey plugged in: its resident
 #                        key, made once for every host, which needs the PIN
 #                        and a touch. Other hosts fetch the handle when needed
@@ -44,6 +47,31 @@ create() {
   ssh-keygen -q -t "$type" "$@" -N '' -C "$comment" -f "$key"
 }
 
+# enclave KEY: a Secure Enclave key that signs without a prompt, with its
+# handle at KEY. -K fetches the handles of every enclave identity; keep ours.
+enclave() {
+  local key=$1 label=git-signing tmp
+  [ -f "$key" ] && return
+  echo "ssh-enroll: creating $key in the Secure Enclave"
+  if ! /usr/sbin/sc_auth list-ctk-identities | awk -v l="$label" '$4 == l { f = 1 } END { exit !f }'; then
+    /usr/sbin/sc_auth create-ctk-identity -l "$label" -N "$label" -k p-256-ne -t none
+  fi
+  tmp="$(mktemp -d)"
+  echo "ssh-enroll: press Enter at the PIN prompt; the enclave has no PIN"
+  (cd "$tmp" && SSH_SK_PROVIDER=/usr/lib/ssh-keychain.dylib ssh-keygen -q -K -N '')
+  mv "$tmp/id_ecdsa_sk_rk_$label" "$key"
+  printf '%s %s\n' "$(cut -d' ' -f1,2 "$tmp/id_ecdsa_sk_rk_$label.pub")" "$host" >"$key.pub"
+  rm -rf "$tmp"
+}
+
+# tpm BASE: a key sealed to this machine's TPM, at BASE.tpm and BASE.pub.
+tpm() {
+  local base=$1
+  [ -f "$base.tpm" ] && return
+  echo "ssh-enroll: creating $base.tpm; press Enter twice, for no passphrase"
+  ssh-tpm-keygen -C "$host" -f "$base"
+}
+
 # register PUB TYPE: add PUB to GitHub as an authentication or signing key.
 register() {
   local pub=$1 type=$2 endpoint=user/keys body
@@ -69,9 +97,17 @@ if $backup; then
   create "$auth" backup ed25519-sk -O resident -O verify-required -O application=ssh:backup
 else
   auth="$dir/id_ed25519_sk"
-  sign="$dir/id_ed25519"
   create "$auth" "$host" ed25519-sk
-  create "$sign" "$host" ed25519
+  case "$(uname -s)" in
+  Darwin)
+    sign="$dir/id_ecdsa_sk_signing"
+    enclave "$sign"
+    ;;
+  *)
+    sign="$dir/id_ecdsa_signing"
+    tpm "$sign"
+    ;;
+  esac
 fi
 
 trap drop_scopes EXIT
@@ -87,4 +123,7 @@ if $backup; then
 else
   line "user.authKeys.$host" "$auth.pub" "$host"
   line "user.signingKeys.$host" "$sign.pub" "$host"
+  echo
+  echo "Move a replaced signingKeys line to user.retiredSigningKeys, so old"
+  echo "commits still verify."
 fi

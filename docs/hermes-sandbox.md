@@ -19,9 +19,23 @@ memory limits, and these mounts:
 The `hermes-sandbox-store` user service seeds that store with Nix and mise from
 the host. The container never sees the host's nix-daemon socket: the user is a
 trusted Nix user, so the socket would give the agent root. `hermes-ssh-agent`
-runs a second `pass-cli ssh-agent` limited to the Proton Pass `Hermes` vault,
-whose only key signs the sandbox's git commits. The sandbox has no push or login
-credentials.
+runs a second `ssh-tpm-agent` that serves only the key in
+`~/.local/state/hermes-signing`, which signs the sandbox's git commits. The
+sandbox has no push or login credentials.
+
+## Signing
+
+The key is sealed to amarna's TPM, so neither the sandbox nor anything else can
+copy it off the machine. Make it once (press Enter twice, for no passphrase):
+
+```sh
+mkdir -p -m 700 ~/.local/state/hermes-signing
+ssh-tpm-keygen -C hermes-amarna -f ~/.local/state/hermes-signing/id_ecdsa
+```
+
+Add `~/.local/state/hermes-signing/id_ecdsa.pub` as `hermes-amarna` in
+`user.agentSigningKeys` (`modules/common/default.nix`) and switch; until then
+the sandbox commits unsigned and `hermes-ssh-agent` does not exist.
 
 Anything the sandbox can write, the host later runs: Git hooks and
 `core.fsmonitor` in `.git/config`, `mise.toml` tasks, build scripts. Review what

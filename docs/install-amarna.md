@@ -60,10 +60,11 @@ It:
 
 ## After the first boot
 
-1. `pass-cli login`, for the Hermes sandbox's signing agent
-   (`systemctl --user status hermes-ssh-agent`). NixOS configures the
-   persistent desktop keyring with `PROTON_PASS_LINUX_KEYRING=dbus`; on an older
-   installer, export that variable before logging in.
+1. **Keys.** Log in again so the session has the `tss` group, then run
+   `ssh-enroll` with the primary YubiKey plugged in. It makes the host's
+   YubiKey login key and its TPM-sealed signing key; add the lines it prints
+   (see [secrets and keys](secrets.md)). For Hermes, make its key as
+   [the sandbox doc](hermes-sandbox.md#signing) says.
 2. **Secrets, if the host key was not restored.** The generated host key differs
    from the recipient in the flake, so the first activation cannot decrypt
    Berkeley Mono or the Git scan policy. From `~/src/system`:

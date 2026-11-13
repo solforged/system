@@ -44,6 +44,7 @@ let
     // lib.optionalAttrs sign { signingkey = signingKey; };
     gpg.format = "ssh";
     gpg.ssh.allowedSignersFile = "${allowedSigners}";
+    gpg.ssh.program = "${common.signingProgram}";
     commit.gpgsign = sign;
     tag.gpgsign = sign;
   };

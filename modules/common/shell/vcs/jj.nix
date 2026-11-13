@@ -70,6 +70,7 @@ in
           backend = "ssh";
           key = signingKey;
           backends.ssh.allowed-signers = "${allowedSigners}";
+          backends.ssh.program = "${common.signingProgram}";
         };
       };
     };

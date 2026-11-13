@@ -38,7 +38,7 @@ in
           "Public halves of retired keys. Git and jj still verify their old signatures; they authorize nothing.";
       agentSigningKeys =
         my.mkOpt' (types.attrsOf types.str) { }
-          "Public halves of Proton Pass keys that sandboxed agents sign commits with, by name. Git trusts them for signatures only; they never authorize logins.";
+          "Public halves of keys that sandboxed agents sign commits with, by name (hermes-<host>: modules/nixos/agents/hermes-sandbox.nix). Git trusts them for signatures only; they never authorize logins.";
     };
 
     # Write home-manager config as `hm.<option>` from any module. A
@@ -112,11 +112,10 @@ in
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGJ1b34vIwDUfuIkKUrcFD/oji8cVPHD0pJQgBwn4ZII amarna"
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGcTyuiMYZAm8fCEMjUG2uWlSylRqfA/azJksC8wY+8C hyperion (Proton Pass)"
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIErof9IMxQpX5/SSsZeJ8cH6h6WYOiiIBURVUZFkd4r 1password"
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAugIdnV1mNxWv1SJK/qHzXVixB6ufI7n5Fc2RngN59o hermes-amarna (Proton Pass)"
     ];
-    # Each lives alone in a "Hermes" Proton Pass vault; see modules/nixos/agents.
-    user.agentSigningKeys = {
-      hermes-amarna = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAugIdnV1mNxWv1SJK/qHzXVixB6ufI7n5Fc2RngN59o hermes-amarna";
-    };
+    # TPM-sealed keys; docs/hermes-sandbox.md makes one.
+    user.agentSigningKeys = { };
     users.users.${user}.openssh.authorizedKeys.keys =
       lib.concatMap (
         host: lib.optional (config.user.authKeys ? ${host}) config.user.authKeys.${host}
