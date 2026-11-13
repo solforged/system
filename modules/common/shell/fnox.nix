@@ -1,7 +1,7 @@
 # modules/common/shell/fnox.nix
 #
-# User-level secrets for projects. With Proton Pass enabled, fnox reads them
-# from Proton Pass through pass-cli; system secrets belong to agenix.
+# User-level secrets for projects, as age ciphertext decrypted with this
+# host's ~/.config/fnox/age-identity.txt. System secrets belong to agenix.
 {
   config,
   lib,
@@ -17,8 +17,6 @@ in
 
   config = lib.mkIf cfg.enable {
     hm.home.packages = [ pkgs.fnox ];
-    modules.dotfiles.configLink = lib.mkIf config.modules.apps.proton-pass.enable {
-      "fnox/config.toml" = "fnox/config.toml";
-    };
+    modules.dotfiles.configLink."fnox/config.toml" = "fnox/config.toml";
   };
 }

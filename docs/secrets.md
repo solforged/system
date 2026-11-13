@@ -26,8 +26,9 @@
 - **SSH access.** amarna accepts inbound SSH only on `tailscale0`; connect
   through the tailnet. Password, keyboard-interactive and root login are
   disabled.
-- **fnox** reads project secrets from Proton Pass (`config/fnox/config.toml`).
-
+- **fnox** decrypts project secrets, stored as age ciphertext, with this host's
+  `~/.config/fnox/age-identity.txt` (`config/fnox/config.toml`). Create the
+  identity by hand on a new host and add its recipient there.
 - **solforge-theme** is a private flake input. `system-bump` and `bootstrap`
   pass `gh auth token`; CI uses the `SOLFORGE_THEME_TOKEN` secret (see
   [system maintenance](maintenance.md#updating-inputs)). By hand, add

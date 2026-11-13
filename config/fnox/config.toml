@@ -1,8 +1,17 @@
-# Global fnox config. Values stay in Proton Pass; project fnox.toml files
-# reference items through this provider, e.g.
-#   API_TOKEN = { provider = "protonpass", value = "Some item/password" }
-default_provider = "protonpass"
+# Global fnox config. Project fnox.toml files hold age ciphertext encrypted to
+# these recipients; each host decrypts with its own identity, which never
+# leaves the host. To add a host: `age-keygen -o ~/.config/fnox/age-identity.txt`
+# there (mode 0600), add its public key below, and re-encrypt project secrets.
+default_provider = "age"
 
-[providers.protonpass]
-type = "proton-pass"
-vault = "Personal"
+[providers.age]
+type = "age"
+recipients = [
+  "age1n4udyn72eqf87c6pa2z7px3n5y3w38kpdutanjhsuz5888k6xphqkatrqk", # hyperion
+  "age1dpan0pmg7falqsh6swj69awlxpt7rvajt7rjrq7xccsy03swqy0sc6uy0g", # atlas
+  "age14pzlztptfxc2espflsvenzjhtdhuj325xd3gphdmzfhe5z28tf2s5xktjn", # amarna
+]
+key_file = "~/.config/fnox/age-identity.txt"
+
+[daemon]
+enabled = false
