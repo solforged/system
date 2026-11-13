@@ -20,14 +20,14 @@ rec {
   # read from disk rather than an agent. Retired keys still verify old
   # signatures; agent keys are trusted only for Git's signature namespace.
   signingKey =
-    if config.user.sshKeys ? ${config.networking.hostName} then
+    if config.user.signingKeys ? ${config.networking.hostName} then
       "${config.users.users.${config.user.name}.home}/.ssh/id_ed25519"
     else
       null;
   sign = cfg.sign && signingKey != null;
   allowedSigners = pkgs.writeText "allowed_signers" (
     lib.concatMapStrings (key: "${email} ${key}\n") (
-      lib.attrValues config.user.sshKeys ++ config.user.retiredSigningKeys
+      lib.attrValues config.user.signingKeys ++ config.user.retiredSigningKeys
     )
     + lib.concatMapStrings (key: "${email} namespaces=\"git\" ${key}\n") (
       lib.attrValues config.user.agentSigningKeys

@@ -147,7 +147,7 @@ main() {
   note "Next:"
   note "  - Log out and back in, so new sessions get NH_FLAKE and the shell setup."
   note "  - Run pi-setup for Pi's extensions and wiki; configure Rex (docs/terminals.md)."
-  note "  - Run ssh-enroll if this host has no personal SSH key yet."
+  note "  - Run ssh-enroll with the primary YubiKey if this host has no ~/.ssh/id_ed25519_sk."
   note "  - Later updates: system-bump, or nh darwin switch after a pull."
 }
 

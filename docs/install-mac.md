@@ -27,8 +27,9 @@ It:
    with `nh darwin switch`.
 
 Then log out and back in, run `pi-setup`, and finish the
-[Rex setup](terminals.md#rex-on-macs). Run `ssh-enroll` if the host has no local
-SSH key yet.
+[Rex setup](terminals.md#rex-on-macs). Run `ssh-enroll` with the primary
+YubiKey plugged in if the host has no `~/.ssh/id_ed25519_sk` yet, and add the
+lines it prints.
 
 To make a new host's secrets decrypt, add its key to `secrets/agenix-rules.nix`,
 run `secrets-rekey` on a host with an admin YubiKey plugged in, pull, and rerun
@@ -60,7 +61,7 @@ Do this immediately before the switch: dictation stops until the new service
 starts. Other user/project launch agents are left alone. Review
 `dev.mise.cargo-sweep` separately; it is not replaced by this flake.
 
-Keep `~/.pi/agent`, `~/.omp/agent`, `~/.ssh/id_ed25519`,
+Keep `~/.pi/agent`, `~/.omp/agent`, `~/.ssh/id_ed25519*`,
 `~/.config/fnox/age-identity.txt` and the memory wiki in place. The agent modules
 now use their native homes, and the local keys continue to work. Back up any
 older `~/.config/pi` or `~/.config/omp` state before deciding what to migrate;

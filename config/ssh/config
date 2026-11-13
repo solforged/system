@@ -1,4 +1,6 @@
-# Machine-local overrides deployed by an overlay; ignored when absent.
+# Machine-local overrides deployed by an overlay; ignored when absent. Apple's
+# ssh options there must not break Nix's ssh, which git uses.
+IgnoreUnknown UseKeychain
 Include ~/.ssh/config.local
 
 Host github.com
@@ -7,15 +9,29 @@ Host github.com
 Host amarna
   User sol
 
+Host hyperion
+  User admin
+
 Host agent-vm
   User vmadmin
 
-Host github.com amarna agent-vm
-  IdentityFile ~/.ssh/id_ed25519
+# The YubiKeys' FIDO2 keys, read from their handles on disk: this host's key
+# on the primary (ssh-enroll), then the backup's, if pulled with
+# `cd ~/.ssh && ssh-keygen -K`. Only Nix's ssh can use them; /usr/bin/ssh has
+# no FIDO2 support.
+Host github.com amarna hyperion agent-vm
+  IdentityFile ~/.ssh/id_ed25519_sk
+  IdentityFile ~/.ssh/id_ed25519_sk_rk_backup
   IdentitiesOnly yes
   IdentityAgent none
+  # A touch opens a connection that later ones reuse for 10 minutes, without
+  # another touch. Anything running as you can reuse it in that time.
+  ControlMaster auto
+  ControlPath ~/.ssh/control-%C
+  ControlPersist 10m
 
 Host *
+  ForwardAgent no
   ServerAliveInterval 60
   ServerAliveCountMax 3
   HashKnownHosts yes

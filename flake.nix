@@ -122,6 +122,8 @@
           # nix run .#system-bump; installed on every host as system-bump.
           system-bump = (pkgsFor system).callPackage ./packages/system-bump.nix { };
           mitos = (pkgsFor system).callPackage ./packages/mitos.nix { };
+          # nix run .#ssh-enroll, for a host enrolled before its first switch.
+          ssh-enroll = (pkgsFor system).callPackage ./packages/ssh-enroll.nix { };
         }
         # nix build .#installer-iso
         // lib.optionalAttrs (system == "x86_64-linux") { installer-iso = installerIso; }

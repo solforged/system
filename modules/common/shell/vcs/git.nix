@@ -75,6 +75,9 @@ in
         # lazygit reads core.editor before $EDITOR.
         core.editor = lib.mkIf (config.modules.editors.default != null) config.modules.editors.default;
         commit.template = "${./commit-template}";
+        # GUI apps find /usr/bin/ssh first, which has no FIDO2 support and
+        # cannot use the YubiKey keys. jj's Git subprocess reads this too.
+        core.sshCommand = lib.getExe' pkgs.openssh "ssh";
 
         # Hook names must not collide with event names.
         hook = {

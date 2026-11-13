@@ -26,7 +26,7 @@ in
     enable = lib.mkEnableOption "Git and its tools";
     sign =
       my.mkOpt' types.bool true
-        "Sign personal commits and tags with this host's key from user.sshKeys, when it has one.";
+        "Sign personal commits and tags with this host's key from user.signingKeys, when it has one.";
     personalIdentity = my.mkOpt' (types.enum [
       "everywhere"
       "github"

@@ -21,12 +21,18 @@ in
 
     user = {
       name = my.mkOpt types.str "sol";
-      sshKeys =
+      authKeys =
         my.mkOpt' (types.attrsOf types.str) { }
-          "Public halves of each host's ~/.ssh/id_ed25519, made by ssh-enroll, by host. A host listed here signs commits with its own key.";
+          "Public halves of each host's ~/.ssh/id_ed25519_sk, a FIDO2 key on the primary YubiKey made by ssh-enroll, by host. They authenticate to GitHub; those of sshLoginHosts also log in.";
+      backupAuthKey =
+        my.mkOpt' (types.nullOr types.str) null
+          "Public half of the backup YubiKey's resident FIDO2 key (ssh-enroll --backup). It needs the PIN and a touch, and logs in wherever authKeys do.";
       sshLoginHosts =
         my.mkOpt' (types.listOf types.str) [ ]
-          "Hosts in sshKeys whose key may log in to this user's account.";
+          "Hosts in authKeys whose key may log in to this user's account.";
+      signingKeys =
+        my.mkOpt' (types.attrsOf types.str) { }
+          "Public halves of the key each host signs commits with, by host. Git and jj trust them for signatures; they authorize no logins.";
       retiredSigningKeys =
         my.mkOpt' (types.listOf types.str) [ ]
           "Public halves of retired keys. Git and jj still verify their old signatures; they authorize nothing.";
@@ -86,16 +92,19 @@ in
       (final: _prev: my.mapModules ../../packages (path: final.callPackage path { }))
     ];
 
-    user.sshKeys = {
-      hyperion = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJhK+KaTssKEnfGu7L1mPgvycDLyAIZIqlJ089Wi7kWd hyperion";
-      amarna = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIO4ILJOzgl9yhaZ5mNZAtq16R8pvxXIgqX1ks/7+0ttD amarna";
-      atlas = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPp+FPH5hWad4uKJWwkQuDt1SqKy4tKY+gSmA/xnpyWZ atlas";
-    };
-    # The work Mac signs commits but does not log in to personal machines.
+    # Filled in by ssh-enroll on each host; see docs/secrets.md.
+    user.authKeys = { };
+    user.backupAuthKey = null;
+    # The work Mac reaches GitHub but does not log in to personal machines.
     user.sshLoginHosts = [
       "hyperion"
       "amarna"
     ];
+    user.signingKeys = {
+      hyperion = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJhK+KaTssKEnfGu7L1mPgvycDLyAIZIqlJ089Wi7kWd hyperion";
+      amarna = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIO4ILJOzgl9yhaZ5mNZAtq16R8pvxXIgqX1ks/7+0ttD amarna";
+      atlas = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPp+FPH5hWad4uKJWwkQuDt1SqKy4tKY+gSmA/xnpyWZ atlas";
+    };
     user.retiredSigningKeys = [
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINJVrIRrq7NWLBvH/yDwoFCgZ4Ha/i7EKYCDEk3fDRNr amarna (Proton Pass)"
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGJ1b34vIwDUfuIkKUrcFD/oji8cVPHD0pJQgBwn4ZII amarna"
@@ -106,9 +115,19 @@ in
     user.agentSigningKeys = {
       hermes-amarna = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAugIdnV1mNxWv1SJK/qHzXVixB6ufI7n5Fc2RngN59o hermes-amarna";
     };
-    users.users.${user}.openssh.authorizedKeys.keys = map (
-      host: config.user.sshKeys.${host}
-    ) config.user.sshLoginHosts;
+    users.users.${user}.openssh.authorizedKeys.keys =
+      lib.concatMap (
+        host: lib.optional (config.user.authKeys ? ${host}) config.user.authKeys.${host}
+      ) config.user.sshLoginHosts
+      # sshd then demands the backup key's PIN as well as a touch.
+      ++ lib.optional (config.user.backupAuthKey != null) "verify-required ${config.user.backupAuthKey}";
+    warnings =
+      lib.optional
+        (
+          config.services.openssh.enable == true
+          && config.users.users.${user}.openssh.authorizedKeys.keys == [ ]
+        )
+        "sshd is on, but no key may log in to ${user}: run ssh-enroll and fill in user.authKeys before switching a host you reach over SSH.";
 
     modules.env.variables = {
       DOTFILES_DIR = dotfiles.dir;

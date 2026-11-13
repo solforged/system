@@ -10,15 +10,28 @@
   paper key instead. Never decrypt the paper key onto a host's disk for longer
   than one run.
 - **Adding a host.** Read its `/etc/ssh/ssh_host_ed25519_key.pub` (on macOS,
-  create it first with `sudo ssh-keygen -A`), add it to the rules file, then run
-  `secrets-rekey`.
-- **SSH keys.** Each host has its own passphrase-less `~/.ssh/id_ed25519` that
-  never leaves it. `ssh-enroll` creates it if missing and registers it on
-  GitHub for push and signing, then prints the line to add to `user.sshKeys` in
-  `modules/common/default.nix`. A host in `user.sshKeys` signs commits with its
-  key, and only hosts in `user.sshLoginHosts` may log in to the others; atlas
-  signs but does not log in. `config/ssh/config` uses the key for GitHub and
-  personal hosts and reads `~/.ssh/config.local` first.
+  create it first with `sudo ssh-keygen -A`), add it to
+  `secrets/host-keys.nix` and the rules file, then run `secrets-rekey`. Every
+  host also pins it in `/etc/ssh/ssh_known_hosts`, with GitHub's keys.
+- **SSH keys** live on the YubiKeys. With only the primary plugged in,
+  `ssh-enroll` gives a host its own FIDO2 key, `~/.ssh/id_ed25519_sk`: a handle
+  that is useless without the YubiKey, and needs a touch per connection.
+  It registers the key on GitHub and prints the line for `user.authKeys` in
+  `modules/common/default.nix`. Only hosts in `user.sshLoginHosts` may log in
+  to the others; atlas reaches GitHub but logs in nowhere.
+- **Backup YubiKey.** `ssh-enroll --backup`, run once, makes its resident key,
+  which needs the PIN and a touch and logs in wherever the primary's keys do
+  (`user.backupAuthKey`). On any host, `cd ~/.ssh && ssh-keygen -K` fetches its
+  handle when the primary is gone. Then enroll a replacement primary on every
+  host and remove the lost key's lines and GitHub keys.
+- **Using the keys.** `config/ssh/config` offers both handles to GitHub and
+  personal hosts and reads `~/.ssh/config.local` first. One touch serves
+  every connection to that host for 10 minutes (`ControlPersist`). Only Nix's
+  ssh speaks FIDO2, so Git's `core.sshCommand` points at it; `/usr/bin/ssh`,
+  which GUI apps would find first, cannot use the keys.
+- **Signing.** Each host signs commits with `~/.ssh/id_ed25519`, also from
+  `ssh-enroll` (`user.signingKeys`). It authorizes no logins and is no
+  GitHub authentication key.
 - **Verifying old signatures.** `user.retiredSigningKeys` keeps replaced keys in
   Git's and jj's allowed signers; they authorize nothing.
   `user.agentSigningKeys` lists keys that sandboxed agents sign with; Git trusts
