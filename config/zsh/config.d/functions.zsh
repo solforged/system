@@ -19,7 +19,9 @@ if (( $+commands[omp] )); then
       if (( skip )); then
         command "$bin" commit "$@"
       else
-        command "$bin" commit --context "Commit messages must pass the global commit-msg policy: Conventional Commits, with a lowercase description after type(scope): and a past-tense subject with no trailing period. Body is optional. If present, use a paragraph or a bullet list (at most three paragraphs)." "$@"
+        local policy="${XDG_CONFIG_HOME:-$HOME/.config}/git/commit-style.md"
+        [[ -r "$policy" ]] || { print -u2 "Missing commit policy: $policy"; return 1; }
+        command "$bin" commit --context "$(< "$policy")" "$@"
       fi
     else
       command "$bin" "$@"
@@ -55,7 +57,7 @@ eff() {
   local selected
   selected=$(ff "$@") || return
   [[ -n "$selected" ]] || return
-  local -a editor=( ${(z)${EDITOR:-nvim}} )
+  local -a editor=( ${(z)${EDITOR:-ms}} )
   "${(@Q)editor}" -- "$selected"
 }
 
@@ -76,48 +78,42 @@ if command -v eza >/dev/null 2>&1; then
 fi
 
 # --- Git worktrees ---
-# Create a new worktree and branch from within current git directory.
+# Canonical repo key, independent of the current subdirectory or worktree.
 ga() {
-  if [[ -z "$1" ]]; then
-    echo "Usage: ga [branch name]"
-    return 1
-  fi
-
-  local branch="$1"
-  local base="$(basename "$PWD")"
-  local wt_path="../${base}--${branch}"
-
-  git worktree add -b "$branch" "$wt_path"
-  command -v mise >/dev/null 2>&1 && mise trust "$wt_path"
-  cd "$wt_path"
+  [[ $# == 1 ]] || { print -u2 'Usage: ga <branch>'; return 1; }
+  local common base branch="$1" slug root target
+  git check-ref-format --branch "$branch" >/dev/null || return 1
+  common=$(git rev-parse --path-format=absolute --git-common-dir) || return 1
+  common=$(cd "$common" && pwd -P) || return 1
+  base="${common%/.git}"
+  base="${base:t}"
+  slug="${branch//\//-}"
+  root="${OMP_WORKTREE_DIR:-$HOME/.omp/wt}"
+  [[ "$root" == /* ]] || { print -u2 'OMP_WORKTREE_DIR must be absolute'; return 1; }
+  target="$root/$base--$slug"
+  [[ ! -e "$target" && ! -L "$target" ]] || { print -u2 "Path already exists: $target"; return 1; }
+  mkdir -p "$root" || return 1
+  git worktree add -b "$branch" "$target" || return 1
+  cd "$target"
 }
 
-# Remove worktree and branch from within active worktree directory.
+# Refuse main checkouts and dirty trees; never force-delete a branch.
 gd() {
-  local confirm=n
+  local common git_dir top main branch confirm=n
+  common=$(git rev-parse --path-format=absolute --git-common-dir) || return 1
+  git_dir=$(git rev-parse --path-format=absolute --git-dir) || return 1
+  top=$(git rev-parse --show-toplevel) || return 1
+  [[ "$git_dir" != "$common" ]] || { print -u2 'Not a linked worktree'; return 1; }
+  main=$(git worktree list --porcelain | head -1)
+  main="${main#worktree }"
+  branch=$(git branch --show-current) || return 1
   if command -v gum >/dev/null 2>&1; then
-    gum confirm "Remove worktree and branch?" || return 0
+    gum confirm "Remove $top and branch $branch?" || return 0
   else
-    read -r "confirm?Remove worktree and branch? (y/N): "
+    read -r "confirm?Remove $top and branch $branch? (y/N): "
     [[ "$confirm" != [Yy] ]] && return 0
   fi
-
-  local cwd base branch root worktree
-
-  cwd="$(pwd)"
-  worktree="$(basename "$cwd")"
-
-  # split on first `--`
-  root="${worktree%%--*}"
-  branch="${worktree#*--}"
-
-  # Protect against accidentally nuking a non-worktree directory
-  if [[ "$root" != "$worktree" ]]; then
-    cd "../$root"
-    git worktree remove "$cwd" --force || return 1
-    git branch -D "$branch"
-  else
-    echo "Current directory is not a worktree (does not match <root>--<branch> pattern)"
-    return 1
-  fi
+  cd "$main" || return 1
+  git worktree remove "$top" || return 1
+  if [[ -n "$branch" ]]; then git branch -d "$branch"; fi
 }

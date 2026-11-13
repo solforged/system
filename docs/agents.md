@@ -172,8 +172,11 @@ and working rules. The commit rules live in `~/.config/git/commit-style.md`
 after a Pi reload or OMP restart.
 
 Private worktrees go in `${OMP_WORKTREE_DIR:-$HOME/.omp/wt}/<repo-key>--<task>`,
-the layout `ga` creates. Harness-managed worker paths stay unchanged, with
-review and cleanup owned by the parent session.
+the layout `ga` creates. It rejects relative roots and occupied paths, including
+dangling symlinks. `gd` confirms the target and refuses dirty trees or forced
+branch deletion. New worktrees are not automatically trusted by mise.
+Harness-managed worker paths stay unchanged, with review and cleanup owned by
+the parent session.
 
 ## Pi
 

@@ -333,8 +333,9 @@ def eff [...args] {
 # OMP_LAUNCHER names a wrapper to run instead of omp, such as a sandbox.
 def --wrapped omp [...args] {
   let bin = $env.OMP_LAUNCHER? | default omp
-  if ($args | first) == "commit" and not ($args | any {|arg| $arg in [--context -c --help -h] }) {
-    ^$bin commit --context "Commit messages must pass the global commit-msg policy: Conventional Commits, with a lowercase description after type(scope): and a past-tense subject with no trailing period. Body is optional. If present, use a paragraph or a bullet list (at most three paragraphs)." ...($args | skip 1)
+  if ($args | get 0?) == "commit" and not ($args | any {|arg| $arg in [--context -c --help -h] }) {
+    let policy = ($env.XDG_CONFIG_HOME? | default ($env.HOME | path join .config) | path join git commit-style.md)
+    ^$bin commit --context (open --raw $policy) ...($args | skip 1)
   } else {
     ^$bin ...$args
   }
@@ -343,29 +344,40 @@ alias omr = omp --resume
 alias pir = pi --resume
 
 # --- Git worktrees ---
-# Create a new worktree and branch from within current git directory.
+# Canonical repo key, independent of the current subdirectory or worktree.
 def --env ga [branch: string] {
-  let wt_path = $"../($env.PWD | path basename)--($branch)"
-  git worktree add -b $branch $wt_path
-  if (which mise | is-not-empty) { mise trust $wt_path }
-  cd $wt_path
+  let valid = (git check-ref-format --branch $branch | complete)
+  if $valid.exit_code != 0 { error make {msg: "Invalid branch name"} }
+  let result = (git rev-parse --path-format=absolute --git-common-dir | complete)
+  if $result.exit_code != 0 { error make {msg: $result.stderr} }
+  let common = ($result.stdout | str trim | path expand)
+  let base = (if ($common | path basename) == ".git" { $common | path dirname } else { $common } | path basename)
+  let slug = ($branch | str replace --all "/" "-")
+  let root = ($env.OMP_WORKTREE_DIR? | default ($env.HOME | path join .omp wt))
+  if not ($root | str starts-with "/") { error make {msg: "OMP_WORKTREE_DIR must be absolute"} }
+  let target = ($root | path join $"($base)--($slug)")
+  if ($target | path exists --no-symlink) { error make {msg: $"Path already exists: ($target)"} }
+  mkdir $root
+  git worktree add -b $branch $target
+  if $env.LAST_EXIT_CODE != 0 { error make {msg: "git worktree add failed"} }
+  cd $target
 }
 
-# Remove worktree and branch from within active worktree directory.
+# Refuse main checkouts and dirty trees; never force-delete a branch.
 def --env gd [] {
-  try { gum confirm "Remove worktree and branch?" } catch { return }
-
-  let cwd = $env.PWD
-  # split on first `--`
-  let parts = $cwd | path basename | split row --number 2 "--"
-
-  # Protect against accidentally nuking a non-worktree directory
-  if ($parts | length) != 2 {
-    error make { msg: "Current directory is not a worktree (does not match <root>--<branch> pattern)" }
-  }
-  cd $"../($parts.0)"
-  git worktree remove $cwd --force
-  git branch -D $parts.1
+  let result = (git rev-parse --path-format=absolute --git-common-dir --git-dir --show-toplevel | complete)
+  if $result.exit_code != 0 { error make {msg: $result.stderr} }
+  let paths = ($result.stdout | lines)
+  if $paths.0 == $paths.1 { error make {msg: "Not a linked worktree"} }
+  let top = $paths.2
+  let main = (git worktree list --porcelain | lines | first | str replace "worktree " "")
+  let branch = (git branch --show-current | str trim)
+  gum confirm $"Remove ($top) and branch ($branch)?"
+  if $env.LAST_EXIT_CODE != 0 { return }
+  cd $main
+  git worktree remove $top
+  if $env.LAST_EXIT_CODE != 0 { error make {msg: "Worktree was not removed"} }
+  if $branch != "" { git branch -d $branch }
 }
 
 # --- Fish-like editing ---
