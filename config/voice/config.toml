@@ -25,7 +25,7 @@ names = [
   "Pi", "Rex", "Claude", "Claude Code", "Codex", "Opus", "Sonnet", "Hermes", "Anthropic",
   "OpenAI", "GitHub", "Ghostty", "Kitty", "Zed", "Raycast", "Obsidian", "Neovim", "Homebrew",
   "Hugging Face", "Superlogical", "Parakeet", "Omarchy", "Hyprland",
-  "omp", "jj", "mise", "uv", "tmux", "launchd", "wasm", "worktree", "AGENTS.md", "README",
+  "omp", "jj", "Nix", "mise", "uv", "tmux", "launchd", "wasm", "worktree", "AGENTS.md", "README",
   "JSON", "JSONL", "YAML", "MLX", "XDG",
 ]
 
@@ -67,6 +67,20 @@ final_period = false
 "meese" = "mise"
 "mies" = "mise"
 "MES" = "mise"
+"mis" = "mise"
+"mese" = "mise"
+"me's" = "mise"
+# Ordinary words, but heard for "mise" and "Nix" in your own dictation and
+# rarely meant here.
+"knees" = "mise"
+"nicks" = "Nix"
+"nick's" = "Nix"
+"nyx" = "Nix"
+"nics" = "Nix"
+"neeks" = "Nix"
+"nakes" = "Nix"
+"nixt" = "Nix"
+"nixflake" = "Nix flake"
 "phnox" = "fnox"
 "fnac" = "fnox"
 "f nox" = "fnox"
