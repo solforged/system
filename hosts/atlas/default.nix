@@ -1,4 +1,5 @@
-# atlas: work machine. Base tools only; no personal agents.
+# atlas: work machine. Base tools and the work-safe agents; the private work
+# flake builds it with its own modules on top (docs/atlas.md).
 { ... }:
 
 {
@@ -43,9 +44,18 @@
     };
 
     apps.ghostty.enable = true;
+
+    # Work-safe agents; the private work flake adds the rest (docs/atlas.md).
+    agents = {
+      omp.enable = true;
+      pi.enable = true;
+    };
   };
 
   config = { ... }: {
+    # Every directory here is in the memory wiki's work scope.
+    modules.env.variables.LLM_WIKI_SCOPE = "work";
+
     system.stateVersion = 6;
   };
 }

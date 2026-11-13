@@ -7,7 +7,7 @@ host; hosts mostly turn on `modules.*` flags.
 | -------- | ------------------------- | --------------------------------------------- |
 | amarna   | NixOS, x86_64             | Desktop: GNOME, Ryzen 9 9950X, RTX PRO 6000   |
 | hyperion | nix-darwin, Apple silicon | Personal Mac                                  |
-| atlas    | nix-darwin, Apple silicon | Work Mac; base tools only, no personal agents |
+| atlas    | nix-darwin, Apple silicon | Work Mac; shared tools and work-safe agents   |
 
 ## Install
 
@@ -52,6 +52,7 @@ and documentation guidelines.
   and fingerprints.
 - [Agent tools](docs/agents.md): omp, Herdr and Claude Desktop.
 - [Memory wiki](docs/wiki.md): the notes repository Pi and omp share.
+- [atlas](docs/atlas.md): the work Mac and its private work flake.
 - [Hermes sandbox](docs/hermes-sandbox.md): mounts, signing and security
   boundaries.
 - [Local inference](modules/nixos/ai/README.md): enable and operate llama.cpp or
