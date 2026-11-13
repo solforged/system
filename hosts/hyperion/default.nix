@@ -48,7 +48,7 @@
       ghostty.enable = false;
       herdr-desktop.enable = false;
       tern.enable = false;
-      # Signing and SSH use this host's own key; see docs/secrets.md.
+      # The password manager app; keys are in docs/secrets.md.
       proton-pass.enable = true;
     };
 

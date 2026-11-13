@@ -1,0 +1,39 @@
+# SSH
+
+## Keys
+
+- **Per host, on the primary.** `ssh-enroll` gives each host its own FIDO2 key:
+  `~/.ssh/id_ed25519_sk` is a handle, useless without the YubiKey, so copying it
+  gains nothing. It registers the key on GitHub and prints the
+  `user.authKeys` line for `modules/common/default.nix`.
+- **Backup.** `ssh-enroll --backup` made one resident key on the backup, which
+  needs its FIDO2 PIN and a touch (`user.backupAuthKey`; sshd enforces the PIN
+  with `verify-required`). Any host fetches its handle with
+  `cd ~/.ssh && ssh-keygen -K`; hyperion already has it.
+- **Who logs in where.** Only hosts in `user.sshLoginHosts` (hyperion, amarna)
+  and the backup may log in to the others. atlas's key reaches GitHub and
+  nothing else, and the work Mac's tooling cannot copy a key off the YubiKey.
+
+## Using them
+
+- `config/ssh/config` offers this host's handle, then the backup's, to GitHub
+  and the personal hosts, and reads `~/.ssh/config.local` first.
+- A touch opens a connection that later ones to the same host reuse for 10
+  minutes (`ControlPersist`). Anything running as you can reuse it meanwhile.
+- Only Nix's ssh speaks FIDO2. Git's `core.sshCommand` points at it, since GUI
+  apps find `/usr/bin/ssh` first, which cannot use the keys. For the same
+  reason, Rex reaches amarna over Tailscale rather than `ssh://`.
+- There is no SSH agent for these keys and no agent forwarding.
+
+## Hosts
+
+- amarna accepts SSH only on `tailscale0`. hyperion's Remote Login accepts only
+  tailnet addresses (`AllowUsers`). Both take keys only, and only those the
+  flake declares; hyperion ignores `~/.ssh/authorized_keys`.
+- To pair a client such as Tern, add its key to the host's
+  `users.users.<name>.openssh.authorizedKeys`. Rex for iOS pairs over
+  Tailscale and needs no SSH.
+- Every host pins GitHub's and the personal hosts' keys in
+  `/etc/ssh/ssh_known_hosts` (`modules/common/shell/ssh.nix`).
+- `agent-vm` is outside the flake: its `authorized_keys` needs the FIDO2 keys
+  added by hand.
