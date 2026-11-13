@@ -13,8 +13,10 @@ let
   admins = [
     # Primary YubiKey 5C Nano, serial 35904923, PIV slot 82.
     "age1yubikey1qww822xc5uux2uxgmrqpxmnaemyum3xt5djknl5rt275326z0f2z6ascq4s"
-    # Backup YubiKey: added at enrollment.
-    # Paper key, offline: added at enrollment.
+    # Backup YubiKey 5C Nano, serial 27235456, PIV slot 82.
+    "age1yubikey1qwhj4d6n9j528z6d3ujy79dd0qxf4fuzeflr7593ngt254uy9t08y43zxx7"
+    # Paper key, kept offline.
+    "age1ccseaks2lau78jayhnallessfhwhmlehcx6qy4j46ma82r2mxv2sv7yule"
   ];
 
   everywhere = admins ++ [
