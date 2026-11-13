@@ -1,0 +1,22 @@
+theme = "solforge-dark"
+
+[editor]
+line-number = "absolute"
+border-style = "rounded"
+mouse.enable = true
+bufferline.show = "multiple"
+format.on-save = false
+lsp.inlay-hints.enable = false
+file-picker.hidden = false
+
+[editor.statusline]
+left = ["mode", "spinner", "file-name", "file-modification-indicator", "branch"]
+right = ["diagnostics", "selections", "search-position", "position", "file-encoding", "file-line-ending", "file-type"]
+separator = "│"
+mode.color = true
+mode.normal = "NORMAL"
+mode.insert = "INSERT"
+mode.select = "SELECT"
+
+[terminal]
+true-color = true
