@@ -183,9 +183,11 @@ the parent session.
 `modules.agents.pi.enable` installs Pi from the pinned `llm-agents` input and
 links the shared policy to `~/.pi/agent/AGENTS.md`. Its extensions and roles
 come from the live `~/src/pi-mono` checkout. Run `pi-setup` once per host, and
-again after pulling pi-mono or the wiki: it clones both when missing, builds the
-wiki tool, and runs pi-mono's `scripts/install.ts`, which links the extensions
-into `~/.pi/agent`. Update Pi itself with `system-bump llm-agents`.
+again after pulling pi-mono or the wiki: it clones both when missing, along
+with the wiki's home bundle on personal hosts, builds the wiki tool, and runs
+pi-mono's `scripts/install.ts`, which links the extensions into `~/.pi/agent`.
+Activation reminds you while any of these are missing; see the
+[wiki guide](wiki.md). Update Pi itself with `system-bump llm-agents`.
 
 ## Herdr
 

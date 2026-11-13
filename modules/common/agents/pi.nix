@@ -2,7 +2,8 @@
 #
 # Pi from the llm-agents input, in its own home, ~/.pi/agent. Extensions and
 # roles come from the live ~/src/pi-mono checkout; pi-setup clones it and the
-# memory wiki and links them in.
+# memory wiki and links them in. Activation only checks for them: cloning
+# needs the network and GitHub keys, so pi-setup stays a manual step.
 {
   config,
   lib,
@@ -36,13 +37,34 @@ in
   };
   config = lib.mkIf cfg.enable {
     modules.dotfiles.homeLink.".pi/agent/AGENTS.md" = "agents/AGENTS.md";
-    hm.home.file = lib.mkIf cfg.herdrTuiIntegration.enable {
-      ".pi/agent/extensions/herdr-agent-state.ts".source =
-        "${herdrPiIntegration}/extensions/herdr-agent-state.ts";
-    };
-    hm.home.packages = [
-      pi
-      pkgs.pi-setup
-    ];
+    hm =
+      hm:
+      let
+        wiki = "${hm.config.xdg.dataHome}/wiki";
+        required = [
+          "${hm.config.home.homeDirectory}/src/pi-mono/.git"
+          "${wiki}/bin/wiki"
+        ]
+        ++ lib.optional (config.modules.agents.wiki.scope == "home") "${wiki}/home/.git";
+      in
+      {
+        home.file = lib.mkIf cfg.herdrTuiIntegration.enable {
+          ".pi/agent/extensions/herdr-agent-state.ts".source =
+            "${herdrPiIntegration}/extensions/herdr-agent-state.ts";
+        };
+        home.packages = [
+          pi
+          pkgs.pi-setup
+        ];
+        home.activation.piSetupNotice = hm.lib.hm.dag.entryAfter [ "linkGeneration" ] ''
+          missing=""
+          for path in ${lib.escapeShellArgs required}; do
+            [ -e "$path" ] || missing="$missing $path"
+          done
+          if [ -n "$missing" ]; then
+            noteEcho "Pi setup is incomplete; run pi-setup. Missing:$missing"
+          fi
+        '';
+      };
   };
 }
