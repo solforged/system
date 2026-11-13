@@ -48,13 +48,12 @@
     agents = {
       omp.enable = true;
       pi.enable = true;
+      # Every directory here is in the memory wiki's work scope.
+      wiki.scope = "work";
     };
   };
 
   config = { ... }: {
-    # Every directory here is in the memory wiki's work scope.
-    modules.env.variables.LLM_WIKI_SCOPE = "work";
-
     system.stateVersion = 6;
   };
 }

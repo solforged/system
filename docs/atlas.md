@@ -26,5 +26,6 @@ Point `NH_FLAKE` at the work flake on atlas, for example with
   `modules.env.variables` so launchd apps see them too;
 - the work Git identity, if it differs from `secrets/git-work-identity.age`;
 - the memory wiki's work bundle, linked from the work repository into
-  `~/.local/share/wiki/work`. `LLM_WIKI_SCOPE=work` is set here already;
+  `~/.local/share/wiki/work`. The `work` scope is set here already
+  (`modules.agents.wiki.scope`);
 - work-only agent commands, skills and project secrets.

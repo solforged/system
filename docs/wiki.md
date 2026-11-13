@@ -10,7 +10,11 @@ tool and the skill. Neither Home Manager nor this repo owns its contents.
 Manager links `~/.agents/skills/memory` to the skill in the checkout, where Pi
 and omp find it.
 
-Each host keeps its own private bundle in the checkout. atlas sets
-`LLM_WIKI_SCOPE=work`, and its private work flake links the work bundle in from
-the work repository, so work notes never reach a personal host; see
-[atlas](atlas.md).
+## Scope and private bundles
+
+`modules.agents.wiki.scope` sets `LLM_WIKI_SCOPE`, which picks the private
+bundle read beside `shared` and where writes go. It defaults to `home`; atlas
+sets `work`. Without a scope, only `shared` is read and writes fail.
+
+atlas's private work flake links the work bundle in from the work repository,
+so work notes never reach a personal host; see [atlas](atlas.md).

@@ -2,7 +2,7 @@
 #
 # Skills in ~/.agents/skills, which Pi and omp both read. The authored ones
 # live in config/agents/skills; the memory skill comes from the wiki checkout
-# (pi-setup clones it). Apps that ship their own skills, such as Rex and
+# (wiki.nix). Apps that ship their own skills, such as Rex and
 # terminal-browser, install them there themselves.
 {
   config,
@@ -17,10 +17,6 @@ in
     modules.dotfiles.homeLink = {
       ".agents/skills/humanizer" = "agents/skills/humanizer";
       ".agents/skills/visual-debugging" = "agents/skills/visual-debugging";
-    };
-    hm = hm: {
-      home.file.".agents/skills/memory".source =
-        hm.config.lib.file.mkOutOfStoreSymlink "${hm.config.xdg.dataHome}/wiki/.agents/skills/memory";
     };
   };
 }
