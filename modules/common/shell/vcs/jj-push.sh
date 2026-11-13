@@ -56,10 +56,12 @@ while read -r commit change; do
 done <<<"$commits"
 
 # One scan over what the push publishes: identities, messages, added lines.
+# C locale for sed and the scan: an age file with no NUL byte is diffed as
+# text, and sed in a UTF-8 locale stops at its first invalid byte sequence.
 if ! {
   jj_log -r "$revs" -T 'author.name() ++ " <" ++ author.email() ++ ">\n" ++ committer.name() ++ " <" ++ committer.email() ++ ">\n" ++ description ++ "\n"'
-  jj_log -r "$revs" --git -T '' | sed -n -e '/^+++ /d' -e '/^+/p'
-} | in_git git-gitleaks-scan --stdin; then
+  jj_log -r "$revs" --git -T '' | LC_ALL=C sed -n -e '/^+++ /d' -e '/^+/p'
+} | LC_ALL=C in_git git-gitleaks-scan --stdin; then
   echo "jj push: gitleaks flagged a commit above." >&2
   failed=1
 fi
