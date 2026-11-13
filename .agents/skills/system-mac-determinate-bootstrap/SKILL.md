@@ -12,6 +12,15 @@ description: "Bootstrap a Mac (hyperion, atlas) on the ~/src/system nix-darwin f
 assert `nix.enable`). Shared `nix.settings` live only in
 `modules/nixos/default.nix`.
 
+## Start with bootstrap
+
+For ~/src/system, run `bootstrap [host]` from the checkout (or the curl line in
+`docs/install-mac.md`) in a pty. It covers Install, the GitHub token, the
+account-name check, the host key, removing `~/src/dotfiles` links, moving
+`nix.custom.conf` aside, installing Homebrew and the first switch through `nh`.
+It is idempotent; rerun it after fixing a failure. The steps below are the
+manual path, for another flake or when diagnosing a failed run.
+
 ## Preflight
 
 - Check `/nix`, `/etc/nix` and `/usr/local/bin/determinate-nixd` for leftovers

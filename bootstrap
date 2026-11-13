@@ -1,0 +1,144 @@
+#!/bin/bash
+# bootstrap: set up a Mac on this flake, or finish a setup that stopped part
+# way. Every step checks its own state, so rerunning is safe.
+#
+#   curl -fsSL https://raw.githubusercontent.com/solforged/system/main/bootstrap | bash
+#   ~/src/system/bootstrap [host]
+#
+# The host defaults to this Mac's LocalHostName and must exist in hosts/.
+# NixOS hosts install from the custom ISO instead; see docs/install-amarna.md.
+#
+# Runs under macOS's bash 3.2. Everything is inside main, so bash has read
+# the whole script before a command can read the curl pipe on stdin.
+set -euo pipefail
+
+repo_url=https://github.com/solforged/system.git
+dir=${SYSTEM_DIR:-$HOME/src/system}
+nix_bin=/nix/var/nix/profiles/default/bin
+
+step() { printf '\n\033[1m==> %s\033[0m\n' "$*"; }
+note() { printf '    %s\n' "$*"; }
+die() {
+  printf '\033[31mbootstrap: %s\033[0m\n' "$*" >&2
+  exit 1
+}
+
+# curl | bash feeds the script on stdin, so questions read the terminal.
+exec 3<>/dev/tty || die "run this from an interactive terminal"
+ask() {
+  local answer
+  printf '%s [Y/n] ' "$1" >&3
+  IFS= read -r answer <&3 || die "could not read from the terminal"
+  case $answer in [nN]*) return 1 ;; *) return 0 ;; esac
+}
+
+main() {
+  [ "$(uname -s)" = Darwin ] || die "macOS only; NixOS hosts use docs/install-amarna.md"
+  [ "$(uname -m)" = arm64 ] || die "Apple silicon only"
+  [ "$(id -u)" -ne 0 ] || die "run as your normal user; it asks for sudo when needed"
+
+  host=${1:-$(scutil --get LocalHostName 2>/dev/null || hostname -s)}
+
+  step "Checking sudo"
+  sudo -v
+
+  if [ ! -x "$nix_bin/nix" ]; then
+    step "Installing Determinate Nix"
+    installer=$(mktemp)
+    curl --proto '=https' --tlsv1.2 -sSf -L -o "$installer" https://install.determinate.systems/nix
+    if ! sh "$installer" install --no-confirm <&3; then
+      note "If it reported a keychain password for a missing \"Nix Store\" volume,"
+      note "delete it with the security command it printed, then rerun bootstrap."
+      exit 1
+    fi
+  fi
+  export PATH="$nix_bin:$PATH"
+
+  # nix-darwin's homebrew module drives brew but does not install it.
+  if [ ! -x /opt/homebrew/bin/brew ]; then
+    step "Installing Homebrew"
+    NONINTERACTIVE=1 /bin/bash -c \
+      "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" <&3
+  fi
+
+  # git and gh from nixpkgs, so a fresh Mac needs no Command Line Tools here.
+  step "Fetching git and gh"
+  for out in $(nix build --no-link --print-out-paths nixpkgs#git nixpkgs#gh); do
+    PATH="$out/bin:$PATH"
+  done
+  export PATH
+
+  if [ ! -d "$dir/.git" ]; then
+    step "Cloning $repo_url to $dir"
+    mkdir -p "$(dirname "$dir")"
+    git clone "$repo_url" "$dir"
+  fi
+  cd "$dir"
+
+  if [ ! -f "hosts/$host/default.nix" ]; then
+    known=""
+    for h in hosts/*/; do known="$known $(basename "$h")"; done
+    die "no hosts/$host; pass one of:$known"
+  fi
+
+  # The solforge-theme input is private.
+  step "Signing in to GitHub for private flake inputs"
+  if ! gh auth status --hostname github.com >/dev/null 2>&1; then
+    gh auth login --hostname github.com --git-protocol ssh --web <&3
+  fi
+  NIX_CONFIG="access-tokens = github.com=$(gh auth token)"
+  export NIX_CONFIG
+
+  step "Checking the account name"
+  user=$(nix eval --raw ".#darwinConfigurations.$host.config.system.primaryUser")
+  [ "$user" = "$(id -un)" ] ||
+    die "hosts/$host builds for \"$user\", but you are \"$(id -un)\"; set user.name in its config"
+
+  step "Checking the host key"
+  [ -f /etc/ssh/ssh_host_ed25519_key ] || sudo ssh-keygen -A
+  key=$(cut -d' ' -f1-2 /etc/ssh/ssh_host_ed25519_key.pub)
+  if ! grep -qF "$key" secrets/agenix-rules.nix; then
+    note "This host cannot decrypt secrets yet. Add its key to"
+    note "secrets/agenix-rules.nix, run secrets-rekey on a host with the admin"
+    note "key, pull, and rerun bootstrap:"
+    note "  $key"
+    ask "Continue without secrets for now?" || exit 1
+  fi
+
+  # Home Manager backs up plain files it replaces, but refuses to replace
+  # symlinks it did not make. Links from the old mise dotfiles are the usual
+  # case.
+  links=$(
+    find "$HOME" -maxdepth 1 -type l -lname "*/src/dotfiles/*" 2>/dev/null
+    for d in .config .local .ssh .agents .omp .pi .claude .hermes; do
+      [ -d "$HOME/$d" ] &&
+        find "$HOME/$d" -maxdepth 8 -type l -lname "*/src/dotfiles/*" -not -path "*.hm-backup*" 2>/dev/null
+    done
+    true
+  )
+  if [ -n "$links" ]; then
+    step "Removing links into ~/src/dotfiles"
+    printf '%s\n' "$links" | sed 's/^/    /'
+    ask "Remove these links?" || die "Home Manager cannot replace them; remove them and rerun"
+    printf '%s\n' "$links" | while IFS= read -r link; do rm "$link"; done
+  fi
+
+  # nix-darwin writes /etc/nix/nix.custom.conf and refuses to replace the
+  # installer's copy.
+  conf=/etc/nix/nix.custom.conf
+  if [ -f "$conf" ] && [ ! -L "$conf" ]; then
+    step "Moving the installer's $conf aside"
+    sudo mv "$conf" "$conf.before-nix-darwin"
+  fi
+
+  step "Building and activating $host"
+  nix run --inputs-from . nixpkgs#nh -- darwin switch . --hostname "$host"
+
+  step "Done"
+  note "Next:"
+  note "  - Log out and back in, so new sessions get NH_FLAKE and the shell setup."
+  note "  - Run pass-cli login for the SSH agent and Proton Pass secrets."
+  note "  - Later updates: system-bump, or nh darwin switch after a pull."
+}
+
+main "$@"

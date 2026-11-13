@@ -4,14 +4,14 @@
 configured by `modules.dotfiles.dir`, so commands work from any directory and
 select the local hostname.
 
-For the first activation, before `nh` is installed:
+Macs get their first activation from [`bootstrap`](install-mac.md). On NixOS,
+before `nh` is installed:
 
 ```sh
 nix run --inputs-from ~/src/system nixpkgs#nh -- os switch ~/src/system
 ```
 
-On Macs, replace `os` with `darwin`. Log out and back in after this first switch
-to load `NH_FLAKE`, then use:
+Log out and back in after the first switch to load `NH_FLAKE`, then use:
 
 ```sh
 nh os switch             # build, show the diff, activate (amarna)

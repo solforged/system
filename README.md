@@ -14,7 +14,8 @@ host; hosts mostly turn on `modules.*` flags.
 Keep the checkout at `~/src/system`; dotfiles are linked live from `config/`.
 
 - **NixOS:** [Install or reinstall amarna](docs/install-amarna.md).
-- **macOS:** [Set up a Mac](docs/install-mac.md).
+- **macOS:** [Set up a Mac](docs/install-mac.md):
+  `curl -fsSL https://raw.githubusercontent.com/solforged/system/main/bootstrap | bash`.
 
 On an already configured host, rebuild and activate as your normal user:
 

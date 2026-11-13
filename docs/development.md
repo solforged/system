@@ -13,6 +13,7 @@ config/            raw dotfiles, linked live into $HOME
 packages/          local derivations; each becomes pkgs.<name>
 secrets/           agenix files and their recipients
 installer/         custom NixOS installer image for amarna
+bootstrap          first-run setup for a Mac
 .github/           checks on every push and the weekly input bump
 docs/              setup, operations and development guides
 ```
