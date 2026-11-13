@@ -21,5 +21,7 @@
   through the tailnet. Password, keyboard-interactive and root login are
   disabled.
 - **fnox** reads project secrets from Proton Pass (`config/fnox/config.toml`).
-- **solforge-theme** is a private flake input. Locking or updating it needs
+- **solforge-theme** is a private flake input. `system-bump` and `bootstrap`
+  pass `gh auth token`; CI uses the `SOLFORGE_THEME_TOKEN` secret (see
+  [system maintenance](maintenance.md#updating-inputs)). By hand, add
   `--option access-tokens "github.com=$(gh auth token)"`.

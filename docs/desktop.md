@@ -137,7 +137,7 @@ scheme lives in the data runtime for the same reason. Edit Solforge's upstream
 generator to change the palette, then update just that input:
 
 ```sh
-nix flake update solforge-theme --option access-tokens "github.com=$(gh auth token)"
+system-bump solforge-theme --no-commit
 nix build .#checks.x86_64-linux.solforge
 nh os switch
 ```

@@ -18,7 +18,6 @@ nh os switch             # build, show the diff, activate (amarna)
 nh os build              # build and show the diff without activating
 nh os test               # activate without changing the next-boot default
 nh os boot               # set the next-boot default without activating
-nh os switch --update    # update all flake inputs, then rebuild and activate
 nh darwin switch         # Macs
 nix fmt                  # nixfmt-tree
 nix build .#installer-iso # amarna installer
@@ -33,6 +32,46 @@ New files must be `git add`ed before the flake can see them.
 
 For the private theme input and host credentials, see
 [secrets and keys](secrets.md).
+
+## Updating inputs
+
+`system-bump` updates flake inputs, builds this host, and commits `flake.lock`
+as `chore(flake): bumped <inputs>` with one bullet per changed input. A failed
+build restores the previous lock. It passes `gh auth token` for the private
+theme input.
+
+```sh
+system-bump                       # every input; build, then commit
+system-bump llm-agents --switch   # one input; build, commit, activate
+system-bump --no-commit           # leave flake.lock for review
+```
+
+It commits with jj in a jj checkout, otherwise git.
+
+GitHub keeps main current as well:
+
+- **Bump** (`.github/workflows/bump.yml`) runs `system-bump --eval-only` every
+  Monday. When every host and check evaluates, it pushes the new lock to main;
+  otherwise it pushes nothing and the failed run is emailed. Pull before
+  switching. Run it on demand from the Actions tab.
+- **Check** (`.github/workflows/check.yml`) runs `system-bump --verify`, which
+  evaluates every host, check and package, and `nix fmt -- --ci` on pull
+  requests and pushes to main.
+- **Dependabot** updates the pinned GitHub Actions.
+
+Evaluation catches renamed options and missing packages, not build failures or
+uncached derivations; `system-bump` locally, or `nh darwin build` after a pull,
+covers those.
+
+Both workflows fetch the private theme with the `SOLFORGE_THEME_TOKEN` secret: a
+fine-grained token with read-only Contents access to `solforged/solforge-theme`.
+Store it as an Actions secret, and also as a Dependabot secret, because runs
+Dependabot starts see only Dependabot secrets:
+
+```sh
+gh secret set SOLFORGE_THEME_TOKEN --repo solforged/system
+gh secret set SOLFORGE_THEME_TOKEN --repo solforged/system --app dependabot
+```
 
 ## Package channels and binary caches
 

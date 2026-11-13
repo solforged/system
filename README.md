@@ -21,7 +21,11 @@ On an already configured host, rebuild and activate as your normal user:
 ```sh
 nh os switch     # NixOS
 nh darwin switch # macOS
+system-bump      # update inputs, build, commit flake.lock
 ```
+
+A weekly workflow also bumps every input and pushes the lock once every host
+evaluates; see [system maintenance](docs/maintenance.md#updating-inputs).
 
 ## Develop
 

@@ -1,0 +1,54 @@
+name: Check
+
+# Evaluates every host, check and package without building them, and checks
+# formatting.
+# Evaluation catches what input bumps usually break: renamed options and
+# removed or renamed packages. bump.yml runs the same evaluation before it
+# commits a new lock.
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: check-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Install Nix
+        uses: DeterminateSystems/determinate-nix-action@16f94ba7aae399b9f9077c254b6719ec6de7e3e3 # v3.24.2
+
+      # solforge-theme is private. Dependabot runs see only Dependabot
+      # secrets, so the token is stored in both places.
+      - name: Configure the theme token
+        env:
+          THEME_TOKEN: ${{ secrets.SOLFORGE_THEME_TOKEN }}
+        run: |
+          if [ -z "$THEME_TOKEN" ]; then
+            echo "::error::SOLFORGE_THEME_TOKEN is not set; see docs/maintenance.md"
+            exit 1
+          fi
+          {
+            echo "NIX_CONFIG<<EOF"
+            echo "access-tokens = github.com=$THEME_TOKEN"
+            echo "EOF"
+          } >> "$GITHUB_ENV"
+
+      - name: Evaluate every host, check and package
+        run: nix run .#system-bump -- --verify
+
+      - name: Check formatting
+        run: nix fmt -- --ci

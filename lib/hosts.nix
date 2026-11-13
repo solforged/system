@@ -69,7 +69,7 @@ rec {
       ++ extraModules;
     };
 
-  # mapHosts :: path -> { name = { isDarwin; build; }; }
+  # mapHosts :: path -> { name = { system; isDarwin; build; }; }
   #
   # `build` stays a thunk, so flake.nix can sort hosts by platform without
   # evaluating them.
@@ -81,6 +81,7 @@ rec {
         host = import path { inherit lib inputs; };
       in
       {
+        inherit (host) system;
         isDarwin = lib.hasSuffix "-darwin" host.system;
         build = mkHost {
           name = baseNameOf path;

@@ -13,6 +13,7 @@ config/            raw dotfiles, linked live into $HOME
 packages/          local derivations; each becomes pkgs.<name>
 secrets/           agenix files and their recipients
 installer/         custom NixOS installer image for amarna
+.github/           checks on every push and the weekly input bump
 docs/              setup, operations and development guides
 ```
 
@@ -47,6 +48,8 @@ Run commands from the checkout on the target platform:
 nix fmt                              # format Nix files
 nh os build                          # build NixOS without activating
 nh darwin build                      # build macOS without activating
+nix flake check                      # build this platform's hosts and checks
+system-bump --verify                 # evaluate every host and check (CI)
 nix build .#checks.x86_64-linux.solforge # Linux theme checks
 nix build .#checks.x86_64-linux.herdr-themes # Herdr themes and settings merge
 nix build .#checks.x86_64-linux.herdr-pi # Pinned Herdr TUI integration for Pi

@@ -2,12 +2,20 @@
 #
 # nh runs rebuilds and shows what changed: `nh os switch` on NixOS,
 # `nh darwin switch` on Macs. NH_FLAKE points it at the live checkout; a flake
-# that builds hosts through lib.mkHost can point it at itself.
-{ config, lib, ... }:
+# that builds hosts through lib.mkHost can point it at itself. system-bump
+# updates inputs, builds, and commits the lock; see docs/maintenance.md.
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 {
   programs.nh = {
     enable = true;
     flake = lib.mkDefault config.modules.dotfiles.dir;
   };
+
+  environment.systemPackages = [ pkgs.system-bump ];
 }

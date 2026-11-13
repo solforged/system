@@ -47,14 +47,15 @@
     omp-intercom.url = "github:solforged/omp-intercom";
     omp-intercom.flake = false;
 
-    # Private repo. Fetching it needs a GitHub token, e.g.
-    # --option access-tokens "github.com=$(gh auth token)".
+    # Private repo. Fetching it needs a GitHub token: system-bump and
+    # bootstrap pass `gh auth token`, CI the SOLFORGE_THEME_TOKEN secret.
+    # By hand: --option access-tokens "github.com=$(gh auth token)".
     solforge-theme.url = "github:solforged/solforge-theme";
     solforge-theme.flake = false;
   };
 
   outputs =
-    inputs@{ nixpkgs, ... }:
+    inputs@{ nixpkgs, nixpkgs-darwin, ... }:
     let
       inherit (nixpkgs) lib;
       my = import ./lib { inherit lib inputs; };
@@ -62,27 +63,27 @@
       only =
         darwin:
         lib.mapAttrs (_: host: host.build) (lib.filterAttrs (_: host: host.isDarwin == darwin) hosts);
-    in
-    {
-      nixosConfigurations = only false;
-      darwinConfigurations = only true;
 
-      lib = { inherit (my) mkHost; };
+      # Tooling (formatter, system-bump) for every platform the flake is
+      # run from, including CI runners. Macs take the Darwin-tested channel.
+      systems = [
+        "x86_64-linux"
+        "aarch64-linux"
+        "aarch64-darwin"
+      ];
+      pkgsFor =
+        system:
+        (if lib.hasSuffix "-darwin" system then nixpkgs-darwin else nixpkgs).legacyPackages.${system};
 
-      checks.x86_64-linux = {
-        solforge = import ./tests/solforge.nix {
-          configuration = hosts.amarna.build;
-        };
-        herdr-themes = import ./tests/herdr.nix {
-          configuration = hosts.amarna.build;
-        };
-        herdr-pi = import ./tests/herdr-pi.nix {
-          configuration = hosts.amarna.build;
-        };
-      };
+      # Every host's system build, as a check on its own platform, so
+      # `nix flake check` builds this Mac and `system-bump --verify`
+      # evaluates every host.
+      hostChecks = lib.foldlAttrs (
+        acc: name: host:
+        lib.recursiveUpdate acc { ${host.system}.${name} = host.build.config.system.build.toplevel; }
+      ) { } hosts;
 
-      # nix build .#installer-iso
-      packages.x86_64-linux.installer-iso =
+      installerIso =
         (lib.nixosSystem {
           specialArgs = { inherit inputs; };
           modules = [
@@ -90,9 +91,37 @@
             { nixpkgs.hostPlatform = "x86_64-linux"; }
           ];
         }).config.system.build.isoImage;
+    in
+    {
+      nixosConfigurations = only false;
+      darwinConfigurations = only true;
 
-      formatter = lib.genAttrs [ "x86_64-linux" "aarch64-darwin" ] (
-        system: nixpkgs.legacyPackages.${system}.nixfmt-tree
+      lib = { inherit (my) mkHost; };
+
+      checks = lib.recursiveUpdate hostChecks {
+        x86_64-linux = {
+          solforge = import ./tests/solforge.nix {
+            configuration = hosts.amarna.build;
+          };
+          herdr-themes = import ./tests/herdr.nix {
+            configuration = hosts.amarna.build;
+          };
+          herdr-pi = import ./tests/herdr-pi.nix {
+            configuration = hosts.amarna.build;
+          };
+        };
+      };
+
+      packages = lib.genAttrs systems (
+        system:
+        {
+          # nix run .#system-bump; installed on every host as system-bump.
+          system-bump = (pkgsFor system).callPackage ./packages/system-bump.nix { };
+        }
+        # nix build .#installer-iso
+        // lib.optionalAttrs (system == "x86_64-linux") { installer-iso = installerIso; }
       );
+
+      formatter = lib.genAttrs systems (system: (pkgsFor system).nixfmt-tree);
     };
 }

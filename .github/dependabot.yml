@@ -1,18 +1,8 @@
-# Weekly flake input updates. Security updates are not throttled by the
-# cooldown; version updates wait out the default 3-day cooldown.
+# Weekly GitHub Actions updates; the actions are pinned by commit. Flake
+# inputs are bumped by .github/workflows/bump.yml instead, which updates
+# every input (the private theme too) in one evaluated commit.
 version: 2
 updates:
-  - package-ecosystem: "nix"
-    directory: "/"
-    schedule:
-      interval: "weekly"
-    # The theme input needs a token at fetch time, so Dependabot cannot
-    # update it; leave it to the quarterly human pass.
-    ignore:
-      - dependency-name: "solforge-theme"
-    commit-message:
-      prefix: "chore(flake)"
-
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:

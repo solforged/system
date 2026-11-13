@@ -1,0 +1,52 @@
+name: Bump
+
+# Weekly: update every flake input, evaluate every host, and push the new lock
+# to main as one commit. A failed evaluation pushes nothing and fails the run,
+# which GitHub reports by email. The same script runs locally as system-bump.
+on:
+  schedule:
+    - cron: "23 5 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: bump
+  cancel-in-progress: false
+
+jobs:
+  bump:
+    name: bump
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: main
+
+      - name: Install Nix
+        uses: DeterminateSystems/determinate-nix-action@16f94ba7aae399b9f9077c254b6719ec6de7e3e3 # v3.24.2
+
+      - name: Configure the theme token
+        env:
+          THEME_TOKEN: ${{ secrets.SOLFORGE_THEME_TOKEN }}
+        run: |
+          if [ -z "$THEME_TOKEN" ]; then
+            echo "::error::SOLFORGE_THEME_TOKEN is not set; see docs/maintenance.md"
+            exit 1
+          fi
+          {
+            echo "NIX_CONFIG<<EOF"
+            echo "access-tokens = github.com=$THEME_TOKEN"
+            echo "EOF"
+          } >> "$GITHUB_ENV"
+
+      - name: Update, evaluate and commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          nix run .#system-bump -- --eval-only
+
+      - name: Push
+        run: git push origin HEAD:main
