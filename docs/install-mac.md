@@ -28,11 +28,11 @@ It:
 
 Then log out and back in, run `pi-setup`, and finish the
 [Rex setup](terminals.md#rex-on-macs). Run `ssh-enroll` if the host has no local
-SSH key yet. `pass-cli login` is needed for editing agenix secrets, rather than
-for everyday SSH or signing.
+SSH key yet.
 
 To make a new host's secrets decrypt, add its key to `secrets/agenix-rules.nix`,
-run `secrets-rekey` on a host with the admin key, pull, and rerun `bootstrap`.
+run `secrets-rekey` on a host with an admin YubiKey plugged in, pull, and rerun
+`bootstrap`.
 The bootstrap skill in `.agents/skills` covers first-switch failures.
 
 Homebrew `cleanup` defaults to `"none"`, so activation leaves extra formulae and

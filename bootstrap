@@ -108,8 +108,8 @@ main() {
   key=$(cut -d' ' -f1-2 /etc/ssh/ssh_host_ed25519_key.pub)
   if ! grep -qF "$key" secrets/agenix-rules.nix; then
     note "This host cannot decrypt secrets yet. Add its key to"
-    note "secrets/agenix-rules.nix, run secrets-rekey on a host with the admin"
-    note "key, pull, and rerun bootstrap:"
+    note "secrets/agenix-rules.nix, run secrets-rekey on a host with an admin"
+    note "YubiKey plugged in, pull, and rerun bootstrap:"
     note "  $key"
     ask "Continue without secrets for now?" || exit 1
   fi
@@ -148,7 +148,6 @@ main() {
   note "  - Log out and back in, so new sessions get NH_FLAKE and the shell setup."
   note "  - Run pi-setup for Pi's extensions and wiki; configure Rex (docs/terminals.md)."
   note "  - Run ssh-enroll if this host has no personal SSH key yet."
-  note "  - Run pass-cli login when editing agenix secrets; personal SSH uses a local key."
   note "  - Later updates: system-bump, or nh darwin switch after a pull."
 }
 

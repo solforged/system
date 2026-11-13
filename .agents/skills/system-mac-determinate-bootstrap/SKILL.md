@@ -89,11 +89,12 @@ manual path, for another flake or when diagnosing a failed run.
 - `sudo ssh-keygen -A` if there is no host key; add
   `/etc/ssh/ssh_host_ed25519_key.pub` to `secrets/agenix-rules.nix`
   `everywhere`.
-- Rekey with the admin key: Sol runs `pass-cli login`, then `secrets-rekey`
-  (user action), then switch again; `org.nixos.activate-agenix` exits 1 until
+- Rekey with an admin key: Sol plugs in an admin YubiKey and runs
+  `secrets-rekey` (PIN, then a touch per file; user action), then switch again; `org.nixos.activate-agenix` exits 1 until
   then.
 - Rekey without the admin key: on amarna (host key is a recipient),
-  `sudo rage -d -i /etc/ssh/ssh_host_ed25519_key f.age | rage -e -r <admin> -r <amarna> -r <newhost> -o f.age.new`
+  `sudo rage -d -i /etc/ssh/ssh_host_ed25519_key f.age | rage -e -r <each recipient the rules list for f.age> -r <newhost> -o f.age.new`
+  (encrypting to `age1yubikey1…` admins needs `age-plugin-yubikey` on PATH)
   per file in a 700 tmp dir; Sol runs it (`ssh -t amarna script`) for sudo. Copy
   back, verify with `sudo rage -d -i /etc/ssh/ssh_host_ed25519_key`, switch,
   check `launchctl print system/org.nixos.activate-agenix` last exit 0 and

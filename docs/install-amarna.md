@@ -26,8 +26,8 @@ Without the bundle, `~/src/system` is a copy of the flake with no history.
 
 ## Before wiping
 
-1. **Admin key.** Make sure the `agenix admin` item exists in the Proton Pass
-   `Personal` vault.
+1. **Admin key.** Have an admin YubiKey (or the paper key) at hand; rekeying
+   for a new host key needs one.
 2. **Key backup.** Write `amarna/backup.tar.age` with the passphrase you will
    type during install:
 
@@ -60,11 +60,10 @@ It:
 
 ## After the first boot
 
-1. `pass-cli login`, which starts the SSH agent
-   (`systemctl --user status proton-pass-ssh-agent`). NixOS configures the
+1. `pass-cli login`, for the Hermes sandbox's signing agent
+   (`systemctl --user status hermes-ssh-agent`). NixOS configures the
    persistent desktop keyring with `PROTON_PASS_LINUX_KEYRING=dbus`; on an older
-   installer, export that variable before logging in. Approve any desktop
-   keyring prompt locally, never copy the admin key into the shell.
+   installer, export that variable before logging in.
 2. **Secrets, if the host key was not restored.** The generated host key differs
    from the recipient in the flake, so the first activation cannot decrypt
    Berkeley Mono or the Git scan policy. From `~/src/system`:
@@ -72,7 +71,8 @@ It:
    - For an older image's read-only flake copy, run `chmod -R u+w ~/src/system`.
    - Read `/etc/ssh/ssh_host_ed25519_key.pub` and replace only the `amarna`
      recipient in `secrets/agenix-rules.nix`. Keep the admin and other hosts.
-   - Run `secrets-rekey` as your normal user, then `nh os switch`. Rekeying
+   - Plug in an admin YubiKey and run `secrets-rekey` as your normal user,
+     then `nh os switch`. Rekeying
      alone does not install decrypted files; activation does.
    - Run `fc-cache -f ~/.local/share/fonts` and verify
      `fc-match 'Berkeley Mono Variable'`. Check that these files are nonempty

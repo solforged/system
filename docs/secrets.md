@@ -2,9 +2,13 @@
 
 - **agenix** decrypts `secrets/*.age` at activation with each host's
   `/etc/ssh/ssh_host_ed25519_key`. Recipients are in `secrets/agenix-rules.nix`.
-- **Admin key.** An age key stored as the password of the `agenix admin` item in
-  the Proton Pass `Personal` vault. `secrets-edit <file.age>` and
-  `secrets-rekey` fetch it through fnox for a single agenix run.
+- **Admin identities.** Every file is also encrypted to the `admins` in the
+  rules file: an age-plugin-yubikey PIV key on each YubiKey (PIN once per
+  session, a touch per file) and an offline paper key. On hosts with
+  `modules.secrets.admin`, `secrets-edit <file.age>` and `secrets-rekey` use
+  whichever YubiKey is plugged in; `SECRETS_IDENTITY=<file>` points them at the
+  paper key instead. Never decrypt the paper key onto a host's disk for longer
+  than one run.
 - **Adding a host.** Read its `/etc/ssh/ssh_host_ed25519_key.pub` (on macOS,
   create it first with `sudo ssh-keygen -A`), add it to the rules file, then run
   `secrets-rekey`.

@@ -87,6 +87,9 @@
       workstation-tools.enable = true;
     };
 
+    # secrets-edit and secrets-rekey, with an admin YubiKey.
+    secrets.admin.enable = true;
+
     agents = {
       claude.enable = true;
       herdr.enable = true;
