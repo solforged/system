@@ -14,6 +14,13 @@ in
     lib.mkEnableOption "Remote Login, with keys from users.users.<name>.openssh.authorizedKeys, over Tailscale only";
 
   config = lib.mkIf cfg.enable {
+    assertions = [
+      {
+        assertion = config.modules.services.tailscale.enable;
+        message = "modules.services.ssh accepts only tailnet addresses; enable modules.services.tailscale.";
+      }
+    ];
+
     services.openssh = {
       enable = true;
       extraConfig = ''

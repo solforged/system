@@ -1,6 +1,6 @@
 # modules/nixos/services/tailscale.nix
 #
-# macOS hosts use the Tailscale app cask instead.
+# macOS hosts use the Tailscale app cask; see modules/darwin/services/tailscale.nix.
 { config, lib, ... }:
 
 let

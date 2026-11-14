@@ -70,7 +70,10 @@
 
     # Remote Login for Tern, over the tailnet only; Rex pairs over Tailscale
     # without SSH.
-    services.ssh.enable = true;
+    services = {
+      ssh.enable = true;
+      tailscale.enable = true;
+    };
   };
 
   config = { pkgs, ... }: {
@@ -123,7 +126,6 @@
       # "roon"
       "signal"
       # "spotify"
-      "tailscale"
       "steam"
       "yubico-authenticator"
       "zotero"
