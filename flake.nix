@@ -102,6 +102,10 @@
       lib = { inherit (my) mkHost; };
 
       checks = lib.recursiveUpdate (lib.recursiveUpdate hostChecks toolingChecks) {
+        aarch64-darwin.hyperion-firewall = import ./tests/hyperion-firewall.nix {
+          pkgs = pkgsFor "aarch64-darwin";
+          configuration = hosts.hyperion.build;
+        };
         x86_64-linux = {
           mt7927 = import ./tests/mt7927.nix {
             inherit inputs installer;

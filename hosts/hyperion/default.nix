@@ -74,6 +74,8 @@
   };
 
   config = { pkgs, ... }: {
+    imports = [ ./firewall.nix ];
+
     # The macOS account on this Mac is "admin", not the default "sol".
     user.name = "admin";
 

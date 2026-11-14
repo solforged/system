@@ -54,6 +54,7 @@ nh darwin build                      # build macOS without activating
 nix flake check                      # build this platform's hosts and checks
 system-bump --verify                 # evaluate every host, check and package
 nix build .#checks.aarch64-darwin.shell # shell helpers and Rex themes (Mac)
+nix build .#checks.aarch64-darwin.hyperion-firewall # firewall policy and activation syntax
 nix build .#checks.x86_64-linux.shell # same tests on Linux (CI)
 nix build .#checks.x86_64-linux.solforge # Linux theme checks
 nix build .#checks.x86_64-linux.herdr-themes # Herdr themes and settings merge
