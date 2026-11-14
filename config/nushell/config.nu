@@ -6,6 +6,7 @@
 #   editing.nu     fish-style editing: directory history, Alt-., hints
 #   completion.nu  carapace completions with a deadline
 #   worktree.nu    ga and gd
+#   remote.nu      ssh that cleans up and reconnects; fip, dip, lip
 #
 # Atuin, mise, fnox, zoxide, carapace and direnv load after this file, from
 # the vendor autoload directory that modules/common/shell/nushell.nix
@@ -16,6 +17,7 @@ use scripts/tern.nu
 use scripts/editing.nu *
 use scripts/completion.nu
 use scripts/worktree.nu *
+use scripts/remote.nu *
 
 # --- Options ---
 $env.config.show_banner = false

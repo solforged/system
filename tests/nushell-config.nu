@@ -4,10 +4,10 @@ use std/assert
 
 # Public commands are in scope; module helpers are not.
 let commands = scope commands | get name
-for name in [ga gd prevd nextd cdh insert-last-arg prepend-sudo insert-file e ff eff y omp] {
+for name in [ga gd prevd nextd cdh insert-last-arg prepend-sudo insert-file ssh fip dip lip e ff eff y omp] {
   assert ($name in $commands) $"missing command ($name)"
 }
-for name in [git-segment hints preexec step history-line complete-external main] {
+for name in [git-segment hints preexec step history-line complete-external interactive main] {
   assert not ($name in $commands) $"($name) leaks into the shell"
 }
 

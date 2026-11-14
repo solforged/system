@@ -45,13 +45,13 @@ in `modules/darwin/apps/rex.nix`.
 Terminals open nu through `nu-login`; zsh stays the login shell and `$SHELL`.
 `config/nushell/config.nu` holds options, keys, aliases and small commands, and
 loads the modules in `config/nushell/scripts/`: the prompt, Tern's integration,
-fish-style editing, completions and worktrees. Both are live links. Only
+fish-style editing, completions, worktrees and ssh. Both are live links. Only
 exported commands reach the shell; helpers stay private to their module.
 `modules/common/shell/nushell.nix` generates the Atuin, mise, fnox, zoxide,
 carapace and direnv init into the vendor autoload directory, and fails the build
 when nu cannot parse it.
 
-The prompt and `ga`/`gd` exist in both shells; change them
+The prompt, `ga`/`gd` and the ssh wrapper exist in both shells; change them
 together. `nix build .#checks.<system>.shell` loads the config in a scratch home
 and runs the worktree helpers in both shells. The Linux helpers in
 `config/zsh/config.d/linux.zsh` (`sff`, `rsw`, `lsw`, `dsw`) have no nu port.

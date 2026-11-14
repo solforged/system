@@ -1,4 +1,5 @@
 # Wrap ssh to clean up the terminal and reconnect when a connection drops.
+# config/nushell/scripts/remote.nu is the Nushell port; keep them in step.
 #
 # A remote tmux or editor arms terminal modes over the SSH pipe (mouse
 # tracking, focus reporting, the alternate screen) that only it can disarm. If
