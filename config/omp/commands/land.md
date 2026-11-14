@@ -18,9 +18,10 @@ a system.
 Find the landing rule, in this order:
 
 1. The repo's AGENTS.md and contributor docs.
-2. A `land` task (`mise tasks`). Tessera's main is protected: push a branch,
-   then `mise run land -- --title "type(scope): summary" --wait <branch>`. Never
-   push main there.
+2. A land command in the repo's devenv shell (`devenv info`). Tessera's main
+   is protected: push a branch, then
+   `ts-land --title "type(scope): summary" --wait <branch>`. Never push main
+   there.
 3. Branch protection, when `gh` works
    (`gh api repos/{owner}/{repo}/branches/main/protection`).
 4. Otherwise, a fast-forward push of main.
@@ -58,7 +59,7 @@ Publish:
 Ship, only when asked:
 
 - Run the repo's ship step against the landed SHA (Tessera:
-  `mise run ship <sha>` from `~/src/tessera`, then confirm the live service
+  `ts-ship <sha>` from `~/src/tessera`, then confirm the live service
   reports that build). For an app, ship means the user's installed copy; for a
   system flake, it means a switch.
 - If shipping needs something you cannot do, such as `sudo`, a device approval,

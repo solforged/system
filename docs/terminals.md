@@ -47,8 +47,8 @@ Terminals open nu through `nu-login`; zsh stays the login shell and `$SHELL`.
 loads the modules in `config/nushell/scripts/`: the prompt, Tern's integration,
 fish-style editing, completions, worktrees and ssh. Both are live links. Only
 exported commands reach the shell; helpers stay private to their module.
-`modules/common/shell/nushell.nix` generates the Atuin, mise, fnox, zoxide,
-carapace and direnv init into the vendor autoload directory, and fails the build
+`modules/common/shell/nushell.nix` generates the Atuin, fnox, zoxide, carapace
+and direnv init into the vendor autoload directory, and fails the build
 when nu cannot parse it.
 
 The prompt, `ga`/`gd` and the ssh wrapper exist in both shells; change them

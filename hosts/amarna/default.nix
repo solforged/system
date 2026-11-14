@@ -47,7 +47,6 @@
         enable = true;
         jj.enable = true;
       };
-      mise.enable = true;
       fnox.enable = true;
       tools.enable = true;
       ssh.enable = true;

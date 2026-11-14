@@ -14,7 +14,7 @@ unless the argument says so. Fetch before comparing. Do not reconcile against a
 stale remote-tracking ref.
 
 Out of scope unless this invocation asks for it: push, `jj push`,
-`mise run land`, ship, force-push, opening a pull request, dependency-wide lock
+`ts-land`, ship, force-push, opening a pull request, dependency-wide lock
 updates, deleting backup refs, stashes, or worktrees you did not create, and
 rebuilding, switching or restarting the system.
 

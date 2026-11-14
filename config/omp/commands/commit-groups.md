@@ -15,7 +15,7 @@ The arguments at the end may say:
 By default, commit every uncommitted change that is not a live peer's.
 
 Out of scope unless this invocation asks for it: push, `jj git push`,
-`mise run land`, rewriting commits that are already on a remote, and squashing
+`ts-land`, rewriting commits that are already on a remote, and squashing
 peers' commits.
 
 Before committing:

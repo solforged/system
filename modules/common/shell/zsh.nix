@@ -36,17 +36,12 @@ let
     export HOME="$TMPDIR/home"
     mkdir -p "$HOME"
     touch "$out"
-    ${lib.optionalString config.modules.shell.mise.enable ''
-      ${pkgs.mise}/bin/mise activate zsh > "$TMPDIR/mise.zsh"
-      # Keep the caller's PATH. The initial exports capture the build environment.
-      ${pkgs.gnused}/bin/sed '/^export __MISE_ORIG_PATH=/d; /^export PATH=/d' "$TMPDIR/mise.zsh" >> "$out"
-    ''}
     ${lib.optionalString config.modules.shell.fnox.enable ''
       ${pkgs.fnox}/bin/fnox activate zsh >> "$out"
     ''}
     ${pkgs.zoxide}/bin/zoxide init zsh >> "$out"
     ${lib.optionalString config.modules.dev.devenv.enable ''
-      # Last, so a project's .envrc layers over mise's tools.
+      # Last, so a project's .envrc layers over the tools set up above.
       ${lib.getExe pkgs.direnv} hook zsh >> "$out"
     ''}
   '';

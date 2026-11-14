@@ -17,7 +17,6 @@
         identity = ../../secrets/git-work-identity.age;
         personalIdentity = "github";
       };
-      mise.enable = true;
       fnox.enable = true;
       tools.enable = true;
       ssh.enable = true;

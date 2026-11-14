@@ -55,22 +55,12 @@ let
     ${lib.optionalString shell.atuin.enable ''
       ${pkgs.atuin}/bin/atuin init nu --disable-ai --disable-up-arrow > "$out/atuin.nu"
     ''}
-    ${lib.optionalString shell.mise.enable ''
-      # mise's init is a module: its `main` becomes the `mise` wrapper that
-      # applies `mise shell` to this shell. Sourced directly, it would only
-      # define a command called `main`. Keep the caller's PATH; the first
-      # PATH assignments capture the build environment.
-      mkdir "$out/modules"
-      ${pkgs.mise}/bin/mise activate nu \
-        | ${pkgs.gnused}/bin/sed -E "/^ *[\$]env[.](__MISE_ORIG_PATH|PATH) = [(]?r#'/d; /^set,PATH,/d" > "$out/modules/mise.nu"
-      echo "use $out/modules/mise.nu" > "$out/mise.nu"
-    ''}
     ${lib.optionalString shell.fnox.enable ''
       ${pkgs.fnox}/bin/fnox activate nu > "$out/fnox.nu"
     ''}
     ${pkgs.zoxide}/bin/zoxide init nushell > "$out/zoxide.nu"
     ${lib.optionalString config.modules.dev.devenv.enable ''
-      # Sorts after mise.nu, so a project's .envrc layers over mise's tools.
+      # Sorts last, so a project's .envrc layers over the tools set up above.
       cp ${direnvHook} "$out/zz-direnv.nu"
     ''}
     # The init puts carapace's bin directory first on PATH. Generate it with a

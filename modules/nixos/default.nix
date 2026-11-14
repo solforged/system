@@ -50,7 +50,7 @@ in
     extraArgs = "--keep-since 14d --keep 5";
   };
 
-  # Project mise tools and npm/uv prebuilt binaries can require an FHS dynamic linker.
+  # npm and uv prebuilt binaries can require an FHS dynamic linker.
   programs.nix-ld.enable = true;
 
   hardware.enableRedistributableFirmware = true;

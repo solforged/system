@@ -41,7 +41,7 @@ docs/              setup, operations and development guides
 - **Language runtimes** come from `modules.dev.{python,node,go,rust,android}`.
   Projects bring their own with devenv or a flake `devShell`;
   `modules.dev.devenv` installs devenv and loads a project's `.envrc` through
-  direnv in zsh and Nushell. mise only serves repos that ship a `mise.toml`.
+  direnv in zsh and Nushell.
 
 ## Checks
 

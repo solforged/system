@@ -83,7 +83,7 @@ after a link is first installed.
 | `/take-stock`    | Reconciles the board, repo state, and session recaps; next passes in order             | Edit the board                  |
 | `/commit-groups` | Splits uncommitted (or `unpushed`) work into logical signed commits; `plan` to propose | Push, sweep in peers' hunks     |
 | `/review-commits` | Proposes a more logical split of the last N (or all unpushed) commits                 | Rewrite history                 |
-| `/land`          | Rebases, verifies, and lands by the repo's rule (`mise run land` or fast-forward)      | Merge, force-push main, ship    |
+| `/land`          | Rebases, verifies, and lands by the repo's rule (`ts-land` or fast-forward)            | Merge, force-push main, ship    |
 | `/reconcile`     | Brings the checkout up to date with upstream, keeping unique local commits linear      | Push, land, update flake inputs |
 | `/tidy`          | Surveys worktrees, branches, servers, and `/tmp`; deletes an approved list             | Touch live peers' work          |
 | `/curate-skills` | Audits managed skills, then applies an approved keep/merge/delete list                 | Mutate on the first pass        |
@@ -174,7 +174,7 @@ after a Pi reload or OMP restart.
 Private worktrees go in `${OMP_WORKTREE_DIR:-$HOME/.omp/wt}/<repo-key>--<task>`,
 the layout `ga` creates. It rejects relative roots and occupied paths, including
 dangling symlinks. `gd` confirms the target and refuses dirty trees or forced
-branch deletion. New worktrees are not automatically trusted by mise.
+branch deletion. A new worktree needs `direnv allow` before its devenv shell loads.
 Harness-managed worker paths stay unchanged, with review and cleanup owned by
 the parent session.
 

@@ -25,4 +25,3 @@ alias gcad='git commit -a --amend'
 
 command -v docker &>/dev/null && alias d='docker'
 command -v claude &>/dev/null && alias cx='printf "\033[2J\033[3J\033[H" && claude --permission-mode auto'
-alias mup='MISE_MINIMUM_RELEASE_AGE=0 mise up'

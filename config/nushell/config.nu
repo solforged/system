@@ -8,7 +8,7 @@
 #   worktree.nu    ga and gd
 #   remote.nu      ssh that cleans up and reconnects; fip, dip, lip
 #
-# Atuin, mise, fnox, zoxide, carapace and direnv load after this file, from
+# Atuin, fnox, zoxide, carapace and direnv load after this file, from
 # the vendor autoload directory that modules/common/shell/nushell.nix
 # generates.
 
@@ -138,7 +138,6 @@ def --env md [dir: path] { mkdir $dir; cd $dir }
 def --env .. [] { cd .. }
 def --env ... [] { cd ../.. }
 
-def mup [] { with-env {MISE_MINIMUM_RELEASE_AGE: 0} { ^mise up } }
 
 def cx [] { clear; ^claude --permission-mode auto }
 
