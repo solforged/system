@@ -53,8 +53,7 @@ when nu cannot parse it.
 
 The prompt, `ga`/`gd` and the ssh wrapper exist in both shells; change them
 together. `nix build .#checks.<system>.shell` loads the config in a scratch home
-and runs the worktree helpers in both shells. The Linux helpers in
-`config/zsh/config.d/linux.zsh` (`sff`, `rsw`, `lsw`, `dsw`) have no nu port.
+and runs the worktree helpers in both shells.
 
 ## Optional browser and other terminals
 

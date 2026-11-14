@@ -67,16 +67,14 @@ in
     modules.dotfiles.configLink.zsh = "zsh";
 
     hm = {
-      home.packages =
-        (with pkgs; [
-          fzf
-          gum
-          jq
-          moor
-          rsync
-          zoxide
-        ])
-        ++ lib.optionals pkgs.stdenv.hostPlatform.isLinux [ pkgs.inotify-tools ];
+      home.packages = with pkgs; [
+        fzf
+        gum
+        jq
+        moor
+        rsync
+        zoxide
+      ];
       home.file.".hushlogin".text = "";
       xdg.dataFile = {
         "zsh/plugins.zsh".source = pluginsFile;
