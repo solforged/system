@@ -1,5 +1,14 @@
 # Language servers come from modules/common/editors/mitos.nix, except
 # sourcekit-lsp, which ships with Xcode on macOS.
+[language-server.dprint]
+command = "dprint"
+args = ["lsp"]
+config = { useGlobalConfig = true }
+
+[language-server.typescript-language-server]
+command = "typescript-language-server"
+args = ["--stdio"]
+
 [language-server.sourcekit-lsp]
 command = "xcrun"
 args = ["sourcekit-lsp"]
@@ -19,6 +28,66 @@ args = ["server"]
 [language-server.taplo]
 command = "taplo"
 args = ["lsp", "stdio"]
+
+# Keep project formatting rules when present; use the global dprint config
+# for loose files. Other language servers still provide language intelligence.
+[[language]]
+name = "markdown"
+language-servers = [
+  "marksman",
+  { name = "dprint", only-features = ["format"] },
+]
+
+[[language]]
+name = "json"
+language-servers = [
+  { name = "vscode-json-language-server", except-features = ["format"] },
+  { name = "dprint", only-features = ["format"] },
+]
+
+[[language]]
+name = "jsonc"
+language-servers = [
+  { name = "vscode-json-language-server", except-features = ["format"] },
+  { name = "dprint", only-features = ["format"] },
+]
+
+[[language]]
+name = "toml"
+language-servers = [
+  { name = "taplo", except-features = ["format"] },
+  { name = "dprint", only-features = ["format"] },
+]
+
+[[language]]
+name = "yaml"
+language-servers = ["yaml-language-server"]
+# Override the bundled yamlfmt command, which takes precedence over LSP format.
+# The CLI also falls back to the global config when no project config exists.
+formatter = { command = "dprint", args = ["fmt", "--stdin", "%{buffer_name}"] }
+
+# Use the tsserver-based LSP explicitly rather than `tsc --lsp`, whose
+# availability depends on the project's TypeScript compiler version.
+[[language]]
+name = "javascript"
+language-servers = ["typescript-language-server"]
+
+[[language]]
+name = "jsx"
+language-servers = ["typescript-language-server"]
+
+[[language]]
+name = "typescript"
+language-servers = ["typescript-language-server"]
+
+[[language]]
+name = "tsx"
+language-servers = ["typescript-language-server"]
+
+[[language]]
+name = "nix"
+language-servers = ["nixd"]
+formatter = { command = "nixfmt" }
 
 [[language]]
 name = "python"

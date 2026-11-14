@@ -7,7 +7,9 @@ mouse.enable = true
 bufferline.show = "multiple"
 format.on-save = false
 lsp.inlay-hints.enable = false
-file-picker.hidden = false
+file-picker.hidden = true
+indent-guides.render = true
+soft-wrap.enable = true
 
 [editor.statusline]
 left = ["mode", "spinner", "file-name", "file-modification-indicator", "branch"]

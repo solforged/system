@@ -11,9 +11,23 @@ Solforge input. Xcode supplies Swift's language server on Macs.
 parsers, avoiding a Rust and grammar rebuild on a switch. To update it, change
 `version` and the three platform hashes from the release's `SHA256SUMS`, run
 `nix build .#mitos` on the target platform, then check
-`./result/bin/ms --health rust`. Neovim provides the
-shared language tools when enabled; Mitos also installs the servers explicitly
-named in its own configuration.
+`./result/bin/ms --health rust`.
+
+Mitos installs its own language tools, independently of Neovim: Marksman for
+Markdown, Taplo for TOML, the JSON and YAML servers, Pyright and Ruff for
+Python, `typescript-language-server` and TypeScript for JS/TS, and nixd with
+nixfmt for Nix. Swift uses Xcode's `sourcekit-lsp` on Macs.
+
+`:format` uses dprint for Markdown, JSON/JSONC, TOML and YAML. Project dprint
+configuration takes precedence. Loose files fall back to
+`config/dprint/dprint.jsonc`. The global config has no JS/TS plugin, so those
+languages keep the TypeScript server's formatter. Format-on-save and autosave
+are off. Indentation guides, soft wrapping and hidden files in the picker are
+on. Inlay hints remain off.
+
+After changing language settings, use `:lsp-restart`. Check tool availability
+with `ms --health <language>`; that checks executables without starting servers.
+Use `:config-reload` after changing the main editor settings.
 
 ## Rex on Macs
 

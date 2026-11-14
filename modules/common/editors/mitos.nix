@@ -18,10 +18,18 @@ in
     hm = {
       home.packages = with pkgs; [
         mitos
+        dprint
         marksman
+        nixd
+        nixfmt
         pyright
         ruff
         taplo
+        # The tsserver-based LSP needs the JS SDK, not the native tsc package.
+        typescript_5
+        typescript-language-server
+        vscode-langservers-extracted
+        yaml-language-server
       ];
       xdg.configFile =
         lib.genAttrs
