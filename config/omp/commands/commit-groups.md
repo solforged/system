@@ -5,6 +5,10 @@ description: Split uncommitted (or unpushed) work into logical, signed commits w
 Turn the working tree into a short sequence of logical commits that a reader
 could follow. Do not push.
 
+A managed skill named below is at
+`~/.omp/agent/managed-skills/<name>/SKILL.md`; read it in full before the
+step that uses it.
+
 The arguments at the end may say:
 
 - `plan`: propose the groups and stop for approval.

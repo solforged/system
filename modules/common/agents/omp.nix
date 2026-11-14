@@ -13,18 +13,11 @@
 let
   cfg = config.modules.agents.omp;
   omp = inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.omp;
-  commands = [
-    "audit"
-    "clickaround"
-    "commit-groups"
-    "curate-skills"
-    "fix-findings"
-    "land"
-    "reconcile"
-    "review-commits"
-    "take-stock"
-    "tidy"
-  ];
+  # Every command in config/omp/commands; pi.nix links the same files as Pi
+  # prompt templates.
+  commands = map (lib.removeSuffix ".md") (
+    lib.filter (lib.hasSuffix ".md") (lib.attrNames (builtins.readDir ../../../config/omp/commands))
+  );
 in
 {
   options.modules.agents.omp.enable = lib.mkEnableOption "Oh My Pi";

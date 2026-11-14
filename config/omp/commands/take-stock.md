@@ -6,6 +6,10 @@ Take stock of this repository and recommend what to work on next. This is
 read-only: do not edit, commit, prune, or update the board. Offer to update
 `TODO.md` or the roadmap, but do it only when asked.
 
+A managed skill named below is at
+`~/.omp/agent/managed-skills/<name>/SKILL.md`; read it in full before the
+step that uses it.
+
 The arguments at the end may narrow the question: an area, `backlog`, `health`,
 `roadmap`, or "where were we on <topic>". Without them, cover all of these
 briefly.

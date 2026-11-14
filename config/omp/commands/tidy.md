@@ -6,6 +6,10 @@ Clean up what agent work left behind. Survey first, then ask for one approval of
 the exact list. Before approval, remove only processes and paths this session
 created.
 
+A managed skill named below is at
+`~/.omp/agent/managed-skills/<name>/SKILL.md`; read it in full before the
+step that uses it.
+
 The arguments at the end may limit the run to `worktrees`, `branches`,
 `servers`, `tmp`, `caches`, or a repo. By default, cover this repo's worktrees
 and branches, plus servers, headless browsers, and `/tmp` across the machine.

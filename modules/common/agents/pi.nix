@@ -36,7 +36,16 @@ in
       };
   };
   config = lib.mkIf cfg.enable {
-    modules.dotfiles.homeLink.".pi/agent/AGENTS.md" = "agents/AGENTS.md";
+    # The slash commands in config/omp/commands, shared with Oh My Pi, as Pi
+    # prompt templates.
+    modules.dotfiles.homeLink = {
+      ".pi/agent/AGENTS.md" = "agents/AGENTS.md";
+    }
+    // lib.listToAttrs (
+      map (file: lib.nameValuePair ".pi/agent/prompts/${file}" "omp/commands/${file}") (
+        lib.filter (lib.hasSuffix ".md") (lib.attrNames (builtins.readDir ../../../config/omp/commands))
+      )
+    );
     hm =
       hm:
       let
