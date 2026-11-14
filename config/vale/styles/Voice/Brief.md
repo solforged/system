@@ -25,8 +25,9 @@ colleague who wants the finding, the reason for it and what to do next.
   comparison, and a heading marks a section a reader would look for.
 - Describe the current state in a document. When it changes, rewrite the
   passage it affects; the history goes in the commit message.
-- Use the progressive for what is under way: "the build is failing", "I'm
-  checking the logs". The simple present states what is generally true.
+- Use the progressive or a participle for a state that will change: "the
+  build is failing", "3 drafts waiting". The simple present states what is
+  lasting; on a passing state it reads as narration ("three drafts sit").
 - Distinguish facts from inferences, and say which is which.
 - Quote sources exactly, including their spelling. Keep proper names, code
   identifiers, API values and titles of works as they are written.
@@ -42,6 +43,8 @@ The standard holds everywhere; the profiles change shape, not voice.
 - **UI text.** The shortest wording that names the action or the state:
   "Delete note", "Saved 2 minutes ago", "Needs a wider window". Sentence case;
   no closing period on a label; a full sentence where the text explains.
+  The interface labels and instructs; it does not narrate (see Interface
+  text below).
 - **Essays and notes.** Longer paragraphs and an argument that builds, in the
   same plain register. A claim is attributed to the person who made it. Block
   quotations hold sources and are not edited.
@@ -148,6 +151,28 @@ Markdown and skip fenced code.
   the rundown" at the start of a sentence.
 - **Arrows:** an arrow standing for a verb ("miss → slow read"). Menu paths,
   changes of value and tables are left alone.
+
+### Interface text
+
+Models write interface text as narration: promises about what the app keeps
+("Your text is still here"), parts with a home or a will ("The handle lives
+in the gutter", "three drafts sit; they wait for you"), taglines ("Calm
+surfaces. Local controls.") and helper text that restates the spec. A label
+names the thing and its state ("3 drafts waiting"); helper text appears only
+where the screen needs it. A product whose interface speaks in a deliberate
+voice, such as a period setting, turns the Ui rules off.
+
+In React components (`*.tsx`, `*.jsx`), the `UiCopy` view reads the text a
+person sees or hears: JSX text, and string values of `title`, `aria-label`,
+`placeholder`, `alt` and `label`. The word rules run there too.
+
+- **UiGuarantee:** what the app keeps or promises, narrated: "Changes save
+  automatically", "is still here", "stays in history", "never overwrites".
+- **UiNarration:** a part given a posture, a home or a will: "lives in",
+  "sits", "waits", "lands in", "forgets".
+- **UiCadence:** three or more very short sentences in a row, a tagline.
+- **UiLength:** one string over 25 words.
+- **UiSemicolon:** a semicolon joining clauses.
 
 ### Commit messages
 
