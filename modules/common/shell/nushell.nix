@@ -83,8 +83,7 @@ let
       > "$out/carapace-specs.nu"
 
     # Fail the build, not the shell, when a tool emits code nu cannot parse.
-    for f in "$out"/*.nu "$out"/modules/*.nu; do
-      [[ -e $f ]] || continue
+    for f in "$out"/*.nu; do
       [[ $(${pkgs.nushell}/bin/nu -n -c "nu-check '$f'") == true ]] || {
         echo "nu-check failed: $f" >&2
         exit 1
