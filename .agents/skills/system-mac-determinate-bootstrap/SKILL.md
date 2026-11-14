@@ -87,8 +87,8 @@ manual path, for another flake or when diagnosing a failed run.
 ## Secrets
 
 - `sudo ssh-keygen -A` if there is no host key; add
-  `/etc/ssh/ssh_host_ed25519_key.pub` to `secrets/agenix-rules.nix`
-  `everywhere`.
+  `/etc/ssh/ssh_host_ed25519_key.pub` to `secrets/host-keys.nix` and the
+  host to `everywhere` in `secrets/agenix-rules.nix`.
 - Rekey with an admin key: Sol plugs in an admin YubiKey and runs
   `secrets-rekey` (PIN, then a touch per file; user action), then switch again; `org.nixos.activate-agenix` exits 1 until
   then.

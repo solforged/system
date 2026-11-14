@@ -31,9 +31,9 @@ Then log out and back in, run `pi-setup`, and finish the
 YubiKey plugged in if the host has no `~/.ssh/id_ed25519_sk` yet, and add the
 lines it prints.
 
-To make a new host's secrets decrypt, add its key to `secrets/agenix-rules.nix`,
-run `secrets-rekey` on a host with an admin YubiKey plugged in, pull, and rerun
-`bootstrap`.
+To make a new host's secrets decrypt, add its key to `secrets/host-keys.nix`
+and the host to `secrets/agenix-rules.nix`, run `secrets-rekey` on a host with
+an admin YubiKey plugged in, pull, and rerun `bootstrap`.
 The bootstrap skill in `.agents/skills` covers first-switch failures.
 
 Homebrew `cleanup` defaults to `"none"`, so activation leaves extra formulae and

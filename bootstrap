@@ -106,10 +106,11 @@ main() {
   step "Checking the host key"
   [ -f /etc/ssh/ssh_host_ed25519_key ] || sudo ssh-keygen -A
   key=$(cut -d' ' -f1-2 /etc/ssh/ssh_host_ed25519_key.pub)
-  if ! grep -qF "$key" secrets/agenix-rules.nix; then
+  if ! grep -qF "$key" secrets/host-keys.nix; then
     note "This host cannot decrypt secrets yet. Add its key to"
-    note "secrets/agenix-rules.nix, run secrets-rekey on a host with an admin"
-    note "YubiKey plugged in, pull, and rerun bootstrap:"
+    note "secrets/host-keys.nix and secrets/agenix-rules.nix, run"
+    note "secrets-rekey on a host with an admin YubiKey plugged in, pull,"
+    note "and rerun bootstrap:"
     note "  $key"
     ask "Continue without secrets for now?" || exit 1
   fi
