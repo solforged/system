@@ -4,13 +4,13 @@
   lib,
   stdenv,
   hermes,
+  agent,
 }:
 let
   system = stdenv.hostPlatform.system;
   upstreamPkgs = import hermes.inputs.nixpkgs { inherit system; };
-  agent = hermes.packages.${system}.default;
 in
-hermes.packages.${system}.desktop.overrideAttrs (old: {
+agent.hermesDesktop.overrideAttrs (old: {
   nativeBuildInputs = old.nativeBuildInputs ++ [ upstreamPkgs.nodejs ];
 
   postInstall = (old.postInstall or "") + ''

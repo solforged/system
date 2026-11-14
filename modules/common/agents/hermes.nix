@@ -14,12 +14,15 @@
 
 let
   cfg = config.modules.agents.hermes;
-  hermes = inputs.hermes-agent.packages.${pkgs.stdenv.hostPlatform.system};
+  agent = pkgs.callPackage ../../../packages/hermes-agent.nix { hermes = inputs.hermes-agent; };
   desktop =
     if pkgs.stdenv.hostPlatform.isDarwin then
-      pkgs.callPackage ../../../packages/hermes-desktop.nix { hermes = inputs.hermes-agent; }
+      pkgs.callPackage ../../../packages/hermes-desktop.nix {
+        hermes = inputs.hermes-agent;
+        inherit agent;
+      }
     else
-      hermes.desktop;
+      agent.hermesDesktop;
 in
 {
   options.modules.agents.hermes.enable = lib.mkEnableOption "Hermes Agent";
@@ -28,7 +31,7 @@ in
     hm = {
       # On Darwin, Home Manager copies Hermes.app to ~/Applications/Home Manager Apps.
       home.packages = [
-        hermes.default
+        agent
         desktop
       ];
 
