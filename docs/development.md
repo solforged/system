@@ -70,9 +70,10 @@ Manager is part of the system build, not a separate activation. See
 configuration and `styles/Voice` the rules it enables, both linked live;
 `styles/Voice/Brief.md` is the written house standard the rules enforce, and
 `styles/Voice/NOTICE` records the upstream source of the vendored dictionary
-and rules. Each rule carries its own test cases. Projects that gate on prose,
-such as Tessera, commit a copy of `styles/Voice` and refresh it after a change
-here.
+and rules. Each rule carries its own test cases. Projects that gate on prose
+commit a copy of `styles/Voice` and its views: `vale-voice [repo]` copies them
+into the repository's StylesPath, writes a `.vale.ini` from the global one
+where there is none, and refreshes the copy after a change here.
 
 ## Documentation
 

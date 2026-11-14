@@ -11,6 +11,7 @@
     hm.home.packages = [
       pkgs.yt-dlp
       pkgs.vale
+      pkgs.vale-voice
     ];
     modules.dotfiles = {
       configLink = {
