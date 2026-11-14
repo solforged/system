@@ -93,9 +93,11 @@
     agents = {
       claude.enable = true;
       herdr.enable = true;
+      # Off for now, with the sandbox that only served it; Nous Portal
+      # inference goes through the nous-portal extension instead.
       hermes = {
-        enable = true;
-        sandbox.enable = true;
+        enable = false;
+        sandbox.enable = false;
       };
       omp.enable = true;
       pi.enable = true;

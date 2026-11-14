@@ -95,8 +95,8 @@ nh darwin switch
 ## Hermes on macOS
 
 `modules.agents.hermes.enable` installs both the CLI and desktop app. It is
-enabled on hyperion. After `nh darwin switch`, Home Manager places the app at
-`~/Applications/Home Manager Apps/Hermes.app`.
+off on every host for now. When it is on, Home Manager places the app at
+`~/Applications/Home Manager Apps/Hermes.app` after `nh darwin switch`.
 
 Disabling the module removes both packages and the app on the next switch.
 Hermes' configuration and conversation data remain in `~/.hermes`; re-enabling

@@ -1,5 +1,7 @@
 # Hermes sandbox (amarna)
 
+Off for now, along with Hermes itself; amarna sets both options to false.
+
 `modules.agents.hermes.sandbox.enable` prepares a rootless Podman sandbox for
 Hermes' Docker terminal backend, so terminal, file and code tools never touch
 the rest of the home directory. Hermes creates and reuses the container itself

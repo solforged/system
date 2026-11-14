@@ -58,7 +58,9 @@
     agents = {
       claude.enable = true;
       herdr.enable = false;
-      hermes.enable = true;
+      # Off for now; Nous Portal inference goes through the nous-portal
+      # extension instead. ~/.hermes stays.
+      hermes.enable = false;
       omp.enable = true;
       pi.enable = true;
     };
@@ -98,7 +100,7 @@
       iina
       keka
       obsidian
-      telegram-desktop
+      # telegram-desktop: off until nixpkgs builds it with Swift 6.4 again.
       transmission_4-mac
       whatsapp-for-mac
     ];
