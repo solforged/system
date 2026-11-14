@@ -1,7 +1,7 @@
-# Fish-style line editing: directory history (Alt-Left/Right, Alt-C), the last
-# argument of earlier commands (Alt-.), sudo (Alt-S), a file picker (Ctrl-T),
-# history hints that prefer the current directory, and command-not-found
-# suggestions. config.nu binds the keys; the commands they run are exported.
+# Fish-style line editing: directory history (Alt-Left/Right), a project
+# picker (Alt-C), the last argument of earlier commands (Alt-.), sudo (Alt-S),
+# a file picker (Ctrl-T), history hints that prefer the current directory,
+# and command-not-found suggestions. config.nu binds the keys; the commands they run are exported.
 #
 # State lives in records, which nu never passes to child processes.
 
@@ -28,12 +28,60 @@ export def --env prevd [] { step back fwd }
 # Forward again, after prevd.
 export def --env nextd [] { step fwd back }
 
-# Pick a directory zoxide knows and enter it.
-export def --env cdh [] {
-  let listed = try { ^zoxide query -l | complete } catch { return }
-  if $listed.exit_code != 0 { return }
-  let pick = pick ($listed.stdout | lines) "cd> "
-  if $pick != null { cd $pick }
+# --- Projects ---
+
+# The directories in each of $env.PROJECTS.roots, plus $env.PROJECTS.marks,
+# most used first by zoxide's score and alphabetical after that. Ones that
+# do not exist are skipped.
+export def projects [] {
+  let places = $env.PROJECTS? | default {}
+  let roots = $places.roots? | default [] | path expand | where {|dir| ($dir | path type) == dir }
+  let children = $roots | each {|root|
+    ls $root | where type in [dir symlink] | get name | path expand | where {|dir| ($dir | path type) == dir }
+  } | flatten
+  let marks = $places.marks? | default [] | path expand | where {|dir| ($dir | path type) == dir }
+  let listed = try { ^zoxide query --list --score | complete } catch { {exit_code: 1} }
+  let scores = if $listed.exit_code == 0 {
+    $listed.stdout | lines | parse --regex '^\s*(?<score>[0-9.]+) (?<path>.+)$' | update score { into float }
+  } else { [] }
+  $children ++ $marks
+  | uniq
+  | each {|dir| {path: $dir, rank: ($scores | where path == $dir | get score.0? | default 0 | $in * -1)} }
+  | sort-by rank path
+  | get path
+}
+
+# A path with $HOME shown as ~.
+def tilde [path: string] {
+  let home = $env.HOME
+  if $path == $home or ($path | str starts-with $"($home)/") {
+    "~" + ($path | str substring ($home | str length)..)
+  } else { $path }
+}
+
+# Pick a project or marked place and enter it; Ctrl-Z in the picker swaps in
+# everything zoxide knows. Words match exactly rather than fuzzily, so that
+# `p tessera` is one match and enters directly. With none, it falls back to
+# zoxide, so `p hermes` works like `z hermes`.
+export def --env p [...query: string] {
+  let feed = projects | each {|dir| $"($dir)\t(tilde $dir)" }
+  # fzf runs these with sh; {1} is the absolute path, quoted.
+  let everything = r#'zoxide query --list | awk -v h="$HOME" '{ d = $0; if ($0 == h || index($0, h "/") == 1) d = "~" substr($0, length(h) + 1); print $0 "\t" d }''#
+  let preview = r#'if git -C {1} rev-parse --git-dir >/dev/null 2>&1; then git -C {1} -c color.status=always status -sb | head -20; echo; git -C {1} log --oneline --color=always -20; else eza -1 --color=always --group-directories-first {1}; fi'#
+  let args = [
+    --with-shell "sh -c" --delimiter "\t" --with-nth 2 --scheme path --tiebreak index
+    --header "ctrl-z: everything zoxide knows" --bind $"ctrl-z:reload\(($everything)\)"
+    --preview $preview --preview-window "right,50%"
+  ]
+  let args = if ($query | is-empty) { $args } else { $args ++ [--exact --query ($query | str join " ") --select-1 --exit-0] }
+  let result = fzf-run $feed "cd> " ...$args
+  if $result.exit_code == 0 {
+    let line = $result.stdout | str trim --right --char (char nl)
+    if $line != "" { cd ($line | split row (char tab) | first) }
+  } else if $result.exit_code == 1 and ($query | is-not-empty) {
+    let found = try { ^zoxide query --exclude $env.PWD -- ...$query | complete } catch { return }
+    if $found.exit_code == 0 { cd ($found.stdout | str trim) } else { print -e $"no match for ($query | str join ' ')" }
+  }
 }
 
 # --- Command line ---
@@ -104,10 +152,15 @@ export def prepend-sudo [] {
   commandline set-cursor ($next | str length)
 }
 
+# fzf over the lines, with its exit code: 1 means no match, 130 cancelled.
+def fzf-run [feed: list<string>, prompt: string, ...args: string] {
+  try {
+    $feed | str join (char nl) | ^fzf --height=40% --reverse --prompt $prompt ...$args | complete
+  } catch { {exit_code: 2, stdout: ""} }
+}
+
 def pick [feed: list<string>, prompt: string] {
-  let result = try {
-    $feed | str join (char nl) | ^fzf --height=40% --reverse --prompt=$prompt | complete
-  } catch { return null }
+  let result = fzf-run $feed $prompt
   if $result.exit_code != 0 { return null }
   let pick = $result.stdout | str trim
   if ($pick | is-empty) { null } else { $pick }

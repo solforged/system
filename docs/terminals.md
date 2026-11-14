@@ -51,6 +51,10 @@ exported commands reach the shell; helpers stay private to their module.
 and direnv init into the vendor autoload directory, and fails the build
 when nu cannot parse it.
 
+Alt-C, or `p` with words to match, enters a project: a directory in `~/src`
+or a worktree root, or a mark. `$env.PROJECTS` in `config.nu` lists both;
+zoxide's score ranks them.
+
 The prompt, `ga`/`gd` and the ssh wrapper exist in both shells; change them
 together. `nix build .#checks.<system>.shell` loads the config in a scratch home
 and runs the worktree helpers in both shells.

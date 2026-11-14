@@ -11,6 +11,7 @@ pkgs.runCommand "shell-and-rex-check"
       nushell
       zsh
       python3
+      zoxide
     ];
   }
   ''

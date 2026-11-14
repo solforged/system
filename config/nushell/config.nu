@@ -3,7 +3,7 @@
 #
 #   prompt.nu      the prompt, matching zsh's
 #   tern.nu        Tern's shell integration (native prompt, command lenses)
-#   editing.nu     fish-style editing: directory history, Alt-., hints
+#   editing.nu     fish-style editing: directory history, projects, Alt-., hints
 #   completion.nu  carapace completions with a deadline
 #   worktree.nu    ga and gd
 #   remote.nu      ssh that cleans up and reconnects; fip, dip, lip
@@ -48,6 +48,12 @@ $env.config.history.file_format = "sqlite"
 $env.config.history.path = $history_dir | path join history.sqlite3
 $env.config.history.max_size = 100_000
 
+# What `p` and Alt-C offer: every directory in a root, plus the marks.
+$env.PROJECTS = {
+  roots: [~/src ($env.OMP_WORKTREE_DIR? | default ~/.omp/wt) ~/.pi/wt]
+  marks: [~/src ($env.LLM_WIKI_DIR? | default ~/.local/share/wiki) ~/.config ~/.local/share ~/.local/state]
+}
+
 # --- Keys ---
 # Tab opens the description menu. Ctrl-Space accepts the hint, as Right, End
 # and Ctrl-Right already do; it no longer opens the menu. Ctrl-E keeps the
@@ -69,7 +75,7 @@ $env.config.keybindings ++= [
   {name: insert_last_arg, modifier: alt, keycode: char_., mode: [vi_insert vi_normal], event: (do $host_command insert-last-arg)}
   {name: prepend_sudo, modifier: alt, keycode: char_s, mode: [vi_insert vi_normal], event: (do $host_command prepend-sudo)}
   {name: insert_file, modifier: control, keycode: char_t, mode: [vi_insert vi_normal], event: (do $host_command insert-file)}
-  {name: dir_history, modifier: alt, keycode: char_c, mode: [vi_insert vi_normal], event: (do $host_command cdh)}
+  {name: projects, modifier: alt, keycode: char_c, mode: [vi_insert vi_normal], event: (do $host_command p)}
 ]
 
 $env.config.menus = $env.config.menus | each {|menu|

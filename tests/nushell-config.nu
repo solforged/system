@@ -4,10 +4,10 @@ use std/assert
 
 # Public commands are in scope; module helpers are not.
 let commands = scope commands | get name
-for name in [ga gd prevd nextd cdh insert-last-arg prepend-sudo insert-file ssh fip dip lip e ff eff y omp] {
+for name in [ga gd prevd nextd p projects insert-last-arg prepend-sudo insert-file ssh fip dip lip e ff eff y omp] {
   assert ($name in $commands) $"missing command ($name)"
 }
-for name in [git-segment hints preexec step history-line complete-external interactive main] {
+for name in [git-segment hints preexec step history-line tilde fzf-run complete-external interactive main] {
   assert not ($name in $commands) $"($name) leaks into the shell"
 }
 
@@ -42,6 +42,21 @@ prevd
 do --env $pwd_hook $b $env.PWD
 assert equal $env.DIRHIST.fwd [$b]
 
+# Projects: directories in a root and existing marks, without files or
+# duplicates, most visited first by zoxide.
+cd $env.HOME
+mkdir src/alpha src/beta .config
+touch src/notes.md
+$env._ZO_DATA_DIR = $env.HOME | path join zoxide
+^zoxide add src/beta
+let found = projects
+let in_home = {|rel| $env.HOME | path join $rel | path expand }
+assert equal ($found | first) (do $in_home src/beta)
+for rel in [src/alpha src .config] { assert ((do $in_home $rel) in $found) $"($rel) is not a project" }
+assert not ((do $in_home src/notes.md) in $found)
+assert not ((do $in_home .local/share/wiki) in $found)
+assert equal ($found | uniq | length) ($found | length)
+
 # Shell state stays out of child environments.
 let child_env = ^env | lines | where {|line| $line =~ '^(DIRHIST|ALT_DOT|TERN_|CARAPACE_CONTEXT)' }
 assert equal $child_env []
@@ -55,4 +70,4 @@ assert equal (do $completer {command: [cat "a*"]}) [{value: "a/"}]
 let line = "zz-no-such-command-zz"
 assert equal (do $env.config.hinter.closure {line: $line, pos: ($line | str length), cwd: $env.PWD}) null
 
-print "nushell config: commands, prompt, directory history and completions passed"
+print "nushell config: commands, prompt, directory history, projects and completions passed"
