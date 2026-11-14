@@ -37,7 +37,7 @@ in
 
   modules.hardware.mt7927.enable = true;
 
-  # ZFS does not follow the 7.2 kernel the Wi-Fi driver needs.
+  # The Wi-Fi driver's kernel can be newer than ZFS supports.
   boot.supportedFilesystems.zfs = lib.mkForce false;
 
   networking.hostName = "nixos-installer";

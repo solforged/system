@@ -32,7 +32,7 @@
     lanzaboote.url = "github:nix-community/lanzaboote/v1.2.0";
     lanzaboote.inputs.nixpkgs.follows = "nixpkgs";
 
-    mt7927.url = "github:cmspam/mt7927-nixos/4177e1edb28fdc48ab696903f012348ac8ad39e8";
+    mt7927.url = "github:cmspam/mt7927-nixos/41495373f58bbd7617613aab720eab808f81dde7";
     mt7927.inputs.nixpkgs.follows = "nixpkgs";
 
     # Coding agents. Its nixpkgs is left unfollowed so store paths match
@@ -87,14 +87,13 @@
         shell = import ./tests/shell.nix { pkgs = pkgsFor system; };
       });
 
-      installerIso =
-        (lib.nixosSystem {
-          specialArgs = { inherit inputs; };
-          modules = [
-            ./installer
-            { nixpkgs.hostPlatform = "x86_64-linux"; }
-          ];
-        }).config.system.build.isoImage;
+      installer = lib.nixosSystem {
+        specialArgs = { inherit inputs; };
+        modules = [
+          ./installer
+          { nixpkgs.hostPlatform = "x86_64-linux"; }
+        ];
+      };
     in
     {
       nixosConfigurations = only false;
@@ -104,6 +103,10 @@
 
       checks = lib.recursiveUpdate (lib.recursiveUpdate hostChecks toolingChecks) {
         x86_64-linux = {
+          mt7927 = import ./tests/mt7927.nix {
+            inherit inputs installer;
+            configuration = hosts.amarna.build;
+          };
           solforge = import ./tests/solforge.nix {
             configuration = hosts.amarna.build;
           };
@@ -126,7 +129,9 @@
           ssh-enroll = (pkgsFor system).callPackage ./packages/ssh-enroll.nix { };
         }
         # nix build .#installer-iso
-        // lib.optionalAttrs (system == "x86_64-linux") { installer-iso = installerIso; }
+        // lib.optionalAttrs (system == "x86_64-linux") {
+          installer-iso = installer.config.system.build.isoImage;
+        }
       );
 
       formatter = lib.genAttrs systems (system: (pkgsFor system).nixfmt-tree);

@@ -375,11 +375,11 @@
     "mediatek-mt7927-dkms": {
       "flake": false,
       "locked": {
-        "lastModified": 1791828950,
-        "narHash": "sha256-rxuMkWoWB4GI9rKSB9p/ExD8ao4+xdW+3gJnCdy4O80=",
+        "lastModified": 1793207087,
+        "narHash": "sha256-WXvJ50SF5L36eIbLPy7s8LmgslcE5KmfkFNLnBJFhaI=",
         "owner": "jetm",
         "repo": "mediatek-mt7927-dkms",
-        "rev": "b2384e17f0e69ceeb2a6df9c9f06b652ff5a587d",
+        "rev": "5467fd1237391e8b76625c0fd6fad3285d7ff930",
         "type": "github"
       },
       "original": {
@@ -396,17 +396,17 @@
         ]
       },
       "locked": {
-        "lastModified": 1792874114,
-        "narHash": "sha256-aXXIdtSjt9it2rc4Xwz8zVaY4Kp0Zdt/Bh72QxJasvI=",
+        "lastModified": 1794506383,
+        "narHash": "sha256-C+hAOl9GxkvNKTfp/k4/y6mBIDnZ8gaQ/hIuGY83hto=",
         "owner": "cmspam",
         "repo": "mt7927-nixos",
-        "rev": "4177e1edb28fdc48ab696903f012348ac8ad39e8",
+        "rev": "41495373f58bbd7617613aab720eab808f81dde7",
         "type": "github"
       },
       "original": {
         "owner": "cmspam",
         "repo": "mt7927-nixos",
-        "rev": "4177e1edb28fdc48ab696903f012348ac8ad39e8",
+        "rev": "41495373f58bbd7617613aab720eab808f81dde7",
         "type": "github"
       }
     },

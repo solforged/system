@@ -7,14 +7,17 @@
 }:
 let
   cfg = config.modules.hardware.mt7927;
+  driverVersion = (builtins.fromJSON (builtins.readFile "${inputs.mt7927}/versions.json")).mt76KVer;
+  kernelSeries = lib.versions.majorMinor driverVersion;
 in
 {
   imports = [ inputs.mt7927.nixosModules.default ];
   options.modules.hardware.mt7927.enable =
     lib.mkEnableOption "MediaTek MT7927 Wi-Fi and MT6639 Bluetooth";
   config = lib.mkIf cfg.enable {
-    # Keep the kernel ABI aligned with the driver's pinned 7.2 sources.
-    boot.kernelPackages = pkgs.linuxPackages_7_2;
+    # Follow the pinned driver's source series, not nixpkgs' default kernel.
+    # Updating the driver then updates the host and installer kernel together.
+    boot.kernelPackages = pkgs.${"linuxPackages_${lib.replaceStrings [ "." ] [ "_" ] kernelSeries}"};
     hardware.mediatek-mt7927 = {
       enable = true;
       enableWifi = true;
