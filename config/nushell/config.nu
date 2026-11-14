@@ -54,7 +54,7 @@ $env.config.history.max_size = 100_000
 
 # What `p` and Alt-C offer: every directory in a root, plus the marks.
 $env.PROJECTS = {
-  roots: [~/src ($env.OMP_WORKTREE_DIR? | default ~/.omp/wt) ~/.pi/wt]
+  roots: [~/src ($env.PI_WORKTREE_DIR? | default ~/.pi/wt) ~/.omp/wt]
   marks: [~/src ($env.LLM_WIKI_DIR? | default ~/.local/share/wiki) ~/.config ~/.local/share ~/.local/state]
 }
 

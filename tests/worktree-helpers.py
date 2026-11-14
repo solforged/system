@@ -1,4 +1,5 @@
-"""Exercise zsh and nu worktree helpers only in disposable repositories."""
+"""Exercise zsh and nu worktree helpers only in disposable repositories:
+Git worktrees in a Git-only repository, jj workspaces in a jj one."""
 import os
 from pathlib import Path
 import subprocess
@@ -29,7 +30,10 @@ def test(shell):
         # Answers yes unless GUM_ANSWER=no.
         gum.write_text('#!/bin/sh\n[ "$GUM_ANSWER" != no ]\n')
         gum.chmod(0o755)
-        env = dict(os.environ, OMP_WORKTREE_DIR=str(root / "worktrees"), PATH=f"{commands}:{os.environ['PATH']}")
+        jj_config = root / "jj.toml"
+        jj_config.write_text('[user]\nname = "Test"\nemail = "test@example.invalid"\n[signing]\nbehavior = "drop"\n')
+        env = dict(os.environ, PI_WORKTREE_DIR=str(root / "worktrees"), JJ_CONFIG=str(jj_config),
+                   PATH=f"{commands}:{os.environ['PATH']}")
         # Do not inherit an enclosing repository or its hooks/signing policy.
         for key in ("GIT_DIR", "GIT_WORK_TREE", "GIT_INDEX_FILE"):
             env.pop(key, None)
@@ -43,7 +47,7 @@ def test(shell):
             return run(args, cwd, dict(env, **(overrides or {})), ok)
 
         command("gd", ok=False)
-        command("ga invalid", ok=False, overrides={"OMP_WORKTREE_DIR": "relative"})
+        command("ga invalid", ok=False, overrides={"PI_WORKTREE_DIR": "relative"})
         nested = repo / "nested"
         nested.mkdir()
         command("ga topic/one", nested)
@@ -67,7 +71,31 @@ def test(shell):
         assert not second.exists()
         command("gd", first)
         assert not first.exists()
-        print(f"{shell}: canonical paths, collisions, declining and safe removal passed")
+
+        # A jj repository gets jj workspaces in the same layout.
+        jj_repo = root / "lore"
+        run(["jj", "git", "init", str(jj_repo)], root, env)
+        (jj_repo / "nested").mkdir()
+        command("ga topic/one", jj_repo / "nested")
+        workspace = root / "worktrees/lore--topic-one"
+        assert (workspace / ".jj").is_dir()
+        listed = run(["jj", "workspace", "list", "-T", 'name ++ "\\n"'], jj_repo, env).stdout.split()
+        assert listed == ["default", "topic-one"], listed
+        (root / "worktrees/lore--taken").symlink_to(root / "missing")
+        command("ga taken", jj_repo, ok=False)
+        command("gd", jj_repo, ok=False)
+        change = workspace / "change"
+        change.write_text("keep me")
+        command("gd", workspace, ok=False)
+        assert change.read_text() == "keep me"
+        change.unlink()
+        command("gd", workspace, overrides={"GUM_ANSWER": "no"})
+        assert workspace.is_dir()
+        command("gd", workspace)
+        assert not workspace.exists()
+        listed = run(["jj", "workspace", "list", "-T", 'name ++ "\\n"'], jj_repo, env).stdout.split()
+        assert listed == ["default"], listed
+        print(f"{shell}: canonical paths, collisions, declining and safe removal passed, for git and jj")
 
 
 if __name__ == "__main__":

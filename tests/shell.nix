@@ -9,6 +9,7 @@ pkgs.runCommand "shell-and-rex-check"
   {
     nativeBuildInputs = with pkgs; [
       git
+      jujutsu
       nushell
       zsh
       python3

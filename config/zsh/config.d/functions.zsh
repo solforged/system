@@ -77,29 +77,62 @@ if command -v eza >/dev/null 2>&1; then
   function lta { 'lt' -a "$@"; }
 fi
 
-# --- Git worktrees ---
-# Canonical repo key, independent of the current subdirectory or worktree.
+# --- Workspaces and worktrees ---
+# ${PI_WORKTREE_DIR:-~/.pi/wt}/<repo>--<name>, the root Pi's /wt uses: a jj
+# workspace in a jj repository, a worktree and branch in a Git-only one. The
+# repo key is independent of the current subdirectory or checkout.
 ga() {
-  [[ $# == 1 ]] || { print -u2 'Usage: ga <branch>'; return 1; }
-  local common base branch="$1" slug root target
-  git check-ref-format --branch "$branch" >/dev/null || return 1
-  common=$(git rev-parse --path-format=absolute --git-common-dir) || return 1
-  common=$(cd "$common" && pwd -P) || return 1
-  base="${common%/.git}"
-  base="${base:t}"
-  slug="${branch//\//-}"
-  root="${OMP_WORKTREE_DIR:-$HOME/.omp/wt}"
-  [[ "$root" == /* ]] || { print -u2 'OMP_WORKTREE_DIR must be absolute'; return 1; }
+  [[ $# == 1 ]] || { print -u2 'Usage: ga <name>'; return 1; }
+  local common base name="$1" slug root target
+  root="${PI_WORKTREE_DIR:-$HOME/.pi/wt}"
+  [[ "$root" == /* ]] || { print -u2 'PI_WORKTREE_DIR must be absolute'; return 1; }
+  slug="${name//\//-}"
+  if jj root >/dev/null 2>&1; then
+    [[ -n "$name" && "$name" != *[[:space:]]* ]] || { print -u2 "Invalid workspace name: $name"; return 1; }
+    base=$(jj workspace root --name default) || return 1
+    base="${base:t}"
+  else
+    git check-ref-format --branch "$name" >/dev/null || return 1
+    common=$(git rev-parse --path-format=absolute --git-common-dir) || return 1
+    common=$(cd "$common" && pwd -P) || return 1
+    base="${common%/.git}"
+    base="${base:t}"
+  fi
   target="$root/$base--$slug"
   [[ ! -e "$target" && ! -L "$target" ]] || { print -u2 "Path already exists: $target"; return 1; }
   mkdir -p "$root" || return 1
-  git worktree add -b "$branch" "$target" || return 1
+  if jj root >/dev/null 2>&1; then
+    jj workspace add --name "$slug" "$target" || return 1
+  else
+    git worktree add -b "$name" "$target" || return 1
+  fi
   cd "$target"
 }
 
-# Refuse main checkouts and dirty trees; never force-delete a branch.
+# Refuse the main checkout and uncommitted changes; never force-delete a branch.
 gd() {
-  local common git_dir top main branch confirm=n
+  local common git_dir top main branch name confirm=n
+  if jj root >/dev/null 2>&1; then
+    top=$(jj workspace root) || return 1
+    main=$(jj workspace root --name default) || return 1
+    [[ "$top" != "$main" ]] || { print -u2 'Not a linked workspace'; return 1; }
+    name=$(jj workspace list -T 'name ++ "\t" ++ root ++ "\n"' | awk -F '\t' -v top="$top" '$2 == top { print $1 }')
+    [[ -n "$name" ]] || return 1
+    [[ "$(jj log -r @ --no-graph -T empty)" == true ]] || {
+      print -u2 'The working copy has changes; commit, squash or abandon them first'
+      return 1
+    }
+    if command -v gum >/dev/null 2>&1; then
+      gum confirm "Remove $top and workspace $name?" || return 0
+    else
+      read -r "confirm?Remove $top and workspace $name? (y/N): "
+      [[ "$confirm" != [Yy] ]] && return 0
+    fi
+    cd "$main" || return 1
+    jj workspace forget "$name" || return 1
+    rm -rf -- "$top"
+    return
+  fi
   common=$(git rev-parse --path-format=absolute --git-common-dir) || return 1
   git_dir=$(git rev-parse --path-format=absolute --git-dir) || return 1
   top=$(git rev-parse --show-toplevel) || return 1

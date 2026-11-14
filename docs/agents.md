@@ -119,10 +119,12 @@ and working rules. The commit rules live in `~/.config/git/commit-style.md`
 `config/omp/AGENTS.md` remains a compatibility symlink. Policy edits take effect
 after a Pi reload or OMP restart.
 
-Private worktrees go in `${OMP_WORKTREE_DIR:-$HOME/.omp/wt}/<repo-key>--<task>`,
-the layout `ga` creates. It rejects relative roots and occupied paths, including
-dangling symlinks. `gd` confirms the target and refuses dirty trees or forced
-branch deletion. A new worktree needs `direnv allow` before its devenv shell loads.
+Private worktrees go in `${PI_WORKTREE_DIR:-$HOME/.pi/wt}/<repo-key>--<task>`,
+the layout `ga` creates and Pi's `/wt` uses. In a jj repository `ga` adds a jj
+workspace, and in a Git-only one a worktree and branch. It rejects relative
+roots and occupied paths, including dangling symlinks. `gd` confirms the
+target, refuses uncommitted changes and never force-deletes a branch. For a jj
+workspace it forgets the workspace and deletes its directory. A new worktree needs `direnv allow` before its devenv shell loads.
 Harness-managed worker paths stay unchanged, with review and cleanup owned by
 the parent session.
 
