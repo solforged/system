@@ -64,7 +64,9 @@ The standard holds everywhere; the profiles change shape, not voice.
 `vale` checks these on every draft. The three spelling rules (Spelling,
 SpellingCompound, American) are errors; the rest are warnings, because each
 pattern also has legitimate uses, and an alert asks for a second look rather
-than a rewrite. A project may hold more of them as errors.
+than a rewrite. A project may hold more of them as errors. Spelling and
+SpellingCompound run only in projects that vendor this style with
+`vale-voice`, beside the project's own vocabulary.
 
 <!-- vale Voice.BoldLabels = NO -->
 <!-- vale Voice.SectionLength = NO -->
