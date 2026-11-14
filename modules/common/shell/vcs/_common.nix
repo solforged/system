@@ -39,13 +39,17 @@ rec {
     else
       "file";
   home = config.users.users.${config.user.name}.home;
+  # null until ssh-enroll has run and the host's key is in user.signingKeys.
   signingKey =
-    {
-      enclave = "${home}/.ssh/id_ecdsa_sk_signing";
-      tpm = "${home}/.ssh/id_ecdsa_signing.pub";
-      file = "${home}/.ssh/id_ed25519";
-    }
-    .${signingKind} or null;
+    if signingKind == null then
+      null
+    else
+      {
+        enclave = "${home}/.ssh/id_ecdsa_sk_signing";
+        tpm = "${home}/.ssh/id_ecdsa_signing.pub";
+        file = "${home}/.ssh/id_ed25519";
+      }
+      .${signingKind};
   sign = cfg.sign && signingKey != null;
 
   # The ssh-keygen Git and jj sign and verify with, pointed at the key's home.
