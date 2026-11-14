@@ -22,10 +22,15 @@ Never touch:
 - Existing material under `~/Documents`; it is not a migration or cleanup
   target.
 
+In a jj repository (`jj root` succeeds), worktrees are jj workspaces
+(`jj workspace list`) and branches are bookmarks. A workspace whose `@` is
+empty holds no uncommitted work.
+
 Survey:
 
 1. Worktrees and branches, using the managed skill
-   `audit-stale-worktrees-branches`. Classify each as integrated (an ancestor of
+   `audit-stale-worktrees-branches`. Look under `${PI_WORKTREE_DIR:-~/.pi/wt}`
+   and the older `~/.omp/wt`. Classify each as integrated (an ancestor of
    main, patch-identical by `git cherry`, or landed as reworked commits by
    subject and line containment), pending, or unknown. Record whether it is
    dirty and which live session owns it, if any.
@@ -55,10 +60,14 @@ After approval:
 
 - Stop the approved servers and kill the approved browser trees.
 - Remove worktrees with `git worktree remove`. Use `--force` only when the sole
-  blocker is an untracked file you have shown to be junk.
+  blocker is an untracked file you have shown to be junk. Remove a jj workspace
+  with `jj workspace forget <name>` from another workspace, then delete its
+  directory.
 - Delete branches with `git branch -d`. Use `-D` only for branches proven landed
-  by rebase or cherry-pick, and say which ones. Delete remote branches only when
-  they have landed and the approval names them.
+  by rebase or cherry-pick, and say which ones. In a jj repository, delete
+  bookmarks with `jj bookmark delete` and abandon a forgotten workspace's
+  leftover commits only when they are empty or landed. Delete remote branches
+  only when they have landed and the approval names them.
 - Before deleting approved paths, durably preserve the approved unique items and
   all cited evidence, required mockup sources/assets, and selected plates. If
   required material cannot be preserved, skip that deletion. Delete only the

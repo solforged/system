@@ -124,9 +124,10 @@ the layout `ga` creates and Pi's `/wt` uses. In a jj repository `ga` adds a jj
 workspace, and in a Git-only one a worktree and branch. It rejects relative
 roots and occupied paths, including dangling symlinks. `gd` confirms the
 target, refuses uncommitted changes and never force-deletes a branch. For a jj
-workspace it forgets the workspace and deletes its directory. A new worktree needs `direnv allow` before its devenv shell loads.
-Harness-managed worker paths stay unchanged, with review and cleanup owned by
-the parent session.
+workspace it forgets the workspace and deletes its directory. A new worktree
+needs `direnv allow` before its devenv shell loads. Harness-managed worker
+paths stay unchanged, with review and cleanup owned by the parent session.
+`/tidy` surveys both kinds under that root and the older `~/.omp/wt`.
 
 ## Pi
 
