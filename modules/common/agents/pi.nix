@@ -37,13 +37,16 @@ in
   };
   config = lib.mkIf cfg.enable {
     # The slash commands in config/omp/commands, shared with Oh My Pi, as Pi
-    # prompt templates.
+    # prompt templates. curate-skills audits Oh My Pi's managed skills, and
+    # pi-mono's own /curate-skills takes its name in Pi.
     modules.dotfiles.homeLink = {
       ".pi/agent/AGENTS.md" = "agents/AGENTS.md";
     }
     // lib.listToAttrs (
       map (file: lib.nameValuePair ".pi/agent/prompts/${file}" "omp/commands/${file}") (
-        lib.filter (lib.hasSuffix ".md") (lib.attrNames (builtins.readDir ../../../config/omp/commands))
+        lib.filter (file: lib.hasSuffix ".md" file && file != "curate-skills.md") (
+          lib.attrNames (builtins.readDir ../../../config/omp/commands)
+        )
       )
     );
     hm =
