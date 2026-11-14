@@ -14,6 +14,9 @@
 - Keep docs short and workspaces tidy; put details in folders for
   progressive discovery. Docs describe the current state: when something
   changes, rewrite the passage it affects instead of appending to it.
+- When you add, rename or remove a command or alias the user runs, update
+  `home/notes/commands.md` or `home/notes/nushell-setup.md` in the memory
+  wiki in the same change.
 
 ## Rules
 
