@@ -15,58 +15,6 @@ the extension's pin with `nix flake update omp-intercom`, then rebuild.
 
 For the memory wiki, see the [wiki guide](wiki.md).
 
-### Nous Portal
-
-`config/omp/extensions/nous-portal.ts` adds the `nous` provider through omp's
-native extension API. Home Manager links it into `~/.omp/agent/extensions/`. It uses the
-[Nous Portal OAuth subscription flow](https://hermes-agent.nousresearch.com/docs/integrations/nous-portal),
-not a static API key or a local Hermes proxy. Existing providers and model roles
-are unchanged.
-
-Switch the system configuration once to install the link, then start a fresh
-omp process. Run `/login` and select **Nous Portal**. Open the displayed Portal
-URL, enter the device code if needed, and approve inference access. The flow
-uses Nous's published `hermes-cli` public OAuth client ID; the consent screen
-may call it Hermes CLI. Only `inference:invoke` is requested, not
-`billing:manage`. No subscription is purchased or changed by the extension.
-
-omp stores the grant in its own credential store and refreshes the short-lived
-inference JWT automatically. Refresh tokens rotate on use: do not copy a Hermes
-refresh token into omp or refresh the same grant from another client. Tokens do
-not belong in `models.yml`, the checkout, or shell environment variables.
-
-After login, select a model with `/model`, for example
-`nous/openai/gpt-6.1-sol`. The extension discovers chat models from the public
-Portal catalog and uses omp's normal 24-hour model cache. Use
-`omp models refresh` to refresh the catalog. Capability, context, output-limit,
-and pricing metadata come from the catalog; when an output limit is omitted,
-the local output cap is 16,384 tokens or the context size, whichever is smaller.
-Requests use Portal's OpenAI-compatible chat-completions endpoint and
-OpenRouter-style reasoning parameters, without OpenRouter routing preferences.
-
-`/usage` shows Portal's allowance gauges, reset times, top-tier scope, and any
-reported credit balance or pause. Gauges are informational: Portal decides model
-eligibility and whether requests may continue on credits. A zero credit balance
-is not treated as an exhausted subscription allowance. Manage the plan at
-[Nous Portal](https://portal.nousresearch.com/manage-subscription). A revoked
-grant requires another `/login`; gateway failures do not erase the stored grant.
-
-Before installing the Home Manager link, load the extension explicitly:
-
-```sh
-omp -e ./config/omp/extensions/nous-portal.ts
-```
-
-Protocol and quota-boundary checks run without credentials:
-
-```sh
-bun test tests/nous-portal.test.ts
-```
-
-Live verification requires completing Portal authorization, selecting a Nous
-model, and making a request. Check `/usage` afterward. Do not mistake successful
-catalog discovery or a device-code dialog for authenticated inference.
-
 ### Slash commands
 
 Each command is a prompt file in `config/omp/commands/`, linked into
@@ -188,6 +136,10 @@ with the wiki's home bundle on personal hosts, builds the wiki tool, and runs
 pi-mono's `scripts/install.ts`, which links the extensions into `~/.pi/agent`.
 Activation reminds you while any of these are missing; see the
 [wiki guide](wiki.md). Update Pi itself with `system-bump llm-agents`.
+
+The Nous Portal subscription is pi-mono's `nous-portal` provider: run
+`/login nous-portal`, then pick a model with `/model`. See pi-mono's
+`docs/providers.md`. omp no longer has it.
 
 ## Herdr
 

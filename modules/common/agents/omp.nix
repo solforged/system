@@ -35,7 +35,6 @@ in
       ".omp/agent/models.yml" = "omp/models.yml";
       ".omp/agent/AGENTS.md" = "agents/AGENTS.md";
       ".omp/agent/TITLE_SYSTEM.md" = "omp/TITLE_SYSTEM.md";
-      ".omp/agent/extensions/nous-portal.ts" = "omp/extensions/nous-portal.ts";
     }
     // lib.listToAttrs (
       map (name: lib.nameValuePair ".omp/agent/commands/${name}.md" "omp/commands/${name}.md") commands
