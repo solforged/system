@@ -94,6 +94,7 @@ in
 
     # Filled in by ssh-enroll on each host; see docs/secrets.md.
     user.authKeys = {
+      aster = "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAIByWBhhUa2vipmyQzwbxc5SEqwQNnW4hF9zJuri40IKoAAAABHNzaDo= aster";
       atlas = "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAIEy5rPyoXHsNjjby0gKzqdzAAZk0Hq7hdELGPvw+69LCAAAABHNzaDo= atlas";
       hyperion = "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAIDKbD8uuk06z37rrhIi5huJb16uewOLCmCLpbufet6u1AAAABHNzaDo= hyperion";
     };
@@ -105,6 +106,7 @@ in
       "aster"
     ];
     user.signingKeys = {
+      aster = "sk-ecdsa-sha2-nistp256@openssh.com AAAAInNrLWVjZHNhLXNoYTItbmlzdHAyNTZAb3BlbnNzaC5jb20AAAAIbmlzdHAyNTYAAABBBB/qs7cROIgCXs10YM6bFpLTov53fpEu6MF+cwRW46H7y4zlSiB0fB30YWUS+OzIzodFoY4mdHX42hpa/v+rhEsAAAAEc3NoOg== aster";
       hyperion = "sk-ecdsa-sha2-nistp256@openssh.com AAAAInNrLWVjZHNhLXNoYTItbmlzdHAyNTZAb3BlbnNzaC5jb20AAAAIbmlzdHAyNTYAAABBBBKZCikpKuquxv1fGSQsAD9eiFHMfmESuaDdJvTQpPonCBuUBDzRXCRzBDKucKs3MvwCt+TqFJKolc4/DXcaAA8AAAAEc3NoOg== hyperion";
       amarna = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIO4ILJOzgl9yhaZ5mNZAtq16R8pvxXIgqX1ks/7+0ttD amarna";
       atlas = "sk-ecdsa-sha2-nistp256@openssh.com AAAAInNrLWVjZHNhLXNoYTItbmlzdHAyNTZAb3BlbnNzaC5jb20AAAAIbmlzdHAyNTYAAABBBJ8vkbngsUcvCWQpi2P9Bn+/W1YCMQ1DLKEDtAxjNPIsCkXdp30UL5avh0/tpKJxXdyfT4sE4G0pkdVrljCkLiMAAAAEc3NoOg== atlas";
