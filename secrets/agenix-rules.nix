@@ -23,6 +23,7 @@ let
     hosts.amarna
     hosts.hyperion
     hosts.atlas
+    hosts.aster
   ];
   work = admins ++ [ hosts.atlas ];
 in
