@@ -34,6 +34,8 @@
   `users.users.<name>.openssh.authorizedKeys`. Rex for iOS pairs over
   Tailscale and needs no SSH.
 - Every host pins GitHub's and the personal hosts' keys in
-  `/etc/ssh/ssh_known_hosts` (`modules/common/shell/ssh.nix`).
+  `/etc/ssh/ssh_known_hosts` (`modules/common/shell/ssh.nix`). Hyperion uses
+  `hyperion.ostrich-rigel.ts.net`; Amarna uses
+  `amarna.ussuri-alphard.ts.net` while its migration is pending.
 - `agent-vm` is outside the flake: its `authorized_keys` needs the FIDO2 keys
   added by hand.

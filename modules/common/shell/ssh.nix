@@ -14,7 +14,11 @@
 
 let
   hostKeys = import ../../../secrets/host-keys.nix;
-  tailnet = "ussuri-alphard.ts.net";
+  # Hosts move to the passkey-owned tailnet individually.
+  tailnets = {
+    amarna = "ussuri-alphard.ts.net";
+    hyperion = "ostrich-rigel.ts.net";
+  };
 
   # From https://api.github.com/meta (ssh_keys).
   github = [
@@ -26,7 +30,7 @@ let
   personal = host: {
     hostNames = [
       host
-      "${host}.${tailnet}"
+      "${host}.${tailnets.${host}}"
     ];
     publicKey = hostKeys.${host};
   };
