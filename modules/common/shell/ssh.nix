@@ -18,6 +18,7 @@ let
   tailnets = {
     amarna = "ussuri-alphard.ts.net";
     hyperion = "ostrich-rigel.ts.net";
+    aster = "ostrich-rigel.ts.net";
   };
 
   # From https://api.github.com/meta (ssh_keys).
@@ -41,6 +42,7 @@ in
     programs.ssh.knownHosts = {
       amarna = personal "amarna";
       hyperion = personal "hyperion";
+      aster = personal "aster";
     }
     // lib.listToAttrs (
       lib.imap0 (i: key: {
