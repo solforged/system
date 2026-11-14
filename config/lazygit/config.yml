@@ -1,5 +1,12 @@
 git:
   overrideGpg: true
+  # delta, with its [delta] options from git config. | cycles through these.
+  diffRenderers:
+    - command: delta --{{colorScheme}} --paging=never
+    - command: delta --{{colorScheme}} --paging=never --side-by-side --width={{width}}
+      name: side by side
+    - type: rawGit
+      name: plain
 # ANSI colors follow the terminal palette, including light mode.
 gui:
   border: single

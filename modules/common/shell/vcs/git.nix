@@ -119,5 +119,17 @@ in
             }) githubRemotes
         );
     };
+
+    # Syntax-highlighted diffs for git diff, show, log -p, blame and add -p.
+    # The ansi theme follows the terminal palette, as bat's does. lazygit
+    # runs delta itself; config/lazygit/config.yml sets that up.
+    hm.programs.delta = {
+      enable = true;
+      enableGitIntegration = true;
+      options = {
+        syntax-theme = "ansi";
+        line-numbers = true;
+      };
+    };
   };
 }
