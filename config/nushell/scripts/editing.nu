@@ -5,6 +5,8 @@
 #
 # State lives in records, which nu never passes to child processes.
 
+use files.nu [ft]
+
 # --- Directory history ---
 
 # Moves to the last directory in one stack and pushes the current one onto the
@@ -60,7 +62,8 @@ def tilde [path: string] {
 }
 
 # Pick a project or marked place and enter it; Ctrl-Z in the picker swaps in
-# everything zoxide knows. Words match exactly rather than fuzzily, so that
+# everything zoxide knows, and Ctrl-F enters the pick and finds a file in it
+# with ft. Words match exactly rather than fuzzily, so that
 # `p tessera` is one match and enters directly. With none, it falls back to
 # zoxide, so `p hermes` works like `z hermes`.
 export def --env p [...query: string] {
@@ -70,14 +73,19 @@ export def --env p [...query: string] {
   let preview = r#'if git -C {1} rev-parse --git-dir >/dev/null 2>&1; then git -C {1} -c color.status=always status -sb | head -20; echo; git -C {1} log --oneline --color=always -20; else eza -1 --color=always --group-directories-first {1}; fi'#
   let args = [
     --with-shell "sh -c" --delimiter "\t" --with-nth 2 --scheme path --tiebreak index
-    --header "ctrl-z: everything zoxide knows" --bind $"ctrl-z:reload\(($everything)\)"
+    --header "ctrl-z: everything zoxide knows  ctrl-f: find a file there" --bind $"ctrl-z:reload\(($everything)\)"
+    --expect ctrl-f
     --preview $preview --preview-window "right,50%"
   ]
   let args = if ($query | is-empty) { $args } else { $args ++ [--exact --query ($query | str join " ") --select-1 --exit-0] }
   let result = fzf-run $feed "cd> " ...$args
   if $result.exit_code == 0 {
-    let line = $result.stdout | str trim --right --char (char nl)
-    if $line != "" { cd ($line | split row (char tab) | first) }
+    # --expect puts the key on the first line, empty for Enter.
+    let out = $result.stdout | lines
+    let pick = $out | get 1?
+    if $pick == null or $pick == "" { return }
+    cd ($pick | split row (char tab) | first)
+    if ($out | first) == "ctrl-f" { ft }
   } else if $result.exit_code == 1 and ($query | is-not-empty) {
     let found = try { ^zoxide query --exclude $env.PWD -- ...$query | complete } catch { return }
     if $found.exit_code == 0 { cd ($found.stdout | str trim) } else { print -e $"no match for ($query | str join ' ')" }

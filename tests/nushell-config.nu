@@ -4,7 +4,7 @@ use std/assert
 
 # Public commands are in scope; module helpers are not.
 let commands = scope commands | get name
-for name in [ga gd glog gst gb ft mdp prevd nextd p projects insert-last-arg prepend-sudo insert-file ssh fip dip lip e ff eff y omp] {
+for name in [ga gd glog gst gb ft mdp mdh prevd nextd p projects insert-last-arg prepend-sudo insert-file ssh fip dip lip e ff eff y omp] {
   assert ($name in $commands) $"missing command ($name)"
 }
 for name in [git-segment hints preexec step history-line tilde fzf-run find-files choose opener copy glow-style preview show-file complete-external interactive main] {
@@ -80,6 +80,13 @@ assert equal (gst | sort-by path) [
 ]
 cd ..
 
+# Markdown outlines skip fenced code, and take a path or piped text.
+let doc = "# Top\n```sh\n# a comment\n```\n~~~\n```\n# still code\n~~~\n## Next ##\n    # indented code\n#tag\n"
+let outline = [{line: 1, level: 1, title: Top} {line: 9, level: 2, title: Next}]
+assert equal ($doc | mdh) $outline
+$doc | save outline.md
+assert equal (mdh outline.md) $outline
+
 # Shell state stays out of child environments.
 let child_env = ^env | lines | where {|line| $line =~ '^(DIRHIST|ALT_DOT|TERN_|CARAPACE_CONTEXT)' }
 assert equal $child_env []
@@ -93,4 +100,4 @@ assert equal (do $completer {command: [cat "a*"]}) [{value: "a/"}]
 let line = "zz-no-such-command-zz"
 assert equal (do $env.config.hinter.closure {line: $line, pos: ($line | str length), cwd: $env.PWD}) null
 
-print "nushell config: commands, prompt, directory history, projects, git tables and completions passed"
+print "nushell config: commands, prompt, directory history, projects, git tables, outlines and completions passed"

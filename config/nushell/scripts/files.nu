@@ -1,4 +1,5 @@
-# Find files and act on them: ft by extension, mdp for markdown. Both list
+# Find files and act on them: ft by extension, mdp for markdown, mdh for a
+# markdown file's outline. ft and mdp list
 # with fd, so .gitignore and hidden files stay out unless --all, and pick
 # with fzf; Tab marks several.
 #
@@ -98,6 +99,37 @@ export def ft [
 # Read a file in the terminal: glow for markdown, bat for the rest.
 def show-file [file: path] {
   if ($file | path parse | get extension) in [md markdown] { ^glow -t $file } else { ^bat --paging=always -- $file }
+}
+
+# A markdown file's headings as a table of line, level and title, from a
+# path or piped text. Lines in fenced code blocks are not headings.
+#
+#   mdh README.md
+#   mdh docs/agents.md | where level <= 2
+#   http get https://example.com/README.md | mdh
+export def mdh [file?: path]: [nothing -> table, string -> table] {
+  let text = if $file != null { open --raw $file } else if $in != null { $in } else {
+    error make {msg: "mdh needs a file or piped markdown"}
+  }
+  # A loop, not a pipeline: whether a line is in a fence depends on the
+  # lines before it, and closures cannot change outer variables.
+  # The open fence's marker, or "" outside one. A mut keeps the type of its
+  # first value, so this starts as a string rather than null.
+  mut fence = ""
+  mut rows = []
+  for line in ($text | lines | enumerate) {
+    let marker = $line.item | parse --regex '^\s{0,3}(?<marker>```|~~~)' | get marker.0?
+    if $marker != null {
+      if $fence == "" { $fence = $marker } else if $fence == $marker { $fence = "" }
+      continue
+    }
+    if $fence != "" { continue }
+    let heading = $line.item | parse --regex '^\s{0,3}(?<marks>#{1,6})\s+(?<title>.*?)(\s+#+)?\s*$'
+    if ($heading | is-not-empty) {
+      $rows ++= [{line: ($line.index + 1), level: ($heading.0.marks | str length), title: $heading.0.title}]
+    }
+  }
+  $rows
 }
 
 # Pick markdown below a directory with a rendered preview and read it in
