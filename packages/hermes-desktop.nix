@@ -70,6 +70,10 @@ agent.hermesDesktop.overrideAttrs (old: {
 
     rm "$out/bin/hermes-desktop"
     makeWrapper "$app/Contents/MacOS/Hermes" "$out/bin/hermes-desktop"
-    /usr/bin/codesign --force --deep --sign - "$app"
+  '';
+
+  # Stripping and other fixups change signed files; sign the finished bundle.
+  postFixup = (old.postFixup or "") + ''
+    /usr/bin/codesign --force --deep --sign - "$out/Applications/Hermes.app"
   '';
 })
