@@ -26,10 +26,5 @@
 - Deliver what was asked at the scope intended. Make routine judgment calls
   yourself; check in only when readings differ materially. When done, offer
   the logical next steps.
-- Rust in throwaway worktrees: share the main `target/` via `CARGO_TARGET_DIR`
-  unless isolation is needed. A separate target dir needs `CARGO_INCREMENTAL=0`
-  and must be deleted afterwards; each is a multi-GB copy of every dependency.
-- Private worktrees go in `${OMP_WORKTREE_DIR:-$HOME/.omp/wt}/<repo-key>--<task>`
-  (the `ga` layout; repo key from the canonical Git common directory). Require
-  an absolute root and fresh, non-symlink task paths. Harness-managed workers
-  keep their own paths; parents own review and cleanup.
+- Use `jj` instead of `git` and prefer `jj` worktrees under `~/.pi/wt/`
+  whenever possible.
