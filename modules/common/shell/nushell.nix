@@ -56,9 +56,14 @@ let
       ${pkgs.atuin}/bin/atuin init nu --disable-ai --disable-up-arrow > "$out/atuin.nu"
     ''}
     ${lib.optionalString shell.mise.enable ''
-      # Keep the caller's PATH. The first PATH assignments capture the build environment.
+      # mise's init is a module: its `main` becomes the `mise` wrapper that
+      # applies `mise shell` to this shell. Sourced directly, it would only
+      # define a command called `main`. Keep the caller's PATH; the first
+      # PATH assignments capture the build environment.
+      mkdir "$out/modules"
       ${pkgs.mise}/bin/mise activate nu \
-        | ${pkgs.gnused}/bin/sed -E "/^ *[\$]env[.](__MISE_ORIG_PATH|PATH) = [(]?r#'/d; /^set,PATH,/d" > "$out/mise.nu"
+        | ${pkgs.gnused}/bin/sed -E "/^ *[\$]env[.](__MISE_ORIG_PATH|PATH) = [(]?r#'/d; /^set,PATH,/d" > "$out/modules/mise.nu"
+      echo "use $out/modules/mise.nu" > "$out/mise.nu"
     ''}
     ${lib.optionalString shell.fnox.enable ''
       ${pkgs.fnox}/bin/fnox activate nu > "$out/fnox.nu"
@@ -80,7 +85,8 @@ let
     fi
 
     # Fail the build, not the shell, when a tool emits code nu cannot parse.
-    for f in "$out"/*.nu; do
+    for f in "$out"/*.nu "$out"/modules/*.nu; do
+      [[ -e $f ]] || continue
       [[ $(${pkgs.nushell}/bin/nu -n -c "nu-check '$f'") == true ]] || {
         echo "nu-check failed: $f" >&2
         exit 1
