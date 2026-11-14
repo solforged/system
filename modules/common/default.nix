@@ -102,6 +102,7 @@ in
     user.sshLoginHosts = [
       "hyperion"
       "amarna"
+      "aster"
     ];
     user.signingKeys = {
       hyperion = "sk-ecdsa-sha2-nistp256@openssh.com AAAAInNrLWVjZHNhLXNoYTItbmlzdHAyNTZAb3BlbnNzaC5jb20AAAAIbmlzdHAyNTYAAABBBBKZCikpKuquxv1fGSQsAD9eiFHMfmESuaDdJvTQpPonCBuUBDzRXCRzBDKucKs3MvwCt+TqFJKolc4/DXcaAA8AAAAEc3NoOg== hyperion";

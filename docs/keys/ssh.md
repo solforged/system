@@ -27,11 +27,12 @@
 
 ## Hosts
 
-- amarna accepts SSH only on `tailscale0`. hyperion's Remote Login accepts only
-  tailnet addresses (`AllowUsers`). Both take keys only, and only those the
-  flake declares; hyperion ignores `~/.ssh/authorized_keys`. Its
-  [application firewall](../network-security.md) is separate from this login
-  restriction.
+- amarna accepts SSH only on `tailscale0`. The Macs' Remote Login
+  (`modules.services.ssh`, on hyperion and aster) accepts only tailnet addresses
+  (`AllowUsers`) and requires `modules.services.tailscale`. All take keys only,
+  and only those the flake declares; the Macs ignore `~/.ssh/authorized_keys`.
+  hyperion's [application firewall](../network-security.md) is separate from
+  this login restriction.
 - To pair a client such as Tern, add its key to the host's
   `users.users.<name>.openssh.authorizedKeys`. Rex for iOS pairs over
   Tailscale and needs no SSH.

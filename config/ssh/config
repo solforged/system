@@ -9,7 +9,7 @@ Host github.com
 Host amarna
   User sol
 
-Host hyperion
+Host hyperion aster
   User admin
 
 Host agent-vm
@@ -19,7 +19,7 @@ Host agent-vm
 # on the primary (ssh-enroll), then the backup's, if pulled with
 # `cd ~/.ssh && ssh-keygen -K`. Only Nix's ssh can use them; /usr/bin/ssh has
 # no FIDO2 support.
-Host github.com amarna hyperion agent-vm
+Host github.com amarna hyperion aster agent-vm
   IdentityFile ~/.ssh/id_ed25519_sk
   IdentityFile ~/.ssh/id_ed25519_sk_rk_backup
   IdentitiesOnly yes

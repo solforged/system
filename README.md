@@ -8,6 +8,7 @@ host; hosts mostly turn on `modules.*` flags.
 | amarna   | NixOS, x86_64             | Desktop: GNOME, Ryzen 9 9950X, RTX PRO 6000   |
 | hyperion | nix-darwin, Apple silicon | Personal Mac                                  |
 | atlas    | nix-darwin, Apple silicon | Work Mac; shared tools and work-safe agents   |
+| aster    | nix-darwin, Apple silicon | Personal Mac; base tools, agents, Tailscale   |
 
 ## Install
 
