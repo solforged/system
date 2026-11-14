@@ -36,6 +36,10 @@ and the host to `secrets/agenix-rules.nix`, run `secrets-rekey` on a host with
 an admin YubiKey plugged in, pull, and rerun `bootstrap`.
 The bootstrap skill in `.agents/skills` covers first-switch failures.
 
+With Berkeley Mono enabled, activation creates or repairs `~/Library/Fonts` with
+user ownership before agenix installs the font. Home Manager also needs write
+access there to link `.home-manager-fonts-version`.
+
 Homebrew `cleanup` defaults to `"none"`, so activation leaves extra formulae and
 casks installed. hyperion sets `"uninstall"`, which removes formulae and casks
 that are no longer listed. `"zap"` also deletes the files a cask owns.

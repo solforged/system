@@ -102,6 +102,9 @@
       lib = { inherit (my) mkHost; };
 
       checks = lib.recursiveUpdate (lib.recursiveUpdate hostChecks toolingChecks) {
+        aarch64-darwin.berkeley-fonts = import ./tests/berkeley-fonts.nix {
+          configuration = hosts.aster.build;
+        };
         aarch64-darwin.hyperion-firewall = import ./tests/hyperion-firewall.nix {
           pkgs = pkgsFor "aarch64-darwin";
           configuration = hosts.hyperion.build;
