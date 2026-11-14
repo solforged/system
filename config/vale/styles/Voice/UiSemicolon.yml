@@ -4,6 +4,7 @@
 extends: existence
 message: "Interface text joins clauses with a semicolon. Split the sentence, or keep the one the reader acts on."
 level: warning
+scope: ui
 nonword: true
 tokens:
   - ';(?=\s)'

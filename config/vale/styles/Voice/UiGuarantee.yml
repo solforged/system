@@ -7,6 +7,7 @@
 extends: existence
 message: "'%s' narrates what the app keeps or promises. Show the state where it matters, or cut the line."
 level: warning
+scope: ui
 ignorecase: true
 tokens:
   - '(?:is|are) (?:still |always )?kept'

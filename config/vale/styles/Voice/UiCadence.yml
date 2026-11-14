@@ -4,6 +4,7 @@
 extends: existence
 message: "'%s' reads as a tagline. Say what the screen does, or cut it."
 level: warning
+scope: ui
 nonword: true
 tokens:
   - '(?:(?:^|(?<=[.!?]\s))[A-Z][^.!?\n]{1,24}[.!?]\s+){2,}[A-Z][^.!?\n]{1,24}[.!?]'

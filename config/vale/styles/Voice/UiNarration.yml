@@ -6,6 +6,7 @@
 extends: existence
 message: "'%s' narrates the interface as a scene. Name the thing and its state instead."
 level: warning
+scope: ui
 ignorecase: true
 tokens:
   - '(?:lives|sits|rests|waits|lingers|settles|sleeps|belongs|forgets|remembers)\b'
