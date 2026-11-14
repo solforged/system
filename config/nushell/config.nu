@@ -6,6 +6,8 @@
 #   editing.nu     fish-style editing: directory history, projects, Alt-., hints
 #   completion.nu  carapace completions with a deadline
 #   worktree.nu    ga and gd
+#   git.nu         glog, gst, gb: git as tables, a branch picker
+#   files.nu       ft, mdp: find files by type or markdown and act on them
 #   remote.nu      ssh that cleans up and reconnects; fip, dip, lip
 #
 # Atuin, fnox, zoxide, carapace and direnv load after this file, from
@@ -17,6 +19,8 @@ use scripts/tern.nu
 use scripts/editing.nu *
 use scripts/completion.nu
 use scripts/worktree.nu *
+use scripts/git.nu *
+use scripts/files.nu *
 use scripts/remote.nu *
 
 # --- Options ---

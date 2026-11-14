@@ -55,6 +55,11 @@ Alt-C, or `p` with words to match, enters a project: a directory in `~/src`
 or a worktree root, or a mark. `$env.PROJECTS` in `config.nu` lists both;
 zoxide's score ranks them.
 
+`glog` and `gst` return git's log and status as tables to filter and pipe;
+`gb` switches branches. `ft <ext>` finds files by type and acts on the picks,
+and `mdp` previews and reads markdown. `help <command>` shows each one's keys
+and examples.
+
 The prompt, `ga`/`gd` and the ssh wrapper exist in both shells; change them
 together. `nix build .#checks.<system>.shell` loads the config in a scratch home
 and runs the worktree helpers in both shells.

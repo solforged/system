@@ -4,10 +4,10 @@ use std/assert
 
 # Public commands are in scope; module helpers are not.
 let commands = scope commands | get name
-for name in [ga gd prevd nextd p projects insert-last-arg prepend-sudo insert-file ssh fip dip lip e ff eff y omp] {
+for name in [ga gd glog gst gb ft mdp prevd nextd p projects insert-last-arg prepend-sudo insert-file ssh fip dip lip e ff eff y omp] {
   assert ($name in $commands) $"missing command ($name)"
 }
-for name in [git-segment hints preexec step history-line tilde fzf-run complete-external interactive main] {
+for name in [git-segment hints preexec step history-line tilde fzf-run find-files choose opener copy glow-style preview show-file complete-external interactive main] {
   assert not ($name in $commands) $"($name) leaks into the shell"
 }
 
@@ -57,6 +57,29 @@ assert not ((do $in_home src/notes.md) in $found)
 assert not ((do $in_home .local/share/wiki) in $found)
 assert equal ($found | uniq | length) ($found | length)
 
+# Git as tables: glog's columns and types, and gst's statuses, including a
+# rename's old path and a path with a space.
+mkdir repo
+cd repo
+^git init --quiet --initial-branch main
+"a\n" | save "a file.txt"
+"b\n" | save b.txt
+^git add .
+^git -c user.name=t -c user.email=t@t commit --quiet --message "first\tsubject"
+^git mv b.txt c.txt
+"more\n" | save --append "a file.txt"
+"" | save new.md
+let log = glog
+assert equal ($log | columns) [hash author date subject]
+assert equal ($log.0.subject) "first\tsubject"
+assert equal ($log.0.date | describe) datetime
+assert equal (gst | sort-by path) [
+  {status: " M", path: "a file.txt", from: null}
+  {status: "R ", path: "c.txt", from: "b.txt"}
+  {status: "??", path: "new.md", from: null}
+]
+cd ..
+
 # Shell state stays out of child environments.
 let child_env = ^env | lines | where {|line| $line =~ '^(DIRHIST|ALT_DOT|TERN_|CARAPACE_CONTEXT)' }
 assert equal $child_env []
@@ -70,4 +93,4 @@ assert equal (do $completer {command: [cat "a*"]}) [{value: "a/"}]
 let line = "zz-no-such-command-zz"
 assert equal (do $env.config.hinter.closure {line: $line, pos: ($line | str length), cwd: $env.PWD}) null
 
-print "nushell config: commands, prompt, directory history, projects and completions passed"
+print "nushell config: commands, prompt, directory history, projects, git tables and completions passed"
