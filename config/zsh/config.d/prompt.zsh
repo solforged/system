@@ -1,4 +1,4 @@
-# The same prompt as config/nushell/config.nu draws outside Tern's native
+# The same prompt as config/nushell/scripts/prompt.nu draws outside Tern's native
 # prompt: a blank line, host, directory and git state, then `>` on the input
 # line, green or red by the last status, and `<` in vi command mode. The
 # right side shows the last command's duration from 2 seconds and a failing

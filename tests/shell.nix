@@ -1,5 +1,9 @@
 # Fast, unprivileged regression tests; no live home or macOS preferences.
 { pkgs }:
+let
+  # The whole directory, so config.nu finds scripts/ beside it.
+  nushellConfig = ../config/nushell;
+in
 pkgs.runCommand "shell-and-rex-check"
   {
     nativeBuildInputs = with pkgs; [
@@ -16,6 +20,10 @@ pkgs.runCommand "shell-and-rex-check"
     python ${../.}/tests/rex-themes.py
     zsh -n ${../config/zsh/config.d/functions.zsh}
     zsh -n ${../config/zsh/config.d/aliases.zsh}
-    test "$(nu -n -c 'nu-check ${../config/nushell/config.nu}')" = true
+    test "$(nu -n -c 'nu-check ${nushellConfig}/config.nu')" = true
+    for module in ${nushellConfig}/scripts/*.nu; do
+      test "$(nu -n -c "nu-check --as-module '$module'")" = true
+    done
+    (cd "$HOME" && nu --config ${nushellConfig}/config.nu ${./nushell-config.nu})
     touch "$out"
   ''

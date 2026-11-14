@@ -83,6 +83,14 @@ let
       echo "carapace.nu still names the build's config directory" >&2
       exit 1
     fi
+    # Commands with a native carapace spec, for config/nushell/scripts/completion.nu.
+    # `carapace --list` takes too long to run on every completion.
+    ${pkgs.carapace}/bin/carapace --list \
+      | ${pkgs.nushell}/bin/nu -n --stdin -c '
+          $in | from json
+          | items {|name, specs| if ($specs | any {|spec| $spec.group != "bridge" }) { $name } }
+          | compact | to nuon | $"$env.CARAPACE_NATIVE_SPECS = ($in)\n"' \
+      > "$out/carapace-specs.nu"
 
     # Fail the build, not the shell, when a tool emits code nu cannot parse.
     for f in "$out"/*.nu "$out"/modules/*.nu; do
@@ -108,9 +116,13 @@ in
   options.modules.shell.nushell.enable = lib.mkEnableOption "Nushell";
 
   config = lib.mkIf cfg.enable {
-    # Keep config.nu live and let Home Manager own env.nu; nu writes its
-    # plugin registry beside them.
-    modules.dotfiles.configLink."nushell/config.nu" = "nushell/config.nu";
+    # Keep config.nu and its modules live and let Home Manager own env.nu;
+    # nu writes its plugin registry beside them. config.nu finds scripts/
+    # beside its own link.
+    modules.dotfiles.configLink = {
+      "nushell/config.nu" = "nushell/config.nu";
+      "nushell/scripts" = "nushell/scripts";
+    };
 
     hm = {
       # env.nu runs before config.nu and vendor autoloads. Direct launches
@@ -122,6 +134,7 @@ in
       home.packages = with pkgs; [
         login
         carapace
+        fd
         fzf
         gum
         zoxide

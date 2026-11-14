@@ -19,16 +19,15 @@ def test(shell):
         root = Path(temporary).resolve()
         repo = root / "project"
         repo.mkdir()
-        helpers = root / ("helpers.nu" if shell == "nu" else "helpers.zsh")
         if shell == "nu":
-            text = (ROOT / "config/nushell/config.nu").read_text()
-            helpers.write_text(text.split("# --- Git worktrees ---")[1].split("# --- Fish-like editing ---")[0])
+            load = f"use '{ROOT / 'config/nushell/scripts/worktree.nu'}' *"
         else:
-            helpers.write_text((ROOT / "config/zsh/config.d/functions.zsh").read_text())
+            load = f"source '{ROOT / 'config/zsh/config.d/functions.zsh'}'"
         commands = root / "bin"
         commands.mkdir()
         gum = commands / "gum"
-        gum.write_text("#!/bin/sh\nexit 0\n")
+        # Answers yes unless GUM_ANSWER=no.
+        gum.write_text('#!/bin/sh\n[ "$GUM_ANSWER" != no ]\n')
         gum.chmod(0o755)
         env = dict(os.environ, OMP_WORKTREE_DIR=str(root / "worktrees"), PATH=f"{commands}:{os.environ['PATH']}")
         # Do not inherit an enclosing repository or its hooks/signing policy.
@@ -40,7 +39,7 @@ def test(shell):
              "commit", "--allow-empty", "-qm", "chore(test): created a fixture"], repo, env)
 
         def command(text, cwd=repo, ok=True, overrides=None):
-            args = [shell, "-n" if shell == "nu" else "-f", "-c", f"source '{helpers}'; {text}"]
+            args = [shell, "-n" if shell == "nu" else "-f", "-c", f"{load}; {text}"]
             return run(args, cwd, dict(env, **(overrides or {})), ok)
 
         command("gd", ok=False)
@@ -61,11 +60,14 @@ def test(shell):
         command("gd", second, ok=False)
         assert dirt.read_text() == "keep me"
         dirt.unlink()
+        # Declining is not a failure, and keeps the worktree.
+        command("gd", second, overrides={"GUM_ANSWER": "no"})
+        assert second.is_dir()
         command("gd", second)
         assert not second.exists()
         command("gd", first)
         assert not first.exists()
-        print(f"{shell}: canonical paths, collisions and safe removal passed")
+        print(f"{shell}: canonical paths, collisions, declining and safe removal passed")
 
 
 if __name__ == "__main__":

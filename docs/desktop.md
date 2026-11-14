@@ -64,7 +64,7 @@ skips Tern's zsh hooks, which costs zsh the native prompt and command lenses.
 After changing this, switch and open a fresh terminal; existing shells keep the
 startup hooks they already loaded.
 
-Tern ships no Nushell integration, so `config/nushell/config.nu` speaks its
+Tern ships no Nushell integration, so `config/nushell/scripts/tern.nu` speaks its
 protocol itself when `TERM_PROGRAM=tern`. Before each command it reports the
 command line (aliases with their expansion) and exports the pager variables
 Tern's other integrations set (`GIT_PAGER=cat` for `git log`, `GH_PAGER`,
@@ -75,7 +75,7 @@ expose the line editor's vi mode, so Tern's prompt character always shows insert
 mode.
 
 Outside Tern's native prompt (Ghostty, ssh, the `imported` style) nu and zsh
-draw the same small prompt, from the Prompt section of `config.nu` and from
+draw the same small prompt, from `config/nushell/scripts/prompt.nu` and from
 `config/zsh/config.d/prompt.zsh`: host, directory and git state, `>` (or `<` in
 vi normal mode) coloured by the last status, and the duration and failing status
 on the right. There is no Starship.
